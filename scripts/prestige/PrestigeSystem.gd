@@ -42,12 +42,12 @@ func _analyze_run_metrics() -> Dictionary:
 func _get_god_message() -> String:
 	var p = GameState.prestige_count + 1  # count after this prestige
 	match p:
-		1: return L.tr("PRESTIGE_MSG_1")
-		2: return L.tr("PRESTIGE_MSG_2")
-		3: return L.tr("PRESTIGE_MSG_3")
-		4: return L.tr("PRESTIGE_MSG_4")
-		5: return L.tr("PRESTIGE_MSG_5")
-		_: return L.tr("PRESTIGE_MSG_DEFAULT")
+		1: return L.t("PRESTIGE_MSG_1")
+		2: return L.t("PRESTIGE_MSG_2")
+		3: return L.t("PRESTIGE_MSG_3")
+		4: return L.t("PRESTIGE_MSG_4")
+		5: return L.t("PRESTIGE_MSG_5")
+		_: return L.t("PRESTIGE_MSG_DEFAULT")
 
 
 func _assign_prestige_bonuses(metrics: Dictionary) -> void:
@@ -58,7 +58,7 @@ func _assign_prestige_bonuses(metrics: Dictionary) -> void:
 	_pending_bonus_2_key = _determine_bonus_2(metrics)
 	if _pending_bonus_2_key != "":
 		_add_or_replace_bonus(_pending_bonus_2_key)
-		emit_signal("bonus_assigned", L.tr("PRESTIGE_BONUS_" + _pending_bonus_2_key.to_upper()), _pending_bonus_2_key)
+		emit_signal("bonus_assigned", L.t("PRESTIGE_BONUS_" + _pending_bonus_2_key.to_upper()), _pending_bonus_2_key)
 
 
 func _determine_bonus_2(metrics: Dictionary) -> String:

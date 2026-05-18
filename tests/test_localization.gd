@@ -24,18 +24,18 @@ func _test_default_locale_is_english() -> Dictionary:
 
 func _test_english_key_exists() -> Dictionary:
 	L.load_locale("en")
-	var text = L.tr("GAME_TITLE")
+	var text = L.t("GAME_TITLE")
 	return {"name": "GAME_TITLE key exists in English", "passed": text == "The Fold"}
 
 
 func _test_missing_key_returns_key() -> Dictionary:
-	var text = L.tr("NONEXISTENT_KEY_XYZ")
+	var text = L.t("NONEXISTENT_KEY_XYZ")
 	return {"name": "missing key returns key itself", "passed": text == "NONEXISTENT_KEY_XYZ"}
 
 
 func _test_variable_substitution() -> Dictionary:
 	L.load_locale("en")
-	var text = L.tr("ERA_LABEL", {"era": 3, "name": "Civil"})
+	var text = L.t("ERA_LABEL", {"era": 3, "name": "Civil"})
 	var ok = "3" in text and "Civil" in text
 	return {"name": "variable substitution works in tr()", "passed": ok}
 
@@ -47,7 +47,7 @@ func _test_switch_to_italian() -> Dictionary:
 
 func _test_italian_key_translated() -> Dictionary:
 	L.load_locale("it")
-	var text = L.tr("DEATH_OLD_AGE")
+	var text = L.t("DEATH_OLD_AGE")
 	var ok = text == "Vecchiaia"
 	return {"name": "DEATH_OLD_AGE translated in Italian", "passed": ok}
 

@@ -14,7 +14,7 @@ var _tween: Tween = null
 
 func _ready() -> void:
 	visible = false
-	continue_button.text = L.tr("PRESTIGE_CONTINUE")
+	continue_button.text = L.t("PRESTIGE_CONTINUE")
 	continue_button.visible = false
 	continue_button.pressed.connect(_on_continue)
 
@@ -27,7 +27,7 @@ func _ready() -> void:
 func _start_sequence() -> void:
 	_sequence_step = 0
 	god_message_label.modulate.a = 0.0
-	analyzing_label.text = L.tr("PRESTIGE_ANALYZING")
+	analyzing_label.text = L.t("PRESTIGE_ANALYZING")
 	analyzing_label.visible = true
 	bonus_label.visible = false
 	continue_button.visible = false
@@ -54,7 +54,7 @@ func _show_analyzing() -> void:
 
 
 func _on_bonus_assigned(bonus_name: String, _bonus_key: String) -> void:
-	bonus_label.text = L.tr("PRESTIGE_BONUS_ASSIGNED") + "\n" + bonus_name
+	bonus_label.text = L.t("PRESTIGE_BONUS_ASSIGNED") + "\n" + bonus_name
 	bonus_label.visible = true
 	bonus_label.modulate.a = 0.0
 	_tween = create_tween()

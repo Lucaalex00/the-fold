@@ -8,8 +8,8 @@ extends CanvasLayer
 
 func _ready() -> void:
 	visible = false
-	title_label.text = L.tr("MEMORY_BOOK_TITLE")
-	close_button.text = L.tr("MEMORY_BOOK_CLOSE")
+	title_label.text = L.t("MEMORY_BOOK_TITLE")
+	close_button.text = L.t("MEMORY_BOOK_CLOSE")
 	close_button.pressed.connect(_on_close)
 
 
@@ -33,7 +33,7 @@ func _add_omino_entry(entry: Dictionary) -> void:
 	container.add_theme_constant_override("separation", 2)
 
 	var name_label = Label.new()
-	name_label.text = L.tr("MEMORY_BOOK_ENTRY", {
+	name_label.text = L.t("MEMORY_BOOK_ENTRY", {
 		"name": entry.get("name", "?"),
 		"trait": L.get_trait_name(entry.get("trait", "")),
 		"age": entry.get("age_years", 0)
@@ -41,20 +41,20 @@ func _add_omino_entry(entry: Dictionary) -> void:
 	name_label.add_theme_font_size_override("font_size", 14)
 
 	var born_label = Label.new()
-	born_label.text = L.tr("MEMORY_BOOK_BORN", {"date": entry.get("born_date_real", "?")})
+	born_label.text = L.t("MEMORY_BOOK_BORN", {"date": entry.get("born_date_real", "?")})
 	born_label.add_theme_font_size_override("font_size", 11)
 
 	var died_label = Label.new()
-	died_label.text = L.tr("MEMORY_BOOK_DIED", {
+	died_label.text = L.t("MEMORY_BOOK_DIED", {
 		"date": entry.get("death_date_real", "?"),
 		"cause": L.get_death_cause(entry.get("death_cause", ""))
 	})
 	died_label.add_theme_font_size_override("font_size", 11)
 
 	var gen_label = Label.new()
-	gen_label.text = L.tr("MEMORY_BOOK_GENERATION", {"gen": entry.get("generation", 1)}) + \
-		"  |  " + L.tr("MEMORY_BOOK_CHILDREN", {"count": entry.get("children_count", 0)}) + \
-		"  |  " + L.tr("MEMORY_BOOK_RUN", {"run": entry.get("prestige_run", 0)})
+	gen_label.text = L.t("MEMORY_BOOK_GENERATION", {"gen": entry.get("generation", 1)}) + \
+		"  |  " + L.t("MEMORY_BOOK_CHILDREN", {"count": entry.get("children_count", 0)}) + \
+		"  |  " + L.t("MEMORY_BOOK_RUN", {"run": entry.get("prestige_run", 0)})
 	gen_label.add_theme_font_size_override("font_size", 10)
 
 	container.add_child(name_label)

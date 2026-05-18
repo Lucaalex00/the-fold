@@ -30,8 +30,8 @@ func load_locale(locale: String) -> void:
 	_current_locale = locale
 
 
-# Main translation function — use L.tr("KEY") or L.tr("KEY", {var: val})
-func tr(key: String, vars: Dictionary = {}) -> String:
+# Main translation function — use L.t("KEY") or L.t("KEY", {var: val})
+func t(key: String, vars: Dictionary = {}) -> String:
 	var text: String = _strings.get(key, key)
 	for var_name in vars.keys():
 		text = text.replace("{" + var_name + "}", str(vars[var_name]))
@@ -48,20 +48,20 @@ func set_locale(locale: String) -> void:
 
 
 func get_trait_name(trait_key: String) -> String:
-	return tr("TRAIT_" + trait_key.to_upper())
+	return t("TRAIT_" + trait_key.to_upper())
 
 
 func get_stat_name(stat_key: String) -> String:
-	return tr("STAT_" + stat_key.to_upper())
+	return t("STAT_" + stat_key.to_upper())
 
 
 func get_death_cause(cause_key: String) -> String:
 	var key = "DEATH_" + cause_key.to_upper().replace(" ", "_")
-	return tr(key)
+	return t(key)
 
 
 func get_era_name(era: int) -> String:
-	return tr("ERA_" + str(era))
+	return t("ERA_" + str(era))
 
 
 func _save_locale(locale: String) -> void:

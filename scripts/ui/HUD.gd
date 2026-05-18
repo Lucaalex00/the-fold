@@ -25,7 +25,7 @@ func _update_distance() -> void:
 	var dist = GameState.distance_from_center
 	var pct = clampf(1.0 - (dist / DISTANCE_START), 0.0, 1.0) * 100.0
 
-	distance_label.text = L.tr("DISTANCE_LABEL", {
+	distance_label.text = L.t("DISTANCE_LABEL", {
 		"distance": _format_distance(dist)
 	})
 	distance_bar.value = pct
@@ -33,7 +33,7 @@ func _update_distance() -> void:
 
 func _update_divine_energy() -> void:
 	divine_energy_bar.value = (GameState.divine_energy / GameState.divine_energy_max) * 100.0
-	divine_energy_label.text = L.tr("DIVINE_ENERGY_LABEL") + ": %d/%d" % [
+	divine_energy_label.text = L.t("DIVINE_ENERGY_LABEL") + ": %d/%d" % [
 		int(GameState.divine_energy),
 		int(GameState.divine_energy_max)
 	]
@@ -48,25 +48,25 @@ func refresh() -> void:
 func update_cohesion(value: float) -> void:
 	cohesion_bar.value = value
 	var state = CultureSystem.get_cohesion_state()
-	cohesion_label.text = L.tr("COHESION_LABEL") + ": " + L.tr("COHESION_" + state.to_upper())
+	cohesion_label.text = L.t("COHESION_LABEL") + ": " + L.t("COHESION_" + state.to_upper())
 
 
 func _update_era() -> void:
-	era_label.text = L.tr("ERA_LABEL", {
+	era_label.text = L.t("ERA_LABEL", {
 		"era": GameState.current_era,
 		"name": L.get_era_name(GameState.current_era)
 	})
 
 
 func _update_population() -> void:
-	population_label.text = L.tr("LIVING_OMINI_LABEL") + ": " + \
+	population_label.text = L.t("LIVING_OMINI_LABEL") + ": " + \
 		str(GameState.get_living_entities().size()) + "/" + str(GameState.get_entity_limit())
 
 
 func show_era_notification(era: int) -> void:
 	_update_era()
 	_update_population()
-	show_notification(L.tr("ERA_LABEL", {
+	show_notification(L.t("ERA_LABEL", {
 		"era": era,
 		"name": L.get_era_name(era)
 	}))
@@ -86,7 +86,7 @@ func _tick_notification(delta: float) -> void:
 
 
 func show_lifeboat_option() -> void:
-	show_notification("⚠ " + L.tr("LIVING_OMINI_LABEL") + ": 2")
+	show_notification("⚠ " + L.t("LIVING_OMINI_LABEL") + ": 2")
 
 
 func _format_distance(dist: float) -> String:

@@ -60,7 +60,7 @@ Ogni file feature segue questo formato:
 | CultureSystem | ✅ | coesione, soglie, war_penalty, ratio warrior/origini |
 | ResourceSystem | ✅ | harvest/fishing/labor/trade, food_deficit_days, daily_reset() |
 | Planet.gd | ✅ | setup, initialize_founders(), add_entity(), can_add_entity() |
-| i18n (en + it) | ✅ | LocalizationManager (Autoload "L"), en.json + it.json, tr("KEY", {vars}) |
+| i18n (en + it) | ✅ | LocalizationManager (Autoload "L"), en.json + it.json, **L.t("KEY", {vars})** |
 | Sistema eventi (UI) | ✅ | EventPanel.gd + EventPanel.tscn, scelte dinamiche, scadenza |
 | Sistema poteri | ✅ | DivinePowersSystem.gd, 11 poteri, check era/energy, effetti |
 | Counter distanza (HUD) | ✅ | HUD.gd + HUD.tscn, update ogni frame, barre stato |
@@ -76,10 +76,11 @@ Ogni file feature segue questo formato:
 | Tutorial | ❌ | Non iniziato |
 
 ### Decisioni tecniche sessione 2026-05-19
-- **Rename completo Italiano→Inglese** — tutti gli identificatori, nomi file, commenti e stringhe hardcoded sono ora in inglese. Solo le stringhe visibili al player passano per `L.tr("KEY")`.
+- **Rename completo Italiano→Inglese** — tutti gli identificatori, nomi file, commenti e stringhe hardcoded sono ora in inglese. Solo le stringhe visibili al player passano per `L.t("KEY")`.
 - File rinominati: `Omino.gd` → `Entity.gd`, `OminoGenerator.gd` → `EntityGenerator.gd`, `test_omino_system.gd` → `test_entity_system.gd`
 - Identificatori chiave rinominati: `OminoData` → `EntityData`, `ERA_OMINI_LIMIT` → `ERA_ENTITY_LIMIT`, `oldest_omino_age` → `oldest_entity_age`, signal `omino_died` → `entity_died`, `create_omino` → `create_entity`, `_deserialize_omino` → `_deserialize_entity`
 - Death cause hardcoded `"vecchiaia"` → `"old_age"` (chiave i18n)
+- **API i18n**: `Node.tr()` è built-in Godot con firma diversa — la funzione custom è rinominata `t()`. Usare sempre `L.t("KEY")` o `L.t("KEY", {var: val})`. MAI `tr()` direttamente.
 
 ### Decisioni tecniche sessione 2026-05-18
 - `EntityData` implementata come inner class di `GameState` (non standalone) — in GDScript 4 le inner class non supportano `class_name`; accesso via `GameState.EntityData.new()`

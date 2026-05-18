@@ -64,7 +64,7 @@ func get_power_category(power_name: String) -> String:
 
 
 func get_power_display_name(power_name: String) -> String:
-	return L.tr("POWER_" + power_name.to_upper())
+	return L.t("POWER_" + power_name.to_upper())
 
 
 func _apply_power(power_name: String) -> void:

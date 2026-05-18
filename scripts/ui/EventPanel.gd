@@ -48,14 +48,14 @@ func _show_event(event: EventManager.GameEvent) -> void:
 
 func _get_event_title(event: EventManager.GameEvent) -> String:
 	var key = "EVENT_" + event.id.to_upper() + "_TITLE"
-	var translated = L.tr(key)
+	var translated = L.t(key)
 	# Fallback if no translation key exists
 	return translated if translated != key else event.title
 
 
 func _get_event_description(event: EventManager.GameEvent) -> String:
 	var key = "EVENT_" + event.id.to_upper() + "_DESC"
-	var translated = L.tr(key)
+	var translated = L.t(key)
 	return translated if translated != key else event.description
 
 
@@ -67,7 +67,7 @@ func _build_choice_buttons(event: EventManager.GameEvent) -> void:
 	for i in range(event.choices.size()):
 		var choice_key = event.choices[i]
 		var btn = Button.new()
-		btn.text = L.tr("CHOICE_" + str(choice_key).to_upper())
+		btn.text = L.t("CHOICE_" + str(choice_key).to_upper())
 		btn.pressed.connect(_on_choice_pressed.bind(i))
 		choices_container.add_child(btn)
 		_choice_buttons.append(btn)
@@ -85,11 +85,11 @@ func _on_choice_pressed(index: int) -> void:
 func _urgency_text(urgency: int) -> String:
 	match urgency:
 		EventManager.EventUrgency.CRITICAL:
-			return "🔴 " + L.tr("URGENCY_CRITICAL")
+			return "🔴 " + L.t("URGENCY_CRITICAL")
 		EventManager.EventUrgency.URGENT:
-			return "🟠 " + L.tr("URGENCY_URGENT")
+			return "🟠 " + L.t("URGENCY_URGENT")
 		_:
-			return "🟡 " + L.tr("URGENCY_MANAGEABLE")
+			return "🟡 " + L.t("URGENCY_MANAGEABLE")
 
 
 func show_lifeboat_option() -> void:
@@ -98,7 +98,7 @@ func show_lifeboat_option() -> void:
 	ev.id = "lifeboat_warning"
 	ev.type = "social"
 	ev.urgency = EventManager.EventUrgency.CRITICAL
-	ev.title = L.tr("LIVING_OMINI_LABEL")
+	ev.title = L.t("LIVING_OMINI_LABEL")
 	ev.description = "Only 2 survivors remain."
 	ev.choices = ["pray"]
 	ev.created_at = Time.get_unix_time_from_system()
