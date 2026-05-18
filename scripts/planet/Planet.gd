@@ -1,4 +1,5 @@
 extends Node
+class_name Planet
 
 var planet_id: String = ""
 var planet_name: String = ""

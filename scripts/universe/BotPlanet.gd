@@ -1,4 +1,5 @@
 extends Node2D
+class_name BotPlanet
 
 var planet_id: String = ""
 var planet_name: String = ""
