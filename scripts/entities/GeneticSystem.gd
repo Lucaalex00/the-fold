@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 
 
 func generate_child(parent_a: GameState.EntityData, parent_b: GameState.EntityData, origin_planet: String) -> GameState.EntityData:

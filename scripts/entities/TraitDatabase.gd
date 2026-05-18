@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 
 var _traits: Dictionary = {}
 

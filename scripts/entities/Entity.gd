@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 
 # Reference to the entity's logical data
 var data: GameState.EntityData = null

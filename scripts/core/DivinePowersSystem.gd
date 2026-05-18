@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 
 signal power_used(power_name: String)
 signal power_failed(power_name: String, reason: String)

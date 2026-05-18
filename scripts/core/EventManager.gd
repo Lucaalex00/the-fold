@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 
 enum EventUrgency { MANAGEABLE, URGENT, CRITICAL }
 
@@ -135,7 +135,7 @@ func _generate_cosmic_event() -> void:
 	active_cosmic_event = ev
 
 
-# --- Risoluzione eventi ---
+# --- Event resolution ---
 
 func resolve_event(event: GameEvent, choice_index: int) -> void:
 	if event.type == "social":
@@ -146,7 +146,7 @@ func resolve_event(event: GameEvent, choice_index: int) -> void:
 	SaveManager.save_game()
 
 
-# --- Scadenza eventi ---
+# --- Event expiry ---
 
 func _expire_old_events() -> void:
 	var now = Time.get_unix_time_from_system()

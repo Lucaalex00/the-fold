@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 
 var base_speed_per_second: float = 1.0  # light years / second (base)
 var offline_multiplier: float = 0.5

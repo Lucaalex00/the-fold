@@ -91,7 +91,7 @@ func apply_bonus_effects() -> void:
 func _apply_bonus(bonus_key: String) -> void:
 	match bonus_key:
 		"war_god":
-			# +3 attack for founders — applied at run start
+			# +3 attack for founders â€” applied at run start
 			pass
 		"harmony_god":
 			# -20 cultural tension base

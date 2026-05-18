@@ -46,7 +46,7 @@ func _start_new_game() -> void:
 
 
 func _load_existing_game() -> void:
-	# SaveManager._ready() already loaded the save — just refresh UI
+	# SaveManager._ready() already loaded the save â€” just refresh UI
 	CultureSystem.update_cohesion()
 	ResourceSystem.daily_reset()
 
@@ -72,7 +72,7 @@ func _on_entity_died(entity_data) -> void:
 func _check_population_collapse() -> void:
 	var living = GameState.get_living_entities()
 	if living.size() == 0:
-		# Game over — all entities dead
+		# Game over - all entities dead
 		_handle_civilization_end()
 	elif living.size() <= 2:
 		# Warning: near extinction

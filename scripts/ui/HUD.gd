@@ -1,4 +1,4 @@
-﻿extends CanvasLayer
+extends CanvasLayer
 
 @onready var distance_label: Label = $TopBar/DistanceLabel
 @onready var distance_bar: ProgressBar = $TopBar/DistanceBar

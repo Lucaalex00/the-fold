@@ -1,10 +1,10 @@
 extends Node
 
-# Procedural names — combinable syllables
+# Procedural names â€” combinable syllables
 const SYLLABLES_A = ["Ka", "Re", "Mo", "Li", "Su", "Ao", "Ve", "Da", "Ni", "Fo"]
 const SYLLABLES_B = ["ran", "lis", "dor", "ven", "kal", "mis", "ten", "ral", "son", "gon"]
 
-# Founder DNA — fixed for lore consistency
+# Founder DNA â€” fixed for lore consistency
 const FOUNDER_BUILDER = {
 	"body_shape": 0,        # Cube
 	"color_primary": Color(1.0, 0.85, 0.1, 1.0),    # Yellow

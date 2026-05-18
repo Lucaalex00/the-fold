@@ -6,7 +6,7 @@ const SAVE_PATH = "user://save.json"
 func _ready() -> void:
 	var loaded = load_game()
 	if not loaded:
-		# First launch — store timestamp for future sessions
+		# First launch â€” store timestamp for future sessions
 		TimeManager.update_timestamp()
 
 

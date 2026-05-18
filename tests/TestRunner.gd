@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 
 # Run with: add TestRunner.tscn as autostart scene, check Output panel
 # Each test suite must implement run_tests() -> Array[Dictionary]
