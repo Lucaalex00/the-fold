@@ -19,7 +19,7 @@ func run_tests() -> Array:
 
 
 func _make_omino_node() -> Node:
-	var script = load("res://scripts/omini/Omino.gd")
+	var script = load("res://scripts/entities/Omino.gd")
 	var node = script.new()
 	var data = GameState.OminoData.new()
 	data.is_alive = true
