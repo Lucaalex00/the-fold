@@ -1,5 +1,5 @@
 # Genetic System
-## Stato: ❌ Non iniziato
+## Stato: ✅ Completato
 ## Dipendenze: [GameState.gd, omini_system]
 ## Note implementazione:
 - GeneticSystem.gd — generate_child(parent_a, parent_b) -> OminoData

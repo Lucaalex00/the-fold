@@ -1,5 +1,15 @@
 # Changelog — The Fold
 
+## 2026-05-18 — STEP 5: Sistema Omini & Genetico
+
+### Aggiunto
+- `TraitDatabase.gd`: carica traits.json, `get_base_stats()` con variazione ±20%, `is_valid_trait()`
+- `OminoGenerator.gd`: `create_founders()` — Cubo Giallo (builder) + Triangolo Rosso (warrior) con DNA fissi da lore; `create_omino()` generico; `generate_name()` da sillabe; `generate_random_dna()`
+- `Omino.gd`: `calculate_death_probability()` — curva 0%→80% tra 20-30 anni, mai 100%; `roll_death()`; `die()` che chiama `save_to_memory_book()`
+- `GeneticSystem.gd`: `generate_child()` — 70% media stat, bonus intelligenza +5%/gen, tratto dominante per score, tratto secondario da era 2+, mix DNA colori con mutazione H
+
+---
+
 ## 2026-05-18 — STEP 1-4: Core Autoload
 
 ### Aggiunto

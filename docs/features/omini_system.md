@@ -1,5 +1,5 @@
 # Omini System
-## Stato: ❌ Non iniziato
+## Stato: ✅ Completato
 ## Dipendenze: [GameState.gd, GeneticSystem.gd, TraitDatabase.gd]
 ## Note implementazione:
 - 2 fondatori fissi: Cubo Giallo (builder), Triangolo Rosso (warrior)

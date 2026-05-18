@@ -55,8 +55,8 @@ Ogni file feature segue questo formato:
 | SaveManager.gd | ✅ | save/load JSON user://save.json, save_to_memory_book(), serializ. DNA/Color |
 | EventManager.gd | ✅ | GameEvent inner class, MAX 3 social + MAX 1 cosmic, scadenza eventi |
 | docs/ | ✅ | 12 feature docs + changelog creati |
-| Sistema omini | ❌ | Non iniziato |
-| Sistema genetico | ❌ | Non iniziato |
+| Sistema omini | ✅ | OminoGenerator, Omino.gd, TraitDatabase, fondatori Cubo+Triangolo |
+| Sistema genetico | ✅ | GeneticSystem.gd — generate_child(), mix DNA, crescendo generazionale |
 | Sistema eventi (UI) | ❌ | EventManager core pronto, manca UI |
 | Sistema poteri | ❌ | Non iniziato |
 | Counter distanza (HUD) | 🔄 | Logica in TimeManager, manca display HUD |
