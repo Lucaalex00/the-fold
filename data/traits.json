@@ -1,0 +1,10 @@
+{
+  "warrior":    {"icon":"⚔️", "base":{"attack":10,"health":9,"energy":7,"diplomacy":3}, "sprite_row":0, "sprite_col":0},
+  "builder":    {"icon":"🏗️", "base":{"construction":11,"harvest":8,"intelligence":7,"attack":3}, "sprite_row":0, "sprite_col":1},
+  "fisher":     {"icon":"🎣", "base":{"fishing":11,"energy":9,"health":6,"research":2}, "sprite_row":0, "sprite_col":2},
+  "scientist":  {"icon":"🔬", "base":{"research":12,"intelligence":10,"diplomacy":6,"health":3}, "sprite_row":0, "sprite_col":3},
+  "diplomat":   {"icon":"🤝", "base":{"diplomacy":12,"intelligence":9,"harvest":6,"attack":2}, "sprite_row":0, "sprite_col":4},
+  "farmer":     {"icon":"🌾", "base":{"harvest":12,"health":10,"construction":6,"research":2}, "sprite_row":0, "sprite_col":5},
+  "healer":     {"icon":"⚕️", "base":{"health":14,"diplomacy":8,"research":6,"attack":1}, "sprite_row":0, "sprite_col":6},
+  "explorer":   {"icon":"🗺️", "base":{"energy":14,"fishing":8,"attack":5,"construction":2}, "sprite_row":0, "sprite_col":7}
+}

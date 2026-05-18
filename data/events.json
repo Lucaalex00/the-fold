@@ -1,0 +1,12 @@
+{
+  "social": [
+    {"id":"faction_revolt","urgency":"critical","title":"Rivolta","trigger":"cohesion<30","choices":["divide","suppress","negotiate"]},
+    {"id":"famine","urgency":"urgent","title":"Carestia","trigger":"food_deficit>3","choices":["ration","expand","pray"]},
+    {"id":"discovery","urgency":"manageable","title":"Scoperta","trigger":"research>50","choices":["expand_north","expand_south","consolidate"]}
+  ],
+  "cosmic": [
+    {"id":"approaching_star","urgency":"urgent","warning_hours":6,"choices":["lower_temperature","mutate_citizens"]},
+    {"id":"meteorite","urgency":"critical","warning_hours":4,"choices":["deflect","prepare","ignore"]},
+    {"id":"alien_signal","urgency":"manageable","warning_hours":24,"choices":["respond","ignore","analyze"]}
+  ]
+}
