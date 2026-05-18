@@ -1,5 +1,5 @@
 # Event System
-## Stato: ❌ Non iniziato
+## Stato: ✅ Completato
 ## Dipendenze: [EventManager.gd, GameState.gd, CultureSystem.gd, ResourceSystem.gd]
 ## Note implementazione:
 - MAX 3 eventi sociali attivi contemporaneamente

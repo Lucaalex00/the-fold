@@ -60,12 +60,19 @@ Ogni file feature segue questo formato:
 | CultureSystem | ✅ | coesione, soglie, war_penalty, ratio warrior/origini |
 | ResourceSystem | ✅ | harvest/fishing/labor/trade, food_deficit_days, daily_reset() |
 | Planet.gd | ✅ | setup, initialize_founders(), add_omino(), can_add_omino() |
-| Sistema eventi (UI) | ❌ | EventManager core pronto, manca UI |
-| Sistema poteri | ❌ | Non iniziato |
-| Counter distanza (HUD) | 🔄 | Logica in TimeManager, manca display HUD |
+| i18n (en + it) | ✅ | LocalizationManager (Autoload "L"), en.json + it.json, tr("KEY", {vars}) |
+| Sistema eventi (UI) | ✅ | EventPanel.gd + EventPanel.tscn, scelte dinamiche, scadenza |
+| Sistema poteri | ✅ | DivinePowersSystem.gd, 11 poteri, check era/energy, effetti |
+| Counter distanza (HUD) | ✅ | HUD.gd + HUD.tscn, update ogni frame, barre stato |
 | Daily reset | ✅ | Implementato in TimeManager._check_daily_reset() |
-| Prestige | ❌ | Non iniziato |
-| Memory Book | 🔄 | save_to_memory_book() pronto, manca UI |
+| Prestige | ✅ | PrestigeSystem.gd, sequenza, bonus 1+2, slot cap 3, twist narrativo |
+| Memory Book | ✅ | MemoryBook.gd + MemoryBook.tscn, UI completa |
+| PrestigeScreen | ✅ | PrestigeScreen.gd + PrestigeScreen.tscn, tween fade + god message |
+| BubbleSystem | ✅ | BubbleLabel.gd + BubbleLabel.tscn, 8 tipi simbolo, float+fade |
+| Universe | ✅ | Universe.gd, 5 bot planets, posizionamento circolare |
+| BotPlanet | ✅ | BotPlanet.gd, avanza lentamente (5% velocità player) |
+| Main.gd | ✅ | Entry point, init fondatori, connect signals, gestione game over |
+| Tests | ✅ | TestRunner + 6 suite: GameState, Omino, Culture, Genetic, Prestige, L10n |
 | Tutorial | ❌ | Non iniziato |
 
 ### Decisioni tecniche sessione 2026-05-18

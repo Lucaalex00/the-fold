@@ -1,0 +1,52 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/PrestigeScreen.gd" id="1"]
+
+[node name="PrestigeScreen" type="CanvasLayer"]
+script = ExtResource("1")
+layer = 50
+visible = false
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 1)
+modulate = Color(1, 1, 1, 0)
+
+[node name="VBox" type="VBoxContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.1
+anchor_top = 0.2
+anchor_right = 0.9
+anchor_bottom = 0.8
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="GodMessageLabel" type="Label" parent="VBox"]
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 20
+modulate = Color(1, 1, 1, 0)
+visible = false
+
+[node name="AnalyzingLabel" type="Label" parent="VBox"]
+text = "Analyzing your civilization..."
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+visible = false
+
+[node name="BonusLabel" type="Label" parent="VBox"]
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 16
+visible = false
+
+[node name="ContinueButton" type="Button" parent="VBox"]
+text = "Return"
+size_flags_horizontal = 4
+visible = false

@@ -1,5 +1,5 @@
 # Universe Map
-## Stato: ❌ Non iniziato
+## Stato: ✅ Completato
 ## Dipendenze: [Universe.gd, BotPlanet.gd]
 ## Note implementazione:
 - player_planet: PlanetData del giocatore

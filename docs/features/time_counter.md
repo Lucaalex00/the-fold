@@ -1,5 +1,5 @@
 # Time Counter
-## Stato: 🔄 In sviluppo
+## Stato: ✅ Completato
 ## Dipendenze: [TimeManager.gd, GameState.gd]
 ## Note implementazione:
 - distance_from_center parte da 1.000.000 anni luce

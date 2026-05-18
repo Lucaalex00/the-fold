@@ -1,5 +1,5 @@
 # Divine Powers
-## Stato: ❌ Non iniziato
+## Stato: ✅ Completato
 ## Dipendenze: [GameState.gd (divine_energy)]
 ## Note implementazione:
 - 3 categorie: GEOGRAPHY, PHYSICS, BIOLOGY

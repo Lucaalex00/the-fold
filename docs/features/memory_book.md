@@ -1,5 +1,5 @@
 # Memory Book
-## Stato: 🔄 In sviluppo
+## Stato: ✅ Completato
 ## Dipendenze: [SaveManager.gd, GameState.gd]
 ## Note implementazione:
 - Salvato in GameState.memory_book (Array)

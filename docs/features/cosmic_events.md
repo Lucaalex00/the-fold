@@ -1,5 +1,5 @@
 # Cosmic Events
-## Stato: ❌ Non iniziato
+## Stato: ✅ Completato
 ## Dipendenze: [EventManager.gd]
 ## Note implementazione:
 - MAX 1 evento cosmico attivo alla volta

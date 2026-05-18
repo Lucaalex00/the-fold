@@ -1,5 +1,46 @@
 # Changelog — The Fold
 
+## 2026-05-18 — STEP 7: i18n + Tutti i sistemi rimanenti + Tests
+
+### i18n
+- `LocalizationManager.gd` (Autoload "L"): `tr("KEY", {vars})`, switch locale runtime, save in user://settings.cfg
+- `data/translations/en.json` + `it.json`: 80+ chiavi — ere, tratti, stat, morti, eventi, poteri, prestige, UI
+
+### Sistemi core
+- `LocalizationManager.gd`: sistema i18n completo EN/IT
+- `DivinePowersSystem.gd`: 11 poteri, check era_required + divine_energy cost, effetti diretti su stat/coesione
+- `PrestigeSystem.gd`: sequenza buco nero, analisi metriche run, bonus 1 (resource multiplier) + bonus 2 dinamico (5 tipi), slot cap 3, twist narrativo prestige 1-5+
+- `Universe.gd`: player planet + 5 bot planets generati proceduralmente, posizionamento circolare
+- `BotPlanet.gd`: avanzamento a 5% velocità player, step/era autonoma
+
+### UI completa
+- `HUD.gd` + `HUD.tscn`: counter distanza real-time ogni frame, barre cohesion/divine energy/popolazione, notifiche temporizzate
+- `EventPanel.gd` + `EventPanel.tscn`: coda eventi, scelte dinamiche da JSON, mostra urgency
+- `BubbleLabel.gd` + `BubbleLabel.tscn`: 8 tipi simbolo, float upward + fade out in 2.5s
+- `MemoryBook.gd` + `MemoryBook.tscn`: lista completa morti + run prestige, scrollabile
+- `PrestigeScreen.gd` + `PrestigeScreen.tscn`: animazione fade-in nero, god message con tween, bonus reveal
+- `Main.gd`: entry point completo, init fondatori, tutti i signal connessi, gestione population collapse
+
+### Scene aggiornate
+- `Main.tscn`: struttura completa con tutti i nodi UI istanziati
+- `Universe.tscn`: script + planet_scene export
+- `Planet.tscn`: Sprite2D + OminiContainer
+
+### Tests
+- `TestRunner.gd` + `TestRunner.tscn`: runner automatico, print risultati, quit(1) se fallimenti
+- `test_game_state.gd`: 12 test (limiti ere, energia, advance_step, reset_run, living_omini)
+- `test_omino_system.gd`: 13 test (death curve completa, fondatori, TraitDatabase, era cap)
+- `test_culture_system.gd`: 9 test (cohesion formula, soglie, war_penalty)
+- `test_genetic_system.gd`: 8 test (70% stats, intelligence bonus, trait dominante, era cap, DNA)
+- `test_prestige_system.gd`: 10 test (multiplier formula, bonus 2, slot cap, effetti bonus)
+- `test_localization.gd`: 11 test (EN/IT keys, substitution, trait names, era names)
+
+### project.godot
+- Main scene impostata: `res://scenes/main/Main.tscn`
+- 12 Autoload totali (inclusi L, DivinePowersSystem, PrestigeSystem)
+
+---
+
 ## 2026-05-18 — STEP 6: CultureSystem, ResourceSystem, Planet
 
 ### Aggiunto

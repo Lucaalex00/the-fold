@@ -1,5 +1,5 @@
 # Prestige System
-## Stato: ❌ Non iniziato
+## Stato: ✅ Completato
 ## Dipendenze: [GameState.gd, SaveManager.gd, PrestigeSystem.gd]
 ## Note implementazione:
 - Trigger: era 5 raggiunta + distance_from_center < soglia buco nero

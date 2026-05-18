@@ -1,5 +1,5 @@
 # Bubble System
-## Stato: ❌ Non iniziato
+## Stato: ✅ Completato
 ## Dipendenze: [BubbleLabel.tscn]
 ## Note implementazione:
 - Nessun testo sugli omini — solo simboli

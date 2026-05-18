@@ -13,6 +13,7 @@ config_version=5
 config/name="The Fold"
 config/features=PackedStringArray("4.5", "Mobile")
 config/icon="res://icon.svg"
+run/main_scene="res://scenes/main/Main.tscn"
 
 [autoload]
 
@@ -20,11 +21,14 @@ GameState="*res://scripts/core/GameState.gd"
 TimeManager="*res://scripts/core/TimeManager.gd"
 EventManager="*res://scripts/core/EventManager.gd"
 SaveManager="*res://scripts/core/SaveManager.gd"
+L="*res://scripts/core/LocalizationManager.gd"
+DivinePowersSystem="*res://scripts/core/DivinePowersSystem.gd"
 TraitDatabase="*res://scripts/omini/TraitDatabase.gd"
 OminoGenerator="*res://scripts/omini/OminoGenerator.gd"
 GeneticSystem="*res://scripts/omini/GeneticSystem.gd"
 CultureSystem="*res://scripts/planet/CultureSystem.gd"
 ResourceSystem="*res://scripts/planet/ResourceSystem.gd"
+PrestigeSystem="*res://scripts/prestige/PrestigeSystem.gd"
 
 [display]
 

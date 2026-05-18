@@ -1,0 +1,76 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/HUD.gd" id="1"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1")
+layer = 10
+
+[node name="TopBar" type="VBoxContainer" parent="."]
+anchors_preset = 5
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_bottom = 80.0
+grow_horizontal = 2
+
+[node name="EraLabel" type="Label" parent="TopBar"]
+text = "Era 1 — The Fold"
+horizontal_alignment = 1
+
+[node name="DistanceLabel" type="Label" parent="TopBar"]
+text = "1,000,000 light years"
+horizontal_alignment = 1
+
+[node name="DistanceBar" type="ProgressBar" parent="TopBar"]
+custom_minimum_size = Vector2(0, 12)
+max_value = 100.0
+value = 0.0
+show_percentage = false
+
+[node name="StatusBar" type="HBoxContainer" parent="."]
+anchors_preset = 2
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -60.0
+grow_vertical = 0
+
+[node name="PopulationLabel" type="Label" parent="StatusBar"]
+text = "Population: 2/4"
+size_flags_horizontal = 3
+
+[node name="CohesionLabel" type="Label" parent="StatusBar"]
+text = "Cohesion: Stable"
+size_flags_horizontal = 3
+
+[node name="CohesionBar" type="ProgressBar" parent="StatusBar"]
+custom_minimum_size = Vector2(60, 12)
+max_value = 100.0
+value = 100.0
+show_percentage = false
+size_flags_horizontal = 3
+
+[node name="DivineEnergyLabel" type="Label" parent="StatusBar"]
+text = "Divine Energy: 100/100"
+size_flags_horizontal = 3
+
+[node name="DivineEnergyBar" type="ProgressBar" parent="StatusBar"]
+custom_minimum_size = Vector2(60, 12)
+max_value = 100.0
+value = 100.0
+show_percentage = false
+size_flags_horizontal = 3
+
+[node name="NotificationLabel" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_top = 90.0
+offset_bottom = 115.0
+horizontal_alignment = 1
+visible = false
