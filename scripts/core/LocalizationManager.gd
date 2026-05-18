@@ -1,4 +1,4 @@
-extends Node
+﻿extends Node
 
 const SUPPORTED_LOCALES = ["en", "it"]
 const DEFAULT_LOCALE = "en"

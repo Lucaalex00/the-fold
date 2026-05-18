@@ -6,7 +6,7 @@ const SAVE_PATH = "user://save.json"
 func _ready() -> void:
 	var loaded = load_game()
 	if not loaded:
-		# Prima apertura â€” calcola timestamp per sessioni future
+		# First launch — store timestamp for future sessions
 		TimeManager.update_timestamp()
 
 
@@ -21,13 +21,13 @@ func save_game() -> void:
 		"divine_energy_max": GameState.divine_energy_max,
 		"distance_from_center": GameState.distance_from_center,
 		"prestige_resource_multiplier": GameState.prestige_resource_multiplier,
-		"omini": _serialize_omini(),
+		"entities": _serialize_entities(),
 		"memory_book": GameState.memory_book,
 		"conflicts_won": GameState.conflicts_won,
 		"avg_cohesion": GameState.avg_cohesion,
-		"omini_lost": GameState.omini_lost,
+		"entities_lost": GameState.entities_lost,
 		"planets_visited": GameState.planets_visited,
-		"oldest_omino_age": GameState.oldest_omino_age,
+		"oldest_entity_age": GameState.oldest_entity_age,
 		"last_save_timestamp": Time.get_unix_time_from_system()
 	}
 	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -63,15 +63,15 @@ func _apply_save_data(data: Dictionary) -> void:
 	GameState.memory_book = data.get("memory_book", [])
 	GameState.conflicts_won = data.get("conflicts_won", 0)
 	GameState.avg_cohesion = data.get("avg_cohesion", 100.0)
-	GameState.omini_lost = data.get("omini_lost", 0)
+	GameState.entities_lost = data.get("entities_lost", 0)
 	GameState.planets_visited = data.get("planets_visited", 0)
-	GameState.oldest_omino_age = data.get("oldest_omino_age", 0)
+	GameState.oldest_entity_age = data.get("oldest_entity_age", 0)
 
-	GameState.omini.clear()
-	for omino_raw in data.get("omini", []):
-		GameState.omini.append(_deserialize_omino(omino_raw))
+	GameState.entities.clear()
+	for entity_raw in data.get("entities", []):
+		GameState.entities.append(_deserialize_entity(entity_raw))
 
-	# Applica progresso offline dai secondi trascorsi dall'ultimo salvataggio
+	# Apply offline progress from seconds elapsed since last save
 	var last_ts = data.get("last_save_timestamp", 0)
 	if last_ts > 0:
 		var elapsed = Time.get_unix_time_from_system() - last_ts
@@ -80,49 +80,49 @@ func _apply_save_data(data: Dictionary) -> void:
 	TimeManager.update_timestamp()
 
 
-func save_to_memory_book(omino: GameState.OminoData) -> void:
+func save_to_memory_book(entity: GameState.EntityData) -> void:
 	var entry = {
-		"id": omino.id,
-		"name": omino.name,
-		"trait": omino.trait_primary,
-		"born_day": omino.birth_day,
-		"born_date_real": omino.birth_date_real,
+		"id": entity.id,
+		"name": entity.name,
+		"trait": entity.trait_primary,
+		"born_day": entity.birth_day,
+		"born_date_real": entity.birth_date_real,
 		"death_day": GameState.current_day,
 		"death_date_real": Time.get_date_string_from_system(),
-		"age_years": omino.age_years,
-		"stats_final": omino.stats.duplicate(),
-		"generation": omino.generation,
-		"children_count": omino.children.size(),
-		"origin_planet": omino.origin_planet,
-		"notable_events": omino.notable_events.duplicate(),
-		"death_cause": omino.death_cause,
-		"dna_snapshot": _serialize_dna(omino.dna),
+		"age_years": entity.age_years,
+		"stats_final": entity.stats.duplicate(),
+		"generation": entity.generation,
+		"children_count": entity.children.size(),
+		"origin_planet": entity.origin_planet,
+		"notable_events": entity.notable_events.duplicate(),
+		"death_cause": entity.death_cause,
+		"dna_snapshot": _serialize_dna(entity.dna),
 		"prestige_run": GameState.prestige_count
 	}
 	GameState.memory_book.append(entry)
 	save_game()
 
 
-func _serialize_omini() -> Array:
+func _serialize_entities() -> Array:
 	var result = []
-	for omino in GameState.omini:
+	for entity in GameState.entities:
 		result.append({
-			"id": omino.id,
-			"name": omino.name,
-			"birth_day": omino.birth_day,
-			"birth_date_real": omino.birth_date_real,
-			"age_years": omino.age_years,
-			"is_alive": omino.is_alive,
-			"trait_primary": omino.trait_primary,
-			"trait_secondary": omino.trait_secondary,
-			"stats": omino.stats.duplicate(),
-			"dna": _serialize_dna(omino.dna),
-			"origin_planet": omino.origin_planet,
-			"generation": omino.generation,
-			"parents": omino.parents.duplicate(),
-			"children": omino.children.duplicate(),
-			"notable_events": omino.notable_events.duplicate(),
-			"death_cause": omino.death_cause
+			"id": entity.id,
+			"name": entity.name,
+			"birth_day": entity.birth_day,
+			"birth_date_real": entity.birth_date_real,
+			"age_years": entity.age_years,
+			"is_alive": entity.is_alive,
+			"trait_primary": entity.trait_primary,
+			"trait_secondary": entity.trait_secondary,
+			"stats": entity.stats.duplicate(),
+			"dna": _serialize_dna(entity.dna),
+			"origin_planet": entity.origin_planet,
+			"generation": entity.generation,
+			"parents": entity.parents.duplicate(),
+			"children": entity.children.duplicate(),
+			"notable_events": entity.notable_events.duplicate(),
+			"death_cause": entity.death_cause
 		})
 	return result
 
@@ -142,27 +142,27 @@ func _color_to_array(c: Color) -> Array:
 	return [c.r, c.g, c.b, c.a]
 
 
-func _deserialize_omino(data: Dictionary) -> GameState.OminoData:
-	var omino = GameState.OminoData.new()
-	omino.id = data.get("id", "")
-	omino.name = data.get("name", "")
-	omino.birth_day = data.get("birth_day", 0)
-	omino.birth_date_real = data.get("birth_date_real", "")
-	omino.age_years = data.get("age_years", 0)
-	omino.is_alive = data.get("is_alive", true)
-	omino.trait_primary = data.get("trait_primary", "")
-	omino.trait_secondary = data.get("trait_secondary", "")
-	omino.stats = data.get("stats", omino.stats.duplicate())
-	omino.origin_planet = data.get("origin_planet", "")
-	omino.generation = data.get("generation", 1)
-	omino.parents = data.get("parents", [])
-	omino.children = data.get("children", [])
-	omino.notable_events = data.get("notable_events", [])
-	omino.death_cause = data.get("death_cause", "")
+func _deserialize_entity(data: Dictionary) -> GameState.EntityData:
+	var entity = GameState.EntityData.new()
+	entity.id = data.get("id", "")
+	entity.name = data.get("name", "")
+	entity.birth_day = data.get("birth_day", 0)
+	entity.birth_date_real = data.get("birth_date_real", "")
+	entity.age_years = data.get("age_years", 0)
+	entity.is_alive = data.get("is_alive", true)
+	entity.trait_primary = data.get("trait_primary", "")
+	entity.trait_secondary = data.get("trait_secondary", "")
+	entity.stats = data.get("stats", entity.stats.duplicate())
+	entity.origin_planet = data.get("origin_planet", "")
+	entity.generation = data.get("generation", 1)
+	entity.parents = data.get("parents", [])
+	entity.children = data.get("children", [])
+	entity.notable_events = data.get("notable_events", [])
+	entity.death_cause = data.get("death_cause", "")
 	var dna_raw = data.get("dna", {})
 	if not dna_raw.is_empty():
-		omino.dna = _deserialize_dna(dna_raw)
-	return omino
+		entity.dna = _deserialize_dna(dna_raw)
+	return entity
 
 
 func _deserialize_dna(data: Dictionary) -> Dictionary:

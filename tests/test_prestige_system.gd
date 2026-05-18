@@ -53,7 +53,7 @@ func _test_resource_multiplier_slows_after_5() -> Dictionary:
 	var m6 = GameState.calculate_prestige_resource_multiplier()
 	GameState.prestige_count = 10
 	var m10 = GameState.calculate_prestige_resource_multiplier()
-	# Growth from 5→6 should be smaller than 4→5 (1.5x vs 1.15x)
+	# Growth from 5?6 should be smaller than 4?5 (1.5x vs 1.15x)
 	var growth_5_to_6 = m6 / m5
 	var ok = is_equal_approx(growth_5_to_6, 1.15, 0.01) and m10 > m6
 	GameState.prestige_count = original
@@ -62,23 +62,23 @@ func _test_resource_multiplier_slows_after_5() -> Dictionary:
 
 func _test_bonus_2_war_god() -> Dictionary:
 	var metrics = {"conflicts_won": 15, "avg_cohesion": 50.0,
-				   "omini_lost": 5, "planets_visited": 2, "oldest_omino_age": 20}
+				   "entities_lost": 5, "planets_visited": 2, "oldest_entity_age": 20}
 	var bonus = PrestigeSystem._determine_bonus_2(metrics)
 	return {"name": "bonus_2 = war_god when conflicts_won > 10", "passed": bonus == "war_god"}
 
 
 func _test_bonus_2_harmony_god() -> Dictionary:
 	var metrics = {"conflicts_won": 3, "avg_cohesion": 80.0,
-				   "omini_lost": 2, "planets_visited": 1, "oldest_omino_age": 10}
+				   "entities_lost": 2, "planets_visited": 1, "oldest_entity_age": 10}
 	var bonus = PrestigeSystem._determine_bonus_2(metrics)
 	return {"name": "bonus_2 = harmony_god when avg_cohesion > 75", "passed": bonus == "harmony_god"}
 
 
 func _test_bonus_2_resilience_god() -> Dictionary:
 	var metrics = {"conflicts_won": 3, "avg_cohesion": 50.0,
-				   "omini_lost": 20, "planets_visited": 1, "oldest_omino_age": 10}
+				   "entities_lost": 20, "planets_visited": 1, "oldest_entity_age": 10}
 	var bonus = PrestigeSystem._determine_bonus_2(metrics)
-	return {"name": "bonus_2 = resilience_god when omini_lost > 15", "passed": bonus == "resilience_god"}
+	return {"name": "bonus_2 = resilience_god when entities_lost > 15", "passed": bonus == "resilience_god"}
 
 
 func _test_bonus_slots_cap_at_3() -> Dictionary:

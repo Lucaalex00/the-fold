@@ -1,4 +1,4 @@
-extends CanvasLayer
+﻿extends CanvasLayer
 
 @onready var title_label: Label = $Panel/VBox/TitleLabel
 @onready var entries_container: VBoxContainer = $Panel/VBox/Scroll/EntriesContainer

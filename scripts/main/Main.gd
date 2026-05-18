@@ -15,7 +15,7 @@ func _ready() -> void:
 
 
 func _connect_signals() -> void:
-	GameState.omino_died.connect(_on_omino_died)
+	GameState.entity_died.connect(_on_entity_died)
 	GameState.era_changed.connect(_on_era_changed)
 	GameState.prestige_triggered.connect(_on_prestige_triggered)
 	GameState.cohesion_changed.connect(_on_cohesion_changed)
@@ -46,7 +46,7 @@ func _start_new_game() -> void:
 
 
 func _load_existing_game() -> void:
-	# SaveManager._ready() already loaded the save â€” just refresh UI
+	# SaveManager._ready() already loaded the save — just refresh UI
 	CultureSystem.update_cohesion()
 	ResourceSystem.daily_reset()
 
@@ -55,24 +55,24 @@ func _apply_prestige_bonuses_to_founders() -> void:
 	var attack_bonus = PrestigeSystem.get_founder_attack_bonus()
 	if attack_bonus <= 0:
 		return
-	for omino in GameState.omini:
-		if omino.generation == 1 and omino.trait_primary == "warrior":
-			omino.stats["attack"] = mini(
-				omino.stats["attack"] + attack_bonus,
+	for entity in GameState.entities:
+		if entity.generation == 1 and entity.trait_primary == "warrior":
+			entity.stats["attack"] = mini(
+				entity.stats["attack"] + attack_bonus,
 				GameState.get_stat_cap()
 			)
 
 
 # --- Signal handlers ---
 
-func _on_omino_died(omino_data) -> void:
+func _on_entity_died(entity_data) -> void:
 	_check_population_collapse()
 
 
 func _check_population_collapse() -> void:
-	var living = GameState.get_living_omini()
+	var living = GameState.get_living_entities()
 	if living.size() == 0:
-		# Game over â€” all omini dead
+		# Game over — all entities dead
 		_handle_civilization_end()
 	elif living.size() <= 2:
 		# Warning: near extinction

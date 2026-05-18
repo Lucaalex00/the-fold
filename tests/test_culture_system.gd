@@ -1,4 +1,4 @@
-extends Node
+﻿extends Node
 
 func run_tests() -> Array:
 	return [
@@ -14,10 +14,10 @@ func run_tests() -> Array:
 	]
 
 
-func _setup_omini(trait_name: String, count: int, origin: String) -> Array:
+func _setup_entities(trait_name: String, count: int, origin: String) -> Array:
 	var result = []
 	for i in range(count):
-		var o = GameState.OminoData.new()
+		var o = GameState.EntityData.new()
 		o.is_alive = true
 		o.trait_primary = trait_name
 		o.origin_planet = origin
@@ -26,42 +26,42 @@ func _setup_omini(trait_name: String, count: int, origin: String) -> Array:
 
 
 func _test_cohesion_empty_population() -> Dictionary:
-	var original = GameState.omini.duplicate()
-	GameState.omini.clear()
+	var original = GameState.entities.duplicate()
+	GameState.entities.clear()
 	var cohesion = CultureSystem.calculate_cohesion()
 	var ok = is_equal_approx(cohesion, 0.0)
-	GameState.omini = original
+	GameState.entities = original
 	return {"name": "cohesion = 0 with empty population", "passed": ok}
 
 
 func _test_cohesion_full_same_origin() -> Dictionary:
-	var original = GameState.omini.duplicate()
-	GameState.omini = _setup_omini("builder", 4, "planet_a")
+	var original = GameState.entities.duplicate()
+	GameState.entities = _setup_entities("builder", 4, "planet_a")
 	var cohesion = CultureSystem.calculate_cohesion()
 	# 4 builders same origin: warrior_ratio=0, same_origin=1.0 → bonus 20, base 100 → 120 clamped 100
 	var ok = cohesion >= 90.0
-	GameState.omini = original
+	GameState.entities = original
 	return {"name": "cohesion high with same origin non-warriors", "passed": ok}
 
 
 func _test_cohesion_warrior_penalty() -> Dictionary:
-	var original = GameState.omini.duplicate()
+	var original = GameState.entities.duplicate()
 	# 3 warriors out of 4 = 75% ratio → penalty = (0.75-0.5)*100 = 25
-	var omini = _setup_omini("warrior", 3, "planet_a")
-	omini.append_array(_setup_omini("builder", 1, "planet_a"))
-	GameState.omini = omini
+	var entities = _setup_entities("warrior", 3, "planet_a")
+	entities.append_array(_setup_entities("builder", 1, "planet_a"))
+	GameState.entities = entities
 	var cohesion = CultureSystem.calculate_cohesion()
 	var ok = cohesion < 100.0
-	GameState.omini = original
+	GameState.entities = original
 	return {"name": "warrior majority reduces cohesion", "passed": ok}
 
 
 func _test_cohesion_clamps_to_100() -> Dictionary:
-	var original = GameState.omini.duplicate()
-	GameState.omini = _setup_omini("builder", 2, "planet_a")
+	var original = GameState.entities.duplicate()
+	GameState.entities = _setup_entities("builder", 2, "planet_a")
 	var cohesion = CultureSystem.calculate_cohesion()
 	var ok = cohesion <= 100.0
-	GameState.omini = original
+	GameState.entities = original
 	return {"name": "cohesion never exceeds 100", "passed": ok}
 
 

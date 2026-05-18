@@ -1,4 +1,4 @@
-extends Node
+﻿extends Node
 
 # Run with: add TestRunner.tscn as autostart scene, check Output panel
 # Each test suite must implement run_tests() -> Array[Dictionary]
@@ -6,7 +6,7 @@ extends Node
 
 const TEST_SUITES = [
 	"res://tests/test_game_state.gd",
-	"res://tests/test_omino_system.gd",
+	"res://tests/test_entity_system.gd",
 	"res://tests/test_culture_system.gd",
 	"res://tests/test_genetic_system.gd",
 	"res://tests/test_prestige_system.gd",

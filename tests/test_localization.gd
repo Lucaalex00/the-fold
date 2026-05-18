@@ -1,4 +1,4 @@
-extends Node
+﻿extends Node
 
 func run_tests() -> Array:
 	return [

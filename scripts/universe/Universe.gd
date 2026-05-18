@@ -1,4 +1,4 @@
-extends Node2D
+﻿extends Node2D
 
 const BOT_PLANET_COUNT = 5
 const PLANET_SPRITES = [

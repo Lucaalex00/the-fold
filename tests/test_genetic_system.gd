@@ -1,4 +1,4 @@
-extends Node
+﻿extends Node
 
 func run_tests() -> Array:
 	return [
@@ -13,13 +13,13 @@ func run_tests() -> Array:
 	]
 
 
-func _make_parent(trait_name: String, gen: int) -> GameState.OminoData:
-	var o = GameState.OminoData.new()
+func _make_parent(trait_name: String, gen: int) -> GameState.EntityData:
+	var o = GameState.EntityData.new()
 	o.id = "test_" + trait_name + "_" + str(gen)
 	o.trait_primary = trait_name
 	o.generation = gen
 	o.stats = TraitDatabase.get_base_stats(trait_name)
-	o.dna = OminoGenerator.generate_random_dna()
+	o.dna = EntityGenerator.generate_random_dna()
 	o.origin_planet = "test_planet"
 	return o
 

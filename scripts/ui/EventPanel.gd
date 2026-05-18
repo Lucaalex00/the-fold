@@ -1,4 +1,4 @@
-extends CanvasLayer
+﻿extends CanvasLayer
 
 signal choice_made(event: EventManager.GameEvent, choice_index: int)
 

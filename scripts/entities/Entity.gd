@@ -1,11 +1,11 @@
-extends Node
+﻿extends Node
 
-# Riferimento ai dati logici dell'omino
-var data: GameState.OminoData = null
+# Reference to the entity's logical data
+var data: GameState.EntityData = null
 
 
-func setup(omino_data: GameState.OminoData) -> void:
-	data = omino_data
+func setup(entity_data: GameState.EntityData) -> void:
+	data = entity_data
 
 
 # --- Aging & Morte ---
@@ -20,19 +20,19 @@ func tick_age(years: int = 2) -> void:
 func _check_death_by_age() -> void:
 	var prob = calculate_death_probability(data.age_years)
 	if prob > 0.0 and roll_death():
-		die("vecchiaia")
+		die("old_age")
 
 
 func calculate_death_probability(age_years: int) -> float:
 	if age_years < 20:
 		return 0.0
 	elif age_years <= 30:
-		# Curva crescente 0% → 80% tra 20 e 30 anni
+		# Rising curve 0% → 80% between ages 20 and 30
 		var t = (age_years - 20.0) / 10.0
 		return t * 0.80
 	else:
-		# Oltre 30 anni: 80% + 0.05% per ogni anno extra
-		# Max teorico ~98% a 200 anni — mai 100%
+		# Over age 30: 80% + 0.05% per extra year
+		# Theoretical max ~98% at age 200 — never 100%
 		var extra_years = age_years - 30
 		return minf(0.80 + extra_years * 0.0005, 0.98)
 
@@ -45,7 +45,7 @@ func roll_death() -> bool:
 func die(cause: String) -> void:
 	if data == null or not data.is_alive:
 		return
-	GameState.register_omino_death(data, cause)
+	GameState.register_entity_death(data, cause)
 	SaveManager.save_to_memory_book(data)
 
 

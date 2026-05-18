@@ -1,4 +1,4 @@
-extends Node
+﻿extends Node
 
 func run_tests() -> Array:
 	return [
@@ -12,18 +12,18 @@ func run_tests() -> Array:
 		_test_advance_step_era_change(),
 		_test_reset_run_preserves_memory(),
 		_test_reset_run_preserves_prestige(),
-		_test_get_living_omini(),
+		_test_get_living_entities(),
 		_test_era_speed_multiplier(),
 	]
 
 
 func _test_era_omini_limits() -> Dictionary:
-	var ok = GameState.ERA_OMINI_LIMIT[1] == 4 and \
-			 GameState.ERA_OMINI_LIMIT[2] == 8 and \
-			 GameState.ERA_OMINI_LIMIT[3] == 15 and \
-			 GameState.ERA_OMINI_LIMIT[4] == 30 and \
-			 GameState.ERA_OMINI_LIMIT[5] == 50
-	return {"name": "ERA_OMINI_LIMIT values", "passed": ok}
+	var ok = GameState.ERA_ENTITY_LIMIT[1] == 4 and \
+			 GameState.ERA_ENTITY_LIMIT[2] == 8 and \
+			 GameState.ERA_ENTITY_LIMIT[3] == 15 and \
+			 GameState.ERA_ENTITY_LIMIT[4] == 30 and \
+			 GameState.ERA_ENTITY_LIMIT[5] == 50
+	return {"name": "ERA_ENTITY_LIMIT values", "passed": ok}
 
 
 func _test_stat_caps() -> Dictionary:
@@ -100,18 +100,18 @@ func _test_reset_run_preserves_prestige() -> Dictionary:
 	return {"name": "reset_run preserves prestige_count", "passed": ok}
 
 
-func _test_get_living_omini() -> Dictionary:
-	var original = GameState.omini.duplicate()
-	GameState.omini.clear()
-	var o1 = GameState.OminoData.new()
+func _test_get_living_entities() -> Dictionary:
+	var original = GameState.entities.duplicate()
+	GameState.entities.clear()
+	var o1 = GameState.EntityData.new()
 	o1.is_alive = true
-	var o2 = GameState.OminoData.new()
+	var o2 = GameState.EntityData.new()
 	o2.is_alive = false
-	GameState.omini = [o1, o2]
-	var living = GameState.get_living_omini()
+	GameState.entities = [o1, o2]
+	var living = GameState.get_living_entities()
 	var ok = living.size() == 1
-	GameState.omini = original
-	return {"name": "get_living_omini filters dead", "passed": ok}
+	GameState.entities = original
+	return {"name": "get_living_entities filters dead", "passed": ok}
 
 
 func _test_era_speed_multiplier() -> Dictionary:

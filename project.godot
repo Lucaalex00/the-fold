@@ -1,4 +1,4 @@
-; Engine configuration file.
+﻿; Engine configuration file.
 ; It's best edited using the editor UI and not directly,
 ; since the parameters that go here are not all obvious.
 ;
@@ -24,7 +24,7 @@ SaveManager="*res://scripts/core/SaveManager.gd"
 L="*res://scripts/core/LocalizationManager.gd"
 DivinePowersSystem="*res://scripts/core/DivinePowersSystem.gd"
 TraitDatabase="*res://scripts/entities/TraitDatabase.gd"
-OminoGenerator="*res://scripts/entities/OminoGenerator.gd"
+EntityGenerator="*res://scripts/entities/EntityGenerator.gd"
 GeneticSystem="*res://scripts/entities/GeneticSystem.gd"
 CultureSystem="*res://scripts/planet/CultureSystem.gd"
 ResourceSystem="*res://scripts/planet/ResourceSystem.gd"

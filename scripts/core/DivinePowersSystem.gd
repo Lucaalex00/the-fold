@@ -1,4 +1,4 @@
-extends Node
+﻿extends Node
 
 signal power_used(power_name: String)
 signal power_failed(power_name: String, reason: String)
@@ -91,10 +91,10 @@ func _apply_power(power_name: String) -> void:
 
 func _power_create_mountain() -> void:
 	# Increases construction output — terrain bonus
-	for omino in GameState.get_living_omini():
-		if omino.trait_primary == "builder":
-			omino.stats["construction"] = mini(
-				omino.stats["construction"] + 2,
+	for entity in GameState.get_living_entities():
+		if entity.trait_primary == "builder":
+			entity.stats["construction"] = mini(
+				entity.stats["construction"] + 2,
 				GameState.get_stat_cap()
 			)
 
@@ -110,31 +110,31 @@ func _power_change_temperature() -> void:
 
 
 func _power_mutate_faction() -> void:
-	# Random stat boost to all omini of the weakest trait group
-	var living = GameState.get_living_omini()
+	# Random stat boost to all entities of the weakest trait group
+	var living = GameState.get_living_entities()
 	if living.is_empty():
 		return
-	for omino in living:
-		var random_stat = omino.stats.keys()[randi() % omino.stats.size()]
-		omino.stats[random_stat] = mini(
-			omino.stats[random_stat] + randi_range(1, 3),
+	for entity in living:
+		var random_stat = entity.stats.keys()[randi() % entity.stats.size()]
+		entity.stats[random_stat] = mini(
+			entity.stats[random_stat] + randi_range(1, 3),
 			GameState.get_stat_cap()
 		)
 
 
 func _power_grant_immunity() -> void:
-	# Boost health of all living omini
-	for omino in GameState.get_living_omini():
-		omino.stats["health"] = mini(
-			omino.stats["health"] + 3,
+	# Boost health of all living entities
+	for entity in GameState.get_living_entities():
+		entity.stats["health"] = mini(
+			entity.stats["health"] + 3,
 			GameState.get_stat_cap()
 		)
 
 
 func _power_create_disease() -> void:
-	# Deal damage to all living omini health
-	for omino in GameState.get_living_omini():
-		omino.stats["health"] = maxi(omino.stats["health"] - randi_range(1, 4), 1)
+	# Deal damage to all living entities health
+	for entity in GameState.get_living_entities():
+		entity.stats["health"] = maxi(entity.stats["health"] - randi_range(1, 4), 1)
 
 
 func _power_accelerate_evolution() -> void:

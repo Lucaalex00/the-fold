@@ -32,9 +32,9 @@ func _analyze_run_metrics() -> Dictionary:
 	return {
 		"conflicts_won": GameState.conflicts_won,
 		"avg_cohesion": GameState.avg_cohesion,
-		"omini_lost": GameState.omini_lost,
+		"entities_lost": GameState.entities_lost,
 		"planets_visited": GameState.planets_visited,
-		"oldest_omino_age": GameState.oldest_omino_age,
+		"oldest_entity_age": GameState.oldest_entity_age,
 		"prestige_count": GameState.prestige_count
 	}
 
@@ -66,11 +66,11 @@ func _determine_bonus_2(metrics: Dictionary) -> String:
 		return "war_god"
 	if metrics["avg_cohesion"] > 75.0:
 		return "harmony_god"
-	if metrics["omini_lost"] > 15:
+	if metrics["entities_lost"] > 15:
 		return "resilience_god"
 	if metrics["planets_visited"] > 5:
 		return "explorer_god"
-	if metrics["oldest_omino_age"] > 60:
+	if metrics["oldest_entity_age"] > 60:
 		return "eternal_god"
 	return ""
 
@@ -91,7 +91,7 @@ func apply_bonus_effects() -> void:
 func _apply_bonus(bonus_key: String) -> void:
 	match bonus_key:
 		"war_god":
-			# +3 attack for founders â€” applied at run start
+			# +3 attack for founders — applied at run start
 			pass
 		"harmony_god":
 			# -20 cultural tension base
@@ -131,7 +131,7 @@ func _save_run_to_memory_book(metrics: Dictionary) -> void:
 		"prestige_number": GameState.prestige_count + 1,
 		"date": Time.get_date_string_from_system(),
 		"era_reached": GameState.current_era,
-		"omini_total": GameState.omini.size(),
+		"omini_total": GameState.entities.size(),
 		"memory_book_entries": GameState.memory_book.size(),
 		"metrics": metrics,
 		"bonus_2": _pending_bonus_2_key,

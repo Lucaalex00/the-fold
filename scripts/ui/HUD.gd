@@ -1,4 +1,4 @@
-extends CanvasLayer
+﻿extends CanvasLayer
 
 @onready var distance_label: Label = $TopBar/DistanceLabel
 @onready var distance_bar: ProgressBar = $TopBar/DistanceBar
@@ -60,7 +60,7 @@ func _update_era() -> void:
 
 func _update_population() -> void:
 	population_label.text = L.tr("LIVING_OMINI_LABEL") + ": " + \
-		str(GameState.get_living_omini().size()) + "/" + str(GameState.get_omini_limit())
+		str(GameState.get_living_entities().size()) + "/" + str(GameState.get_entity_limit())
 
 
 func show_era_notification(era: int) -> void:

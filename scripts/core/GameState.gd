@@ -1,47 +1,47 @@
 extends Node
 
-# Segnali core
-signal omino_died(omino_data)
+# Core signals
+signal entity_died(entity_data)
 signal era_changed(new_era: int)
 signal prestige_triggered(count: int)
 signal cohesion_changed(new_value: float)
 
-# Costanti di bilanciamento
-const ERA_OMINI_LIMIT = {1: 4, 2: 8, 3: 15, 4: 30, 5: 50}
+# Balance constants
+const ERA_ENTITY_LIMIT = {1: 4, 2: 8, 3: 15, 4: 30, 5: 50}
 const ERA_STAT_CAP = {1: 15, 2: 25, 3: 40, 4: 60, 5: 100}
 
-# Stato progresso
+# Progress state
 var current_era: int = 1
 var current_step: int = 1
 var prestige_count: int = 0
 var current_day: int = 0
 
-# Energia divina
+# Divine energy
 var divine_energy: float = 100.0
 var divine_energy_max: float = 100.0
 var divine_energy_regen_per_hour: float = 5.0
 
-# Counter universo
+# Universe counter
 var distance_from_center: float = 1_000_000.0
 
-# Moltiplicatori prestige (cumulativi, non si resettano)
+# Prestige multipliers (cumulative, never reset)
 var prestige_resource_multiplier: float = 1.0
 
-# Civiltà attiva
-var omini: Array = []
+# Active civilization
+var entities: Array = []
 
-# Memoria permanente (non si cancella mai, neanche col prestige)
+# Permanent memory (never deleted, not even on prestige)
 var memory_book: Array = []
 
-# Metriche run corrente (per calcolo bonus prestige 2)
+# Current run metrics (for prestige bonus 2 calculation)
 var conflicts_won: int = 0
 var avg_cohesion: float = 100.0
-var omini_lost: int = 0
+var entities_lost: int = 0
 var planets_visited: int = 0
-var oldest_omino_age: int = 0
+var oldest_entity_age: int = 0
 
 
-class OminoData:
+class EntityData:
 	var id: String = ""
 	var name: String = ""
 	var birth_day: int = 0
@@ -97,33 +97,33 @@ func _on_energy_regen_tick() -> void:
 	divine_energy = min(divine_energy + divine_energy_regen_per_hour, divine_energy_max)
 
 
-# --- Query stato civiltà ---
+# --- Civilization queries ---
 
 func get_era_speed_multiplier() -> float:
 	return 1.0 + (current_era - 1) * 0.3
 
 
-func get_omini_navigator_bonus() -> float:
+func get_navigator_bonus() -> float:
 	var count = 0
-	for omino in omini:
-		if omino.is_alive and omino.trait_primary == "explorer":
+	for entity in entities:
+		if entity.is_alive and entity.trait_primary == "explorer":
 			count += 1
 	return 1.0 + count * 0.05
 
 
-func get_omini_limit() -> int:
-	return ERA_OMINI_LIMIT.get(current_era, 4)
+func get_entity_limit() -> int:
+	return ERA_ENTITY_LIMIT.get(current_era, 4)
 
 
 func get_stat_cap() -> int:
 	return ERA_STAT_CAP.get(current_era, 15)
 
 
-func get_living_omini() -> Array:
-	return omini.filter(func(o): return o.is_alive)
+func get_living_entities() -> Array:
+	return entities.filter(func(o): return o.is_alive)
 
 
-# --- Avanzamento era/step ---
+# --- Era / step progression ---
 
 func advance_step() -> void:
 	current_step += 1
@@ -137,18 +137,18 @@ func _advance_era() -> void:
 		emit_signal("era_changed", current_era)
 
 
-# --- Gestione omini ---
+# --- Entity management ---
 
-func register_omino_death(omino: OminoData, cause: String) -> void:
-	omino.is_alive = false
-	omino.death_cause = cause
-	omini_lost += 1
-	if omino.age_years > oldest_omino_age:
-		oldest_omino_age = omino.age_years
-	emit_signal("omino_died", omino)
+func register_entity_death(entity: EntityData, cause: String) -> void:
+	entity.is_alive = false
+	entity.death_cause = cause
+	entities_lost += 1
+	if entity.age_years > oldest_entity_age:
+		oldest_entity_age = entity.age_years
+	emit_signal("entity_died", entity)
 
 
-# --- Gestione energia divina ---
+# --- Divine energy management ---
 
 func spend_divine_energy(amount: float) -> bool:
 	if divine_energy < amount:
@@ -170,7 +170,7 @@ func apply_prestige_multiplier() -> void:
 	prestige_resource_multiplier = calculate_prestige_resource_multiplier()
 
 
-# --- Reset run (non tocca memory_book né prestige) ---
+# --- Reset run (does NOT touch memory_book or prestige) ---
 
 func reset_run() -> void:
 	current_era = 1
@@ -178,9 +178,9 @@ func reset_run() -> void:
 	current_day = 0
 	divine_energy = divine_energy_max
 	distance_from_center = 1_000_000.0
-	omini.clear()
+	entities.clear()
 	conflicts_won = 0
 	avg_cohesion = 100.0
-	omini_lost = 0
+	entities_lost = 0
 	planets_visited = 0
-	oldest_omino_age = 0
+	oldest_entity_age = 0

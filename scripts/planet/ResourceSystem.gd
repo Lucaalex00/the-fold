@@ -12,7 +12,7 @@ var _food_consumed_today: bool = false
 
 
 func _ready() -> void:
-	GameState.omino_died.connect(_on_omino_died)
+	GameState.entity_died.connect(_on_entity_died)
 
 
 func daily_reset() -> void:
@@ -27,29 +27,29 @@ func daily_reset() -> void:
 
 func calculate_harvest() -> int:
 	var total = 0
-	for omino in GameState.get_living_omini():
-		total += omino.stats.get("harvest", 0)
+	for entity in GameState.get_living_entities():
+		total += entity.stats.get("harvest", 0)
 	return total
 
 
 func calculate_fishing() -> int:
 	var total = 0
-	for omino in GameState.get_living_omini():
-		total += omino.stats.get("fishing", 0)
+	for entity in GameState.get_living_entities():
+		total += entity.stats.get("fishing", 0)
 	return total
 
 
 func calculate_labor() -> int:
 	var total = 0
-	for omino in GameState.get_living_omini():
-		total += omino.stats.get("construction", 0)
+	for entity in GameState.get_living_entities():
+		total += entity.stats.get("construction", 0)
 	return total
 
 
 func calculate_trade() -> int:
 	var total = 0
-	for omino in GameState.get_living_omini():
-		total += omino.stats.get("diplomacy", 0)
+	for entity in GameState.get_living_entities():
+		total += entity.stats.get("diplomacy", 0)
 	return total
 
 
@@ -58,12 +58,12 @@ func get_total_food() -> int:
 
 
 func _check_food_deficit() -> void:
-	var living_count = GameState.get_living_omini().size()
+	var living_count = GameState.get_living_entities().size()
 	if living_count == 0:
 		food_deficit_days = 0
 		return
 
-	# Deficit se il cibo prodotto non copre il fabbisogno base
+	# Deficit if produced food does not cover the base requirement
 	var food_needed = living_count * 5
 	if get_total_food() < food_needed:
 		food_deficit_days += 1
@@ -71,6 +71,6 @@ func _check_food_deficit() -> void:
 		food_deficit_days = 0
 
 
-func _on_omino_died(_omino_data) -> void:
-	# Ricalcola risorse quando muore un omino
+func _on_entity_died(_entity_data) -> void:
+	# Recalculate resources when an entity dies
 	daily_reset()

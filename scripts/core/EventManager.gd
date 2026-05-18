@@ -1,4 +1,4 @@
-extends Node
+﻿extends Node
 
 enum EventUrgency { MANAGEABLE, URGENT, CRITICAL }
 
@@ -36,7 +36,7 @@ func _load_event_data() -> void:
 			_events_data = parsed
 
 
-# --- Generazione eventi ---
+# --- Event generation ---
 
 func generate_daily_events() -> void:
 	_expire_old_events()
@@ -49,9 +49,9 @@ func generate_social_events() -> void:
 	if active_social_events.size() >= MAX_SOCIAL_EVENTS:
 		return
 
-	# Gli eventi emergono dallo stato reale della civiltà
-	# Accesso a CultureSystem e ResourceSystem quando saranno implementati
-	# Per ora usa i dati base da events.json
+	# Events emerge from the real state of the civilization
+	# Access CultureSystem and ResourceSystem once implemented
+	# For now uses base data from events.json
 
 	var social_pool: Array = _events_data.get("social", [])
 	if social_pool.is_empty():
@@ -67,13 +67,13 @@ func generate_social_events() -> void:
 
 
 func _check_social_trigger(event_def: Dictionary) -> bool:
-	# Valutazione trigger testuale dal JSON
+	# Text trigger evaluation from JSON
 	var trigger = event_def.get("trigger", "")
 	if trigger.is_empty():
 		return false
-	# Trigger base implementati — espandere con CultureSystem/ResourceSystem
+	# Base triggers implemented — expand with CultureSystem/ResourceSystem
 	if trigger == "cohesion<30":
-		return false  # placeholder: GameState non ha cohesion diretta, è in CultureSystem
+		return false  # placeholder: cohesion lives in CultureSystem, not GameState
 	if trigger.begins_with("research>"):
 		var threshold = int(trigger.split(">")[1])
 		return _get_total_stat("research") > threshold
@@ -82,8 +82,8 @@ func _check_social_trigger(event_def: Dictionary) -> bool:
 
 func _get_total_stat(stat: String) -> int:
 	var total = 0
-	for omino in GameState.get_living_omini():
-		total += omino.stats.get(stat, 0)
+	for entity in GameState.get_living_entities():
+		total += entity.stats.get(stat, 0)
 	return total
 
 
@@ -102,7 +102,7 @@ func _spawn_social_event(event_def: Dictionary) -> void:
 
 
 func _maybe_generate_cosmic_event() -> void:
-	# Probabilità base 30% per giorno
+	# Base 30% probability per day
 	if randf() < 0.3:
 		_generate_cosmic_event()
 
@@ -112,7 +112,7 @@ func _generate_cosmic_event() -> void:
 	if cosmic_pool.is_empty():
 		return
 
-	# Filtra per era corrente (solar_wind solo era 4+)
+	# Filter by current era (solar_wind only from era 4+)
 	var available = cosmic_pool.filter(func(e):
 		if e.get("id", "") == "solar_wind" and GameState.current_era < 4:
 			return false

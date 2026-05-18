@@ -11,7 +11,7 @@ var cohesion: float = 100.0
 
 
 func _ready() -> void:
-	GameState.omino_died.connect(_on_omino_died)
+	GameState.entity_died.connect(_on_entity_died)
 
 
 func update_cohesion() -> void:
@@ -22,22 +22,22 @@ func update_cohesion() -> void:
 
 
 func calculate_cohesion() -> float:
-	var living = GameState.get_living_omini()
+	var living = GameState.get_living_entities()
 	if living.is_empty():
 		return 0.0
 
 	var base = 100.0
 
-	# Penalità warrior ratio > 50%
+	# Warrior ratio penalty when > 50%
 	var warrior_ratio = _get_trait_ratio("warrior", living)
 	if warrior_ratio > 0.5:
 		base -= (warrior_ratio - 0.5) * 100.0
 
-	# Bonus stesso pianeta di origine
+	# Bonus for shared origin planet
 	var same_origin_bonus = _same_origin_ratio(living) * 20.0
 	base += same_origin_bonus
 
-	# Penalità per troppa diversità di origini (> 4)
+	# Penalty for too many origin planets (> 4)
 	var unique_origins = _unique_origins(living)
 	if unique_origins > 4:
 		base -= float(unique_origins - 4) * 5.0
@@ -54,7 +54,7 @@ func get_cohesion_state() -> String:
 
 
 func get_war_penalty() -> float:
-	# Riduce la velocità di avanzamento quando c'è conflitto
+	# Reduces advance speed when there is conflict
 	match get_cohesion_state():
 		"conflict":
 			return 0.3
@@ -68,8 +68,8 @@ func _get_trait_ratio(trait_name: String, living: Array) -> float:
 	if living.is_empty():
 		return 0.0
 	var count = 0
-	for omino in living:
-		if omino.trait_primary == trait_name:
+	for entity in living:
+		if entity.trait_primary == trait_name:
 			count += 1
 	return float(count) / float(living.size())
 
@@ -78,8 +78,8 @@ func _same_origin_ratio(living: Array) -> float:
 	if living.size() <= 1:
 		return 1.0
 	var origin_counts = {}
-	for omino in living:
-		var origin = omino.origin_planet
+	for entity in living:
+		var origin = entity.origin_planet
 		origin_counts[origin] = origin_counts.get(origin, 0) + 1
 	var max_count = 0
 	for count in origin_counts.values():
@@ -90,10 +90,10 @@ func _same_origin_ratio(living: Array) -> float:
 
 func _unique_origins(living: Array) -> int:
 	var origins = {}
-	for omino in living:
-		origins[omino.origin_planet] = true
+	for entity in living:
+		origins[entity.origin_planet] = true
 	return origins.size()
 
 
-func _on_omino_died(_omino_data) -> void:
+func _on_entity_died(_entity_data) -> void:
 	update_cohesion()
