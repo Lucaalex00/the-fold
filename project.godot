@@ -20,6 +20,11 @@ GameState="*res://scripts/core/GameState.gd"
 TimeManager="*res://scripts/core/TimeManager.gd"
 EventManager="*res://scripts/core/EventManager.gd"
 SaveManager="*res://scripts/core/SaveManager.gd"
+TraitDatabase="*res://scripts/omini/TraitDatabase.gd"
+OminoGenerator="*res://scripts/omini/OminoGenerator.gd"
+GeneticSystem="*res://scripts/omini/GeneticSystem.gd"
+CultureSystem="*res://scripts/planet/CultureSystem.gd"
+ResourceSystem="*res://scripts/planet/ResourceSystem.gd"
 
 [display]
 

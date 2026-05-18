@@ -1,5 +1,5 @@
 # Culture System
-## Stato: ❌ Non iniziato
+## Stato: ✅ Completato
 ## Dipendenze: [CultureSystem.gd, GameState.gd]
 ## Note implementazione:
 - cohesion float 0-100, calcolata da CultureSystem.calculate_cohesion()

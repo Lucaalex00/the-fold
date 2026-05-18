@@ -1,5 +1,15 @@
 # Changelog — The Fold
 
+## 2026-05-18 — STEP 6: CultureSystem, ResourceSystem, Planet
+
+### Aggiunto
+- `CultureSystem.gd`: `calculate_cohesion()` con formula esatta da CLAUDE.md (warrior ratio, same origin bonus, penalità >4 origini), `get_cohesion_state()`, `get_war_penalty()`, autoconnect su `omino_died`
+- `ResourceSystem.gd`: calcolo harvest/fishing/labor/trade da stat omini vivi, `food_deficit_days`, `daily_reset()`
+- `Planet.gd`: setup pianeta, `initialize_founders()` crea Cubo+Triangolo, gestione lista omini per pianeta
+- `project.godot`: TraitDatabase, OminoGenerator, GeneticSystem, CultureSystem, ResourceSystem aggiunti come Autoload
+
+---
+
 ## 2026-05-18 — STEP 5: Sistema Omini & Genetico
 
 ### Aggiunto

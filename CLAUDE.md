@@ -57,6 +57,9 @@ Ogni file feature segue questo formato:
 | docs/ | ✅ | 12 feature docs + changelog creati |
 | Sistema omini | ✅ | OminoGenerator, Omino.gd, TraitDatabase, fondatori Cubo+Triangolo |
 | Sistema genetico | ✅ | GeneticSystem.gd — generate_child(), mix DNA, crescendo generazionale |
+| CultureSystem | ✅ | coesione, soglie, war_penalty, ratio warrior/origini |
+| ResourceSystem | ✅ | harvest/fishing/labor/trade, food_deficit_days, daily_reset() |
+| Planet.gd | ✅ | setup, initialize_founders(), add_omino(), can_add_omino() |
 | Sistema eventi (UI) | ❌ | EventManager core pronto, manca UI |
 | Sistema poteri | ❌ | Non iniziato |
 | Counter distanza (HUD) | 🔄 | Logica in TimeManager, manca display HUD |
