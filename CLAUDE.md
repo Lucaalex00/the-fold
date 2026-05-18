@@ -14,7 +14,7 @@
 ```
 docs/
 ├── features/
-│   ├── omini_system.md
+│   ├── entity_system.md
 │   ├── genetic_system.md
 │   ├── event_system.md
 │   ├── cosmic_events.md
@@ -41,25 +41,25 @@ Ogni file feature segue questo formato:
 ---
 
 ## 📊 STATO ATTUALE
-> Aggiornato: 2026-05-18
+> Aggiornato: 2026-05-19
 
 | Feature | Stato | Note |
 |---|---|---|
 | project.godot | ✅ | Autoload configurati, viewport 390x844 |
-| Assets omini | ✅ | spritesheet.png 8x4, frame 181x271px |
+| Assets entities | ✅ | spritesheet.png 8x4, frame 181x271px |
 | Assets pianeti | ✅ | 15 pianeti, strip 6 frame 64x64px |
 | traits.json | ✅ | 8 tratti base |
 | events.json | ✅ | Struttura base social + cosmic |
-| GameState.gd | ✅ | OminoData inner class, segnali, costanti ERA, variabili globali, reset_run() |
+| GameState.gd | ✅ | EntityData inner class, segnali, costanti ERA, variabili globali, reset_run() |
 | TimeManager.gd | ✅ | _process() ogni frame, calcolo velocità, offline progress, daily reset 00:00 |
 | SaveManager.gd | ✅ | save/load JSON user://save.json, save_to_memory_book(), serializ. DNA/Color |
 | EventManager.gd | ✅ | GameEvent inner class, MAX 3 social + MAX 1 cosmic, scadenza eventi |
 | docs/ | ✅ | 12 feature docs + changelog creati |
-| Sistema omini | ✅ | OminoGenerator, Omino.gd, TraitDatabase, fondatori Cubo+Triangolo |
+| Sistema entities | ✅ | EntityGenerator.gd, Entity.gd, TraitDatabase, fondatori Cube+Triangle |
 | Sistema genetico | ✅ | GeneticSystem.gd — generate_child(), mix DNA, crescendo generazionale |
 | CultureSystem | ✅ | coesione, soglie, war_penalty, ratio warrior/origini |
 | ResourceSystem | ✅ | harvest/fishing/labor/trade, food_deficit_days, daily_reset() |
-| Planet.gd | ✅ | setup, initialize_founders(), add_omino(), can_add_omino() |
+| Planet.gd | ✅ | setup, initialize_founders(), add_entity(), can_add_entity() |
 | i18n (en + it) | ✅ | LocalizationManager (Autoload "L"), en.json + it.json, tr("KEY", {vars}) |
 | Sistema eventi (UI) | ✅ | EventPanel.gd + EventPanel.tscn, scelte dinamiche, scadenza |
 | Sistema poteri | ✅ | DivinePowersSystem.gd, 11 poteri, check era/energy, effetti |
@@ -72,11 +72,17 @@ Ogni file feature segue questo formato:
 | Universe | ✅ | Universe.gd, 5 bot planets, posizionamento circolare |
 | BotPlanet | ✅ | BotPlanet.gd, avanza lentamente (5% velocità player) |
 | Main.gd | ✅ | Entry point, init fondatori, connect signals, gestione game over |
-| Tests | ✅ | TestRunner + 6 suite: GameState, Omino, Culture, Genetic, Prestige, L10n |
+| Tests | ✅ | TestRunner + 6 suite: GameState, Entity, Culture, Genetic, Prestige, L10n |
 | Tutorial | ❌ | Non iniziato |
 
+### Decisioni tecniche sessione 2026-05-19
+- **Rename completo Italiano→Inglese** — tutti gli identificatori, nomi file, commenti e stringhe hardcoded sono ora in inglese. Solo le stringhe visibili al player passano per `L.tr("KEY")`.
+- File rinominati: `Omino.gd` → `Entity.gd`, `OminoGenerator.gd` → `EntityGenerator.gd`, `test_omino_system.gd` → `test_entity_system.gd`
+- Identificatori chiave rinominati: `OminoData` → `EntityData`, `ERA_OMINI_LIMIT` → `ERA_ENTITY_LIMIT`, `oldest_omino_age` → `oldest_entity_age`, signal `omino_died` → `entity_died`, `create_omino` → `create_entity`, `_deserialize_omino` → `_deserialize_entity`
+- Death cause hardcoded `"vecchiaia"` → `"old_age"` (chiave i18n)
+
 ### Decisioni tecniche sessione 2026-05-18
-- `OminoData` implementata come inner class di `GameState` (non standalone) — in GDScript 4 le inner class non supportano `class_name`; accesso via `GameState.OminoData.new()`
+- `EntityData` implementata come inner class di `GameState` (non standalone) — in GDScript 4 le inner class non supportano `class_name`; accesso via `GameState.EntityData.new()`
 - `distance_from_center` è variabile di `GameState`, aggiornata da `TimeManager._process()` ogni frame
 - `SaveManager._ready()` gestisce caricamento iniziale e calcolo offline progress
 - `EventManager` carica events.json in `_ready()`, trigger CultureSystem/ResourceSystem sono placeholder da completare al prossimo step
