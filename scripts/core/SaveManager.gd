@@ -122,7 +122,8 @@ func _serialize_entities() -> Array:
 			"parents": entity.parents.duplicate(),
 			"children": entity.children.duplicate(),
 			"notable_events": entity.notable_events.duplicate(),
-			"death_cause": entity.death_cause
+			"death_cause": entity.death_cause,
+			"layer": entity.layer
 		})
 	return result
 
@@ -159,6 +160,7 @@ func _deserialize_entity(data: Dictionary) -> GameState.EntityData:
 	entity.children = data.get("children", [])
 	entity.notable_events = data.get("notable_events", [])
 	entity.death_cause = data.get("death_cause", "")
+	entity.layer = data.get("layer", 0)
 	var dna_raw = data.get("dna", {})
 	if not dna_raw.is_empty():
 		entity.dna = _deserialize_dna(dna_raw)

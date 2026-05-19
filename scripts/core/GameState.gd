@@ -82,6 +82,7 @@ class EntityData:
 
 	var origin_planet: String = ""
 	var generation: int = 1
+	var layer: int = 0
 	var parents: Array = []
 	var children: Array = []
 	var notable_events: Array = []

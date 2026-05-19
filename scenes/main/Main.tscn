@@ -74,9 +74,9 @@ mouse_filter = 2
 [node name="FacingLabel" type="Label" parent="PlanetLayer/PlanetInput/ExpandedPanel"]
 layout_mode = 0
 offset_left = 120.0
-offset_top = 342.0
+offset_top = 160.0
 offset_right = 270.0
-offset_bottom = 366.0
+offset_bottom = 184.0
 text = "LAYER: 1 / 6"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
@@ -84,9 +84,9 @@ theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 [node name="LayerDots" type="HBoxContainer" parent="PlanetLayer/PlanetInput/ExpandedPanel"]
 layout_mode = 0
 offset_left = 145.0
-offset_top = 690.0
+offset_top = 565.0
 offset_right = 245.0
-offset_bottom = 710.0
+offset_bottom = 585.0
 alignment = 1
 
 [node name="D0" type="Label" parent="PlanetLayer/PlanetInput/ExpandedPanel/LayerDots"]

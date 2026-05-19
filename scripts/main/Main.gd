@@ -151,6 +151,7 @@ func _apply_prestige_bonuses_to_founders() -> void:
 
 func _on_entity_died(entity_data) -> void:
 	_check_population_collapse()
+	planet_widget.refresh_entities()
 
 
 func _check_population_collapse() -> void:
