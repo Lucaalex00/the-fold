@@ -9,7 +9,24 @@
       "Bash(git remote *)",
       "Bash(git reset *)",
       "PowerShell(Rename-Item \"C:\\\\Progetti\\\\the-fold\\\\scripts\\\\omini\" \"C:\\\\Progetti\\\\the-fold\\\\scripts\\\\entities\")",
-      "PowerShell(Rename-Item \"C:\\\\Progetti\\\\the-fold\\\\assets\\\\omini\" \"C:\\\\Progetti\\\\the-fold\\\\assets\\\\entities\")"
+      "PowerShell(Rename-Item \"C:\\\\Progetti\\\\the-fold\\\\assets\\\\omini\" \"C:\\\\Progetti\\\\the-fold\\\\assets\\\\entities\")",
+      "PowerShell(cd C:\\\\Progetti\\\\the-fold; $f = \"scripts\\\\core\\\\SaveManager.gd\"; \\(Get-Content $f -Raw\\) -replace '\\\\bomino_raw\\\\b', 'entity_raw' -replace '\\\\b_deserialize_omino\\\\b', '_deserialize_entity' | Set-Content $f -NoNewline)",
+      "Bash(git -c user.name=\"Lucaalex00\" -c user.email=\"lu.al.cirio00@gmail.com\" add scripts/ tests/ project.godot)",
+      "Bash(git -c user.name=Lucaalex00 -c user.email=lu.al.cirio00@gmail.com commit -m ' *)",
+      "Bash(git -c user.name=\"Lucaalex00\" -c user.email=\"lu.al.cirio00@gmail.com\" add CLAUDE.md)",
+      "PowerShell(cd C:\\\\Progetti\\\\the-fold; $utf8NoBom = New-Object System.Text.UTF8Encoding $false; $files = @\\(\"scripts\\\\main\\\\Main.gd\",\"scripts\\\\entities\\\\EntityGenerator.gd\",\"scripts\\\\prestige\\\\PrestigeSystem.gd\",\"scripts\\\\core\\\\SaveManager.gd\"\\); foreach \\($f in $files\\) { $raw = [System.IO.File]::ReadAllBytes\\($f\\); $text = [System.Text.Encoding]::UTF8.GetString\\($raw\\); $hex = \\($raw | Select-Object -First 200 | ForEach-Object { $_.ToString\\(\"X2\"\\) }\\) -join \" \"; Write-Host \"$f first bytes: $hex\" })",
+      "Bash(git -c user.name=\"Lucaalex00\" -c user.email=\"lu.al.cirio00@gmail.com\" add scripts/ tests/ CLAUDE.md)",
+      "Bash(git -c user.name=\"Lucaalex00\" -c user.email=\"lu.al.cirio00@gmail.com\" add scripts/planet/Planet.gd scripts/universe/BotPlanet.gd assets/)",
+      "Bash(git -c user.name=\"Lucaalex00\" -c user.email=\"lu.al.cirio00@gmail.com\" push origin master)",
+      "Bash(git -c user.name=\"Lucaalex00\" -c user.email=\"lu.al.cirio00@gmail.com\" add scenes/ui/StartScreen.tscn scripts/ui/StartScreen.gd project.godot assets/ui/)",
+      "Bash(git config *)",
+      "Bash(ffprobe \"C:\\\\Progetti\\\\the-fold\\\\assets\\\\ui\\\\start_screen.gif\")",
+      "Bash(ffmpeg -y -i \"C:\\\\Progetti\\\\the-fold\\\\assets\\\\ui\\\\start_screen.gif\" -vsync 0 \"C:\\\\Progetti\\\\the-fold\\\\assets\\\\ui\\\\splash_frames\\\\frame_%04d.png\")",
+      "Bash(ffmpeg -y -i \"C:\\\\Progetti\\\\the-fold\\\\assets\\\\ui\\\\start_screen.gif\" -vf \"scale=390:844:flags=lanczos\" -vsync 0 \"C:\\\\Progetti\\\\the-fold\\\\assets\\\\ui\\\\splash_frames\\\\frame_%04d.png\")",
+      "Bash(python3 -c \"from PIL import Image; img=Image.open\\('C:/Progetti/the-fold/assets/ui/backgrounds/prova_questo.png'\\); print\\(img.size\\)\")",
+      "Bash(python -c \"from PIL import Image; img=Image.open\\('C:/Progetti/the-fold/assets/ui/backgrounds/prova_questo.png'\\); print\\(img.size\\)\")",
+      "Bash(python3 -c ' *)",
+      "Bash(python -c ' *)"
     ]
   }
 }

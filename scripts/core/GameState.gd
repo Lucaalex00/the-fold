@@ -27,6 +27,10 @@ var distance_from_center: float = 1_000_000.0
 # Background — random per session, set once on launch
 var session_background_index: int = -1
 
+# Planet rotation — which layer faces the cosmos (advances every 4h)
+var facing_layer: int = 0
+var last_planet_rotate_time: int = 0
+
 # Prestige multipliers (cumulative, never reset)
 var prestige_resource_multiplier: float = 1.0
 

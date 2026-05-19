@@ -1,4 +1,4 @@
-﻿; Engine configuration file.
+; Engine configuration file.
 ; It's best edited using the editor UI and not directly,
 ; since the parameters that go here are not all obvious.
 ;
@@ -8,12 +8,14 @@
 
 config_version=5
 
+"ï»¿config_version"=5
+
 [application]
 
 config/name="The Fold"
+run/main_scene="res://scenes/ui/StartScreen.tscn"
 config/features=PackedStringArray("4.5", "Mobile")
 config/icon="res://icon.svg"
-run/main_scene="res://scenes/ui/StartScreen.tscn"
 
 [autoload]
 
