@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/StartScreen.gd" id="1"]
-[ext_resource type="VideoStream" uid="uid://start_screen_ogv" path="res://assets/ui/start_screen.ogv" id="2"]
+[ext_resource type="VideoStream" path="res://assets/ui/start_screen.ogv" id="2"]
 
 [node name="StartScreen" type="Control"]
 anchors_preset = 15
