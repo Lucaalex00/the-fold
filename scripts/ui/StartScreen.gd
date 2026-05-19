@@ -1,6 +1,6 @@
 extends Control
 
-@onready var bg: TextureRect = $Background
+@onready var video: VideoStreamPlayer = $Video
 @onready var fade: ColorRect = $FadeOverlay
 
 var _can_interact: bool = false
@@ -8,16 +8,15 @@ var _can_interact: bool = false
 
 func _ready() -> void:
 	fade.modulate.a = 1.0
+	video.play()
 	var tween = create_tween()
 	tween.tween_property(fade, "modulate:a", 0.0, 1.5)
 	tween.tween_callback(func(): _can_interact = true)
-	_start_pulse()
+	video.finished.connect(_on_video_finished)
 
 
-func _start_pulse() -> void:
-	var tween = create_tween().set_loops()
-	tween.tween_property(bg, "modulate:a", 0.82, 1.4)
-	tween.tween_property(bg, "modulate:a", 1.0, 1.4)
+func _on_video_finished() -> void:
+	video.play()
 
 
 func _input(event: InputEvent) -> void:
