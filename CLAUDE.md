@@ -93,11 +93,22 @@ Ogni file feature segue questo formato:
 - Il giocatore può spostare la popolazione al lato opposto per proteggerla, oppure lascia le entità lì → conseguenze
 - Divisione strategica risorse / eventi / conseguenze
 
-**DISTINZIONE CRITICA — due layer separati:**
-- `view_layer` — quale layer il giocatore sta guardando in quel momento (solo UI, zero effetto gameplay)
-- `facing_layer` — quale layer è fisicamente esposto al cosmo, determinato dal timer ogni 4h (questo è quello che conta per danni/eventi)
+**DISTINZIONE CRITICA — due concetti separati:**
+- `view_layer` — quale layer il giocatore sta guardando (solo UI, zero effetto gameplay)
+- `facing_layer` — quale layer è fisicamente esposto al cosmo, determinato dal timer ogni 4h (conta per danni/eventi)
 
 Il giocatore NON può ruotare il pianeta per evitare danni — può solo spostare le entità da un layer all'altro.
+
+**Feedback visivo per il giocatore:**
+- Il layer `facing_layer` ha sempre un indicatore visivo che lo segnala come "frontale" (es. bordo illuminato, icona bussola)
+- Quando un evento cosmico è in arrivo → calcola quali layer verranno colpiti al momento dell'impatto (in base alla rotazione automatica) → quei layer lampeggiano di rosso come warning
+- Il calcolo: `impacted_layer = (facing_layer + rotations_before_impact) % PLANET_LAYER_COUNT`
+
+**Ampiezza danno per tipo evento:**
+- Alcuni eventi colpiscono 1 solo layer (es. meteorite preciso)
+- Altri colpiscono 2-3 layer adiacenti (es. stella che si avvicina, onda cosmica)
+- Ogni evento ha `layers_hit: int` nel JSON → determina quanti layer adiacenti al punto di impatto vengono colpiti
+- I layer colpiti lampeggiano tutti di rosso durante il warning
 
 **Variabili da aggiungere a GameState/Planet:**
 ```gdscript
@@ -106,6 +117,20 @@ var facing_layer: int = 0           # layer esposto al cosmo (0-5), avanza ogni 
 var last_auto_rotate_time: int = 0  # timestamp ultimo auto-rotate
 # EntityData deve avere: var layer: int = 0
 # view_layer è solo stato UI locale, non va in GameState
+```
+
+**Da aggiungere a events.json per eventi cosmici:**
+```json
+{
+  "id": "meteorite",
+  "layers_hit": 1,
+  "hit_side": "right"
+}
+{
+  "id": "approaching_star",
+  "layers_hit": 3,
+  "hit_side": "left"
+}
 ```
 
 ### Decisioni tecniche sessione 2026-05-19
