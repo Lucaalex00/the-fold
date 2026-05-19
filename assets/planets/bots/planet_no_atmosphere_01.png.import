@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bis3btpiaf1t7"
-path="res://.godot/imported/planet_01.png-039943b4465987d31de992b1da52ff31.ctex"
+uid="uid://c5ti4v4qj8a31"
+path="res://.godot/imported/planet_no_atmosphere_01.png-57fd73dc13d888bf19e434e6ef037ee8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/planets/planet_01.png"
-dest_files=["res://.godot/imported/planet_01.png-039943b4465987d31de992b1da52ff31.ctex"]
+source_file="res://assets/planets/bots/planet_no_atmosphere_01.png"
+dest_files=["res://.godot/imported/planet_no_atmosphere_01.png-57fd73dc13d888bf19e434e6ef037ee8.ctex"]
 
 [params]
 

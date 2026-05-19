@@ -116,9 +116,11 @@ func _start_new_game() -> void:
 	SaveManager.save_game()
 
 
+const PLAYER_PLANET_COUNT = 18
+
 func _setup_planet_widget(planet: Planet) -> void:
-	var index = (planet.sprite_index % 5) + 1
-	var path = "res://assets/planets/planet_%02d.png" % index
+	var index = (planet.sprite_index % PLAYER_PLANET_COUNT) + 1
+	var path = "res://assets/planets/player/planet_%02d.png" % index
 	var source_tex = load(path) as Texture2D
 	if not source_tex:
 		return

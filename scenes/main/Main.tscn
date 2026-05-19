@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/main/Main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/main/Universe.tscn" id="2"]
@@ -8,6 +8,12 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/PrestigeScreen.tscn" id="6"]
 [ext_resource type="Script" path="res://scripts/main/PlanetWidget.gd" id="7"]
 [ext_resource type="Texture2D" path="res://assets/ui/backgrounds/prova_questo.png" id="9"]
+
+[sub_resource type="Theme" id="Theme_topbar"]
+Label/colors/font_color = Color(1, 1, 1, 1)
+Button/colors/font_color = Color(1, 1, 1, 1)
+Button/colors/font_hover_color = Color(0.8, 0.8, 0.8, 1)
+Button/colors/font_pressed_color = Color(0.6, 0.9, 1, 1)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1")
@@ -24,6 +30,22 @@ layer = -10
 [node name="MemoryBook" parent="." instance=ExtResource("5")]
 
 [node name="PrestigeScreen" parent="." instance=ExtResource("6")]
+
+[node name="TopBarLayer" type="CanvasLayer" parent="."]
+layer = 50
+
+[node name="TopBarBG" type="ColorRect" parent="TopBarLayer"]
+offset_right = 390.0
+offset_bottom = 52.0
+color = Color(0, 0, 0, 0.9)
+
+[node name="TopBarContent" type="HBoxContainer" parent="TopBarLayer"]
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 378.0
+offset_bottom = 44.0
+alignment = 1
+theme = SubResource("Theme_topbar")
 
 [node name="PlanetLayer" type="CanvasLayer" parent="."]
 layer = 60
@@ -51,19 +73,20 @@ mouse_filter = 2
 
 [node name="FacingLabel" type="Label" parent="PlanetLayer/PlanetInput/ExpandedPanel"]
 layout_mode = 0
-offset_left = 130.0
-offset_top = 115.0
-offset_right = 260.0
-offset_bottom = 143.0
-text = "FRONT: 1"
+offset_left = 120.0
+offset_top = 342.0
+offset_right = 270.0
+offset_bottom = 366.0
+text = "LAYER: 1 / 6"
 horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 
 [node name="LayerDots" type="HBoxContainer" parent="PlanetLayer/PlanetInput/ExpandedPanel"]
 layout_mode = 0
 offset_left = 145.0
-offset_top = 655.0
+offset_top = 690.0
 offset_right = 245.0
-offset_bottom = 675.0
+offset_bottom = 710.0
 alignment = 1
 
 [node name="D0" type="Label" parent="PlanetLayer/PlanetInput/ExpandedPanel/LayerDots"]
@@ -84,12 +107,3 @@ text = "●"
 [node name="D5" type="Label" parent="PlanetLayer/PlanetInput/ExpandedPanel/LayerDots"]
 text = "●"
 
-[node name="TapHint" type="Label" parent="PlanetLayer/PlanetInput/ExpandedPanel"]
-layout_mode = 0
-offset_left = 95.0
-offset_top = 780.0
-offset_right = 295.0
-offset_bottom = 802.0
-modulate = Color(1, 1, 1, 0.4)
-text = "tap to close  ·  swipe layers"
-horizontal_alignment = 1

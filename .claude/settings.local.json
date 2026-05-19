@@ -26,7 +26,9 @@
       "Bash(python3 -c \"from PIL import Image; img=Image.open\\('C:/Progetti/the-fold/assets/ui/backgrounds/prova_questo.png'\\); print\\(img.size\\)\")",
       "Bash(python -c \"from PIL import Image; img=Image.open\\('C:/Progetti/the-fold/assets/ui/backgrounds/prova_questo.png'\\); print\\(img.size\\)\")",
       "Bash(python3 -c ' *)",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(Get-ChildItem \"C:\\\\Progetti\\\\the-fold\\\\assets\\\\planets\" -Recurse)",
+      "Bash(Select-Object FullName, Name)"
     ]
   }
 }

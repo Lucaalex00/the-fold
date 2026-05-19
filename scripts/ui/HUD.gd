@@ -1,13 +1,11 @@
 extends CanvasLayer
 
-@onready var distance_label: Label = $TopBar/DistanceLabel
+@onready var distance_label: Label = $TopBar/StatsRow/DistanceLabel
 @onready var distance_bar: ProgressBar = $TopBar/DistanceBar
-@onready var era_label: Label = $TopBar/EraLabel
-@onready var cohesion_bar: ProgressBar = $StatusBar/CohesionBar
-@onready var cohesion_label: Label = $StatusBar/CohesionLabel
-@onready var divine_energy_bar: ProgressBar = $StatusBar/DivineEnergyBar
-@onready var divine_energy_label: Label = $StatusBar/DivineEnergyLabel
-@onready var population_label: Label = $StatusBar/PopulationLabel
+@onready var era_label: Label = $TopBar/StatsRow/EraLabel
+@onready var cohesion_label: Label = $TopBar/StatsRow/CohLabel
+@onready var divine_energy_label: Label = $TopBar/StatsRow/EnergyLabel
+@onready var population_label: Label = $TopBar/StatsRow/PopLabel
 @onready var notification_label: Label = $NotificationLabel
 
 const DISTANCE_START = 1_000_000.0
@@ -32,11 +30,7 @@ func _update_distance() -> void:
 
 
 func _update_divine_energy() -> void:
-	divine_energy_bar.value = (GameState.divine_energy / GameState.divine_energy_max) * 100.0
-	divine_energy_label.text = L.t("DIVINE_ENERGY_LABEL") + ": %d/%d" % [
-		int(GameState.divine_energy),
-		int(GameState.divine_energy_max)
-	]
+	divine_energy_label.text = "⚡ %d" % int(GameState.divine_energy)
 
 
 func refresh() -> void:
@@ -46,21 +40,19 @@ func refresh() -> void:
 
 
 func update_cohesion(value: float) -> void:
-	cohesion_bar.value = value
 	var state = CultureSystem.get_cohesion_state()
-	cohesion_label.text = L.t("COHESION_LABEL") + ": " + L.t("COHESION_" + state.to_upper())
+	cohesion_label.text = "💙 " + L.t("COHESION_" + state.to_upper())
 
 
 func _update_era() -> void:
-	era_label.text = L.t("ERA_LABEL", {
-		"era": GameState.current_era,
-		"name": L.get_era_name(GameState.current_era)
-	})
+	era_label.text = "Era %d" % GameState.current_era
 
 
 func _update_population() -> void:
-	population_label.text = L.t("LIVING_OMINI_LABEL") + ": " + \
-		str(GameState.get_living_entities().size()) + "/" + str(GameState.get_entity_limit())
+	population_label.text = "👥 %d/%d" % [
+		GameState.get_living_entities().size(),
+		GameState.get_entity_limit()
+	]
 
 
 func show_era_notification(era: int) -> void:

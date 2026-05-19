@@ -4,7 +4,7 @@
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1")
-layer = 10
+layer = 55
 
 [node name="TopBar" type="VBoxContainer" parent="."]
 anchors_preset = 5
@@ -12,57 +12,50 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 0.0
-offset_bottom = 80.0
+offset_left = 8.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = 50.0
 grow_horizontal = 2
 
-[node name="EraLabel" type="Label" parent="TopBar"]
-text = "Era 1 — The Fold"
-horizontal_alignment = 1
+[node name="StatsRow" type="HBoxContainer" parent="TopBar"]
+size_flags_vertical = 3
+theme_override_constants/separation = 10
 
-[node name="DistanceLabel" type="Label" parent="TopBar"]
-text = "1,000,000 light years"
+[node name="EraLabel" type="Label" parent="TopBar/StatsRow"]
+text = "Era 1"
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(1, 0.85, 0.35, 1)
+theme_override_font_sizes/font_size = 13
+
+[node name="DistanceLabel" type="Label" parent="TopBar/StatsRow"]
+text = "973K ly"
+size_flags_horizontal = 3
 horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 1, 1, 0.55)
+theme_override_font_sizes/font_size = 11
+
+[node name="PopLabel" type="Label" parent="TopBar/StatsRow"]
+text = "👥 2/4"
+theme_override_colors/font_color = Color(0.4, 1, 0.5, 1)
+theme_override_font_sizes/font_size = 11
+
+[node name="CohLabel" type="Label" parent="TopBar/StatsRow"]
+text = "💙 Stable"
+theme_override_colors/font_color = Color(0.35, 0.75, 1, 1)
+theme_override_font_sizes/font_size = 11
+
+[node name="EnergyLabel" type="Label" parent="TopBar/StatsRow"]
+text = "⚡ 100"
+theme_override_colors/font_color = Color(0.85, 0.5, 1, 1)
+theme_override_font_sizes/font_size = 11
 
 [node name="DistanceBar" type="ProgressBar" parent="TopBar"]
-custom_minimum_size = Vector2(0, 12)
+custom_minimum_size = Vector2(0, 5)
 max_value = 100.0
 value = 0.0
 show_percentage = false
-
-[node name="StatusBar" type="HBoxContainer" parent="."]
-anchors_preset = 2
-anchor_left = 0.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -60.0
-grow_vertical = 0
-
-[node name="PopulationLabel" type="Label" parent="StatusBar"]
-text = "Population: 2/4"
-size_flags_horizontal = 3
-
-[node name="CohesionLabel" type="Label" parent="StatusBar"]
-text = "Cohesion: Stable"
-size_flags_horizontal = 3
-
-[node name="CohesionBar" type="ProgressBar" parent="StatusBar"]
-custom_minimum_size = Vector2(60, 12)
-max_value = 100.0
-value = 100.0
-show_percentage = false
-size_flags_horizontal = 3
-
-[node name="DivineEnergyLabel" type="Label" parent="StatusBar"]
-text = "Divine Energy: 100/100"
-size_flags_horizontal = 3
-
-[node name="DivineEnergyBar" type="ProgressBar" parent="StatusBar"]
-custom_minimum_size = Vector2(60, 12)
-max_value = 100.0
-value = 100.0
-show_percentage = false
-size_flags_horizontal = 3
+size_flags_vertical = 0
 
 [node name="NotificationLabel" type="Label" parent="."]
 anchors_preset = 5
@@ -70,7 +63,8 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 0.0
-offset_top = 90.0
-offset_bottom = 115.0
+offset_top = 56.0
+offset_bottom = 80.0
 horizontal_alignment = 1
 visible = false
+theme_override_colors/font_color = Color(1, 1, 1, 1)

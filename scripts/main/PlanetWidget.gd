@@ -3,8 +3,9 @@ extends Control
 signal layer_changed(layer_index: int)
 
 const LAYER_COUNT = 6
+const GAMEPLAY_FRAMES = [0, 3, 6, 9, 12, 15]
 const CORNER_POS = Vector2(0, 850)
-const EXPANDED_POS = Vector2(195, 422)
+const EXPANDED_POS = Vector2(195, 510)
 const CORNER_SCALE = Vector2(2, 2)
 const EXPANDED_SCALE = Vector2(3, 3)
 
@@ -13,6 +14,9 @@ var _view_layer: int = 0
 var _drag_start_x: float = 0.0
 var _is_dragging: bool = false
 var _did_drag: bool = false
+var _layer_changed_this_drag: bool = false
+var _rotation_paused: bool = false
+var _rotation_timer: Timer
 var _planet_sprite: Sprite2D
 
 @onready var expanded_panel: Control = $ExpandedPanel
@@ -32,16 +36,47 @@ func setup(sprite: Sprite2D, texture: Texture2D) -> void:
 
 
 func _start_rotation() -> void:
-	var timer := Timer.new()
-	timer.wait_time = 10.0 / 16.0
-	timer.autostart = true
-	timer.timeout.connect(_on_rotation_tick)
-	add_child(timer)
+	_rotation_timer = Timer.new()
+	_rotation_timer.wait_time = 10.0 / 16.0
+	_rotation_timer.autostart = true
+	_rotation_timer.timeout.connect(_on_rotation_tick)
+	add_child(_rotation_timer)
 
 
 func _on_rotation_tick() -> void:
-	if _planet_sprite:
-		_planet_sprite.frame = (_planet_sprite.frame + 1) % 16
+	if _rotation_paused or not _planet_sprite:
+		return
+	_planet_sprite.frame = (_planet_sprite.frame + 1) % 16
+
+
+func pause_rotation() -> void:
+	_rotation_paused = true
+
+
+func resume_rotation() -> void:
+	_rotation_paused = false
+
+
+func _snap_to_layer(layer_idx: int) -> void:
+	_view_layer = layer_idx
+	facing_label.text = "LAYER: %d / %d" % [_view_layer + 1, LAYER_COUNT]
+	var target: int = GAMEPLAY_FRAMES[_view_layer]
+	if not _planet_sprite:
+		return
+	var current := _planet_sprite.frame
+	if current == target:
+		return
+	var fwd := (target - current + 16) % 16
+	var bwd := (current - target + 16) % 16
+	var tw := create_tween()
+	if fwd <= bwd:
+		for i in range(fwd):
+			var f := (current + i + 1) % 16
+			tw.tween_callback(func(fr = f): _planet_sprite.frame = fr).set_delay(10.0 / 16.0 * 0.25)
+	else:
+		for i in range(bwd):
+			var f := (current - i - 1 + 16) % 16
+			tw.tween_callback(func(fr = f): _planet_sprite.frame = fr).set_delay(10.0 / 16.0 * 0.25)
 
 
 func _to_corner(animated: bool) -> void:
@@ -71,7 +106,7 @@ func _to_expanded() -> void:
 	expanded_panel.visible = true
 	var tw2 = create_tween()
 	tw2.tween_property(expanded_panel, "modulate:a", 1.0, 0.3)
-	facing_label.text = "FRONT: %d" % (GameState.facing_layer + 1)
+	facing_label.text = "LAYER: %d / %d" % [_view_layer + 1, LAYER_COUNT]
 	_update_dots()
 
 
@@ -109,6 +144,7 @@ func _gui_input(event: InputEvent) -> void:
 		_drag_start_x = pos.x
 		_is_dragging = true
 		_did_drag = false
+		_layer_changed_this_drag = false
 
 	elif is_release:
 		_is_dragging = false
@@ -126,9 +162,11 @@ func _gui_input(event: InputEvent) -> void:
 
 	elif is_motion and _is_dragging and _is_expanded:
 		var delta = pos.x - _drag_start_x
-		if abs(delta) > 50:
+		if abs(delta) > 50 and not _layer_changed_this_drag:
 			_did_drag = true
-			_view_layer = (_view_layer + (1 if delta < 0 else -1) + LAYER_COUNT) % LAYER_COUNT
-			_drag_start_x = pos.x
+			_layer_changed_this_drag = true
+			pause_rotation()
+			var next := (_view_layer + (1 if delta < 0 else -1) + LAYER_COUNT) % LAYER_COUNT
+			_snap_to_layer(next)
 			_update_dots()
 			layer_changed.emit(_view_layer)
