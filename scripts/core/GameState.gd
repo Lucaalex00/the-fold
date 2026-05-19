@@ -24,6 +24,9 @@ var divine_energy_regen_per_hour: float = 5.0
 # Universe counter
 var distance_from_center: float = 1_000_000.0
 
+# Background — random per session, set once on launch
+var session_background_index: int = -1
+
 # Prestige multipliers (cumulative, never reset)
 var prestige_resource_multiplier: float = 1.0
 

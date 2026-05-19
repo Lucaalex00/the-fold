@@ -1,5 +1,11 @@
 extends Node2D
 
+const BACKGROUNDS = [
+	"res://assets/ui/backgrounds/red_background.png",
+	"res://assets/ui/backgrounds/blue-backgrounds.png",
+]
+
+@onready var background: TextureRect = $Background
 @onready var hud: CanvasLayer = $HUD
 @onready var event_panel: CanvasLayer = $EventPanel
 @onready var memory_book: CanvasLayer = $MemoryBook
@@ -10,8 +16,15 @@ var _is_new_game: bool = false
 
 
 func _ready() -> void:
+	_set_session_background()
 	_connect_signals()
 	_init_game()
+
+
+func _set_session_background() -> void:
+	if GameState.session_background_index < 0:
+		GameState.session_background_index = randi() % BACKGROUNDS.size()
+	background.texture = load(BACKGROUNDS[GameState.session_background_index])
 
 
 func _connect_signals() -> void:
