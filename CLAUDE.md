@@ -75,6 +75,32 @@ Ogni file feature segue questo formato:
 | Tests | ✅ | TestRunner + 6 suite: GameState, Entity, Culture, Genetic, Prestige, L10n |
 | Tutorial | ❌ | Non iniziato |
 
+### Decisioni design sessione 2026-05-19 — Sistema Pianeta a 6 Layer
+
+**Il pianeta è una sfera divisa in 6 spicchi verticali (come un'arancia).**
+
+- Scrollando orizzontalmente si RUOTA la sfera — ogni scroll completo avanza di 1 layer
+- Si vede sempre 1 solo layer alla volta (la faccia frontale del pianeta)
+- Le entità vivono su un layer specifico; raggiungendo il bordo del layer transitano automaticamente al layer adiacente
+- I layer sono SEPARATI — un'entità non può essere su due layer contemporaneamente
+- **Auto-rotazione**: ogni 4 ore (online o offline) il pianeta ruota da solo di 1 layer completo
+- **Posizionamento UI**: il pianeta è in basso a destra come angolo/preview; tap → si centra a schermo (animazione)
+- **Zoom**: quando è in basso a destra è uno zoom su un punto specifico della superficie — le entità vicine a quel punto sono visibili
+
+**Perché 6 layer:**
+- Dividere la civiltà geograficamente (risorse, popolazione, costruzioni su zone diverse)
+- Gli eventi cosmici (asteroidi, stelle) colpiscono da un LATO specifico (sx o dx) → danneggiano solo i layer esposti
+- Il giocatore può spostare la popolazione al lato opposto per proteggerla, oppure lascia le entità lì → conseguenze
+- Divisione strategica risorse / eventi / conseguenze
+
+**Variabili da aggiungere a GameState/Planet:**
+```gdscript
+const PLANET_LAYER_COUNT = 6
+var current_layer: int = 0          # layer attualmente visibile (0-5)
+var last_auto_rotate_time: int = 0  # timestamp ultimo auto-rotate (ogni 4h)
+# EntityData deve avere: var layer: int = 0
+```
+
 ### Decisioni tecniche sessione 2026-05-19
 - **Rename completo Italiano→Inglese** — tutti gli identificatori, nomi file, commenti e stringhe hardcoded sono ora in inglese. Solo le stringhe visibili al player passano per `L.t("KEY")`.
 - File rinominati: `Omino.gd` → `Entity.gd`, `OminoGenerator.gd` → `EntityGenerator.gd`, `test_omino_system.gd` → `test_entity_system.gd`
