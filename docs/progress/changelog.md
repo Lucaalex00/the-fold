@@ -1,5 +1,36 @@
 # Changelog — The Fold
 
+## 2026-05-19 — STEP 8: Planet Widget, Entity Visualization, Overlay System
+
+### PlanetWidget (rework completo)
+- 6 layer gameplay su 16 frame animazione (GAMEPLAY_FRAMES = [0,3,6,9,12,15])
+- Corner/Expanded states con tween BACK EASE_OUT
+- Swipe orizzontale cambia layer (1 per gesto, bidirectional shortest path)
+- Auto-rotazione aggiorna `view_layer` quando passa su gameplay frame
+- Rotation resume automatico: 4s dopo swipe, 3s dopo drop entità
+- Overlay nero 50% opacity, fade SINE EASE_OUT sincrono con animazione pianeta (0.5s)
+- Entità compaiono solo dopo che il pianeta ha completato l'animazione al centro
+- Pianeta alzato a y=370 in expanded mode, label/dots riposizionati
+
+### EntitySprite (nuovo)
+- `scripts/entities/EntitySprite.gd`: rendering da spritesheet (8×4), scala prospettica 0.8→1.2
+- Movimento autonomo con target random, banda equatoriale ±55px, velocità 18px/s
+- Transizione layer automatica quando supera ±125px dal centro
+- Long-press (0.5s) → lift con scala 3.2x, drag dentro/fuori pianeta
+- Drag fuori pianeta → scrolla layer ±1 ogni 1s, fallback snap a ENTITY_OFFSETS al rilascio
+- Persistenza layer su save/load tramite SaveManager
+
+### Rinomina Omino→Entity
+- `omini_system.md` → `entity_system.md`
+- ERA_OMINI_LIMIT → ERA_ENTITY_LIMIT, OminoData → EntityData, segnale omino_died → entity_died
+
+### Asset
+- `assets/entities/spritesheet.png`: sostituito con PNG trasparente corretto (1.1MB, 8×4 frame)
+- `assets/alerts/`: 3 varianti alert banner (alert_01-03.png)
+- `assets/planets/`: riorganizzato in player/, bots/, events/, decorations/
+
+---
+
 ## 2026-05-18 — STEP 7: i18n + Tutti i sistemi rimanenti + Tests
 
 ### i18n

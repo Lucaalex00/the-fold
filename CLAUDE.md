@@ -46,15 +46,15 @@ Ogni file feature segue questo formato:
 | Feature | Stato | Note |
 |---|---|---|
 | project.godot | ✅ | Autoload configurati, viewport 390x844 |
-| Assets entities | ✅ | spritesheet.png 8x4, frame 181x271px |
-| Assets pianeti | ✅ | 15 pianeti, strip 6 frame 64x64px |
+| Assets entities | ✅ | spritesheet.png 8×4 PNG trasparente, frame 181x271px |
+| Assets pianeti | ✅ | 18 player planets (1600×100, 16 frame), cartelle player/bots/events/decorations |
 | traits.json | ✅ | 8 tratti base |
 | events.json | ✅ | Struttura base social + cosmic |
 | GameState.gd | ✅ | EntityData inner class, segnali, costanti ERA, variabili globali, reset_run() |
 | TimeManager.gd | ✅ | _process() ogni frame, calcolo velocità, offline progress, daily reset 00:00 |
-| SaveManager.gd | ✅ | save/load JSON user://save.json, save_to_memory_book(), serializ. DNA/Color |
+| SaveManager.gd | ✅ | save/load JSON user://save.json, save_to_memory_book(), serializ. DNA/Color, entity.layer |
 | EventManager.gd | ✅ | GameEvent inner class, MAX 3 social + MAX 1 cosmic, scadenza eventi |
-| docs/ | ✅ | 12 feature docs + changelog creati |
+| docs/ | ✅ | 13 feature docs + changelog (aggiunto planet_widget.md, entity_system.md) |
 | Sistema entities | ✅ | EntityGenerator.gd, Entity.gd, TraitDatabase, fondatori Cube+Triangle |
 | Sistema genetico | ✅ | GeneticSystem.gd — generate_child(), mix DNA, crescendo generazionale |
 | CultureSystem | ✅ | coesione, soglie, war_penalty, ratio warrior/origini |
@@ -72,6 +72,8 @@ Ogni file feature segue questo formato:
 | Universe | ✅ | Universe.gd, 5 bot planets, posizionamento circolare |
 | BotPlanet | ✅ | BotPlanet.gd, avanza lentamente (5% velocità player) |
 | Main.gd | ✅ | Entry point, init fondatori, connect signals, gestione game over |
+| PlanetWidget | ✅ | 6-layer system, swipe nav, auto-rotation, entity drag, overlay 50% |
+| EntitySprite | ✅ | Rendering spritesheet, movimento autonomo, prospettiva, layer transition |
 | Tests | ✅ | TestRunner + 6 suite: GameState, Entity, Culture, Genetic, Prestige, L10n |
 | Tutorial | ❌ | Non iniziato |
 
