@@ -93,12 +93,19 @@ Ogni file feature segue questo formato:
 - Il giocatore può spostare la popolazione al lato opposto per proteggerla, oppure lascia le entità lì → conseguenze
 - Divisione strategica risorse / eventi / conseguenze
 
+**DISTINZIONE CRITICA — due layer separati:**
+- `view_layer` — quale layer il giocatore sta guardando in quel momento (solo UI, zero effetto gameplay)
+- `facing_layer` — quale layer è fisicamente esposto al cosmo, determinato dal timer ogni 4h (questo è quello che conta per danni/eventi)
+
+Il giocatore NON può ruotare il pianeta per evitare danni — può solo spostare le entità da un layer all'altro.
+
 **Variabili da aggiungere a GameState/Planet:**
 ```gdscript
 const PLANET_LAYER_COUNT = 6
-var current_layer: int = 0          # layer attualmente visibile (0-5)
-var last_auto_rotate_time: int = 0  # timestamp ultimo auto-rotate (ogni 4h)
+var facing_layer: int = 0           # layer esposto al cosmo (0-5), avanza ogni 4h
+var last_auto_rotate_time: int = 0  # timestamp ultimo auto-rotate
 # EntityData deve avere: var layer: int = 0
+# view_layer è solo stato UI locale, non va in GameState
 ```
 
 ### Decisioni tecniche sessione 2026-05-19
