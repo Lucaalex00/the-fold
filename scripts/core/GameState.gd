@@ -2,6 +2,7 @@ extends Node
 
 # Core signals
 signal entity_died(entity_data)
+signal entities_purged
 signal era_changed(new_era: int)
 signal prestige_triggered(count: int)
 signal cohesion_changed(new_value: float)
@@ -30,6 +31,10 @@ var session_background_index: int = -1
 # Planet rotation — which layer faces the cosmos (advances every 4h)
 var facing_layer: int = 0
 var last_planet_rotate_time: int = 0
+
+# Planet HP — base component (regens); entity health is added on top
+var planet_base_hp: float = 100.0
+const PLANET_BASE_HP_MAX: float = 100.0
 
 # Prestige multipliers (cumulative, never reset)
 var prestige_resource_multiplier: float = 1.0
@@ -103,6 +108,40 @@ func _init_divine_energy_regen() -> void:
 
 func _on_energy_regen_tick() -> void:
 	divine_energy = min(divine_energy + divine_energy_regen_per_hour, divine_energy_max)
+
+
+# --- Planet HP ---
+
+func get_planet_hp() -> float:
+	var entity_health := 0.0
+	for e in get_living_entities():
+		entity_health += float(e.stats.get("health", 0))
+	return planet_base_hp + entity_health
+
+
+func get_planet_hp_max() -> float:
+	var cap := float(ERA_STAT_CAP.get(current_era, 15))
+	return PLANET_BASE_HP_MAX + cap * float(get_living_entities().size())
+
+
+func get_planet_hp_ratio() -> float:
+	var max_hp := get_planet_hp_max()
+	if max_hp <= 0.0:
+		return 1.0
+	return clamp(get_planet_hp() / max_hp, 0.0, 1.0)
+
+
+func purge_dead_entities() -> void:
+	entities = entities.filter(func(e: EntityData): return e.is_alive)
+	entities_purged.emit()
+
+
+func damage_planet(amount: float) -> void:
+	planet_base_hp = maxf(planet_base_hp - amount, 0.0)
+
+
+func regen_planet_hp(amount: float) -> void:
+	planet_base_hp = minf(planet_base_hp + amount, PLANET_BASE_HP_MAX)
 
 
 # --- Civilization queries ---
@@ -187,6 +226,7 @@ func reset_run() -> void:
 	divine_energy = divine_energy_max
 	distance_from_center = 1_000_000.0
 	entities.clear()
+	planet_base_hp = PLANET_BASE_HP_MAX
 	conflicts_won = 0
 	avg_cohesion = 100.0
 	entities_lost = 0

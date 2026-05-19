@@ -41,7 +41,7 @@ Ogni file feature segue questo formato:
 ---
 
 ## 📊 STATO ATTUALE
-> Aggiornato: 2026-05-19
+> Aggiornato: 2026-05-20
 
 | Feature | Stato | Note |
 |---|---|---|
@@ -49,11 +49,11 @@ Ogni file feature segue questo formato:
 | Assets entities | ✅ | spritesheet.png 8×4 PNG trasparente, frame 181x271px |
 | Assets pianeti | ✅ | 18 player planets (1600×100, 16 frame), cartelle player/bots/events/decorations |
 | traits.json | ✅ | 8 tratti base |
-| events.json | ✅ | Struttura base social + cosmic |
-| GameState.gd | ✅ | EntityData inner class, segnali, costanti ERA, variabili globali, reset_run() |
-| TimeManager.gd | ✅ | _process() ogni frame, calcolo velocità, offline progress, daily reset 00:00 |
+| events.json | ✅ | 40 eventi, bucket notify/warning/critical/fatal, trigger condizionali |
+| GameState.gd | ✅ | EntityData, planet_base_hp, get_planet_hp/ratio/max, damage/regen planet |
+| TimeManager.gd | ✅ | _process() ogni frame, daily reset 00:00, regen_planet_hp(1-2) giornaliero |
 | SaveManager.gd | ✅ | save/load JSON user://save.json, save_to_memory_book(), serializ. DNA/Color, entity.layer |
-| EventManager.gd | ✅ | GameEvent inner class, MAX 3 social + MAX 1 cosmic, scadenza eventi |
+| EventManager.gd | ✅ | urgency buckets, cooldown per urgency, GameEvent, social+cosmic, signal event_created |
 | docs/ | ✅ | 13 feature docs + changelog (aggiunto planet_widget.md, entity_system.md) |
 | Sistema entities | ✅ | EntityGenerator.gd, Entity.gd, TraitDatabase, fondatori Cube+Triangle |
 | Sistema genetico | ✅ | GeneticSystem.gd — generate_child(), mix DNA, crescendo generazionale |
@@ -61,21 +61,27 @@ Ogni file feature segue questo formato:
 | ResourceSystem | ✅ | harvest/fishing/labor/trade, food_deficit_days, daily_reset() |
 | Planet.gd | ✅ | setup, initialize_founders(), add_entity(), can_add_entity() |
 | i18n (en + it) | ✅ | LocalizationManager (Autoload "L"), en.json + it.json, **L.t("KEY", {vars})** |
-| Sistema eventi (UI) | ✅ | EventPanel.gd + EventPanel.tscn, scelte dinamiche, scadenza |
+| AlertSystem | ✅ | banner vignette, urgency flash, signal alert_finished(event), queue |
+| EventPanel | ✅ | modal centrato, input blocker, scelte + conseguenze, signal event_resolved(event) |
+| EventTimerChips | ✅ | badge HH:MM, layer 65, pulse <1h, click→modal, add/remove chip |
 | Sistema poteri | ✅ | DivinePowersSystem.gd, 11 poteri, check era/energy, effetti |
 | Counter distanza (HUD) | ✅ | HUD.gd + HUD.tscn, update ogni frame, barre stato |
 | Daily reset | ✅ | Implementato in TimeManager._check_daily_reset() |
+| Planet HP | ✅ | base 100 + Σ entity health, barra rossa sopra pianeta expanded, mini barra su ogni entity |
 | Prestige | ✅ | PrestigeSystem.gd, sequenza, bonus 1+2, slot cap 3, twist narrativo |
 | Memory Book | ✅ | MemoryBook.gd + MemoryBook.tscn, UI completa |
 | PrestigeScreen | ✅ | PrestigeScreen.gd + PrestigeScreen.tscn, tween fade + god message |
 | BubbleSystem | ✅ | BubbleLabel.gd + BubbleLabel.tscn, 8 tipi simbolo, float+fade |
 | Universe | ✅ | Universe.gd, 5 bot planets, posizionamento circolare |
 | BotPlanet | ✅ | BotPlanet.gd, avanza lentamente (5% velocità player) |
-| Main.gd | ✅ | Entry point, init fondatori, connect signals, gestione game over |
-| PlanetWidget | ✅ | 6-layer system, swipe nav, auto-rotation, entity drag, overlay 50% |
-| EntitySprite | ✅ | Rendering spritesheet, movimento autonomo, prospettiva, layer transition |
+| Main.gd | ✅ | Entry point, event flow queue, chip wiring, timer chips init |
+| PlanetWidget | ✅ | 6-layer system, swipe nav, auto-rotation, entity drag, overlay 50%, HP bar |
+| EntitySprite | ✅ | Rendering spritesheet, movimento autonomo, prospettiva, layer transition, name+HP bar |
 | Tests | ✅ | TestRunner + 6 suite: GameState, Entity, Culture, Genetic, Prestige, L10n |
 | Tutorial | ❌ | Non iniziato |
+| Event expiry logic | ❌ | default_consequence su scadenza, hard reset su FATAL scaduto |
+| Consequence handlers | ❌ | choices → effetti reali (spawn entity, ±cohesion, ±divine energy, planet damage) |
+| Universe Map UI | ❌ | visualizzazione bot planets, distanza relativa |
 
 ### Decisioni design sessione 2026-05-19 — Sistema Pianeta a 6 Layer
 

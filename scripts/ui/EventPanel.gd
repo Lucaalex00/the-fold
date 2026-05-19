@@ -1,106 +1,165 @@
 extends CanvasLayer
 
-signal choice_made(event: EventManager.GameEvent, choice_index: int)
+signal event_resolved(event)
 
-@onready var panel: Panel = $Panel
-@onready var event_title: Label = $Panel/VBox/TitleLabel
-@onready var event_description: Label = $Panel/VBox/DescriptionLabel
-@onready var urgency_label: Label = $Panel/VBox/UrgencyLabel
-@onready var choices_container: HBoxContainer = $Panel/VBox/ChoicesContainer
-@onready var event_counter: Label = $EventCounter
+const URGENCY_TITLE_COLOR = {
+	EventManager.EventUrgency.MANAGEABLE: Color(0.4, 0.9, 0.5),
+	EventManager.EventUrgency.URGENT:     Color(1.0, 0.75, 0.15),
+	EventManager.EventUrgency.CRITICAL:   Color(1.0, 0.25, 0.25),
+	EventManager.EventUrgency.FATAL:      Color(0.9, 0.0, 0.0),
+}
 
-var _current_event: EventManager.GameEvent = null
-var _event_queue: Array = []
-var _choice_buttons: Array = []
+var _blocker: ColorRect
+var _panel: PanelContainer
+var _title_label: Label
+var _desc_label: Label
+var _choices_box: VBoxContainer
+var _current_event = null
 
 
 func _ready() -> void:
+	layer = 70
 	visible = false
+	_build_ui()
 
 
-func _process(_delta: float) -> void:
-	_refresh_event_queue()
+func _build_ui() -> void:
+	_blocker = ColorRect.new()
+	_blocker.color = Color(0.0, 0.0, 0.0, 0.55)
+	_blocker.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
+	_blocker.visible = false
+	add_child(_blocker)
+
+	_panel = PanelContainer.new()
+	_panel.size = Vector2(350, 10)
+	_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	_panel.visible = false
+	add_child(_panel)
+
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 18)
+	margin.add_theme_constant_override("margin_right", 18)
+	margin.add_theme_constant_override("margin_top", 18)
+	margin.add_theme_constant_override("margin_bottom", 18)
+	_panel.add_child(margin)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 14)
+	margin.add_child(vbox)
+
+	_title_label = Label.new()
+	_title_label.add_theme_font_size_override("font_size", 22)
+	_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_title_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	_title_label.custom_minimum_size = Vector2(314, 0)
+	vbox.add_child(_title_label)
+
+	vbox.add_child(HSeparator.new())
+
+	_desc_label = Label.new()
+	_desc_label.add_theme_font_size_override("font_size", 13)
+	_desc_label.add_theme_color_override("font_color", Color(0.82, 0.82, 0.82))
+	_desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	_desc_label.custom_minimum_size = Vector2(314, 0)
+	vbox.add_child(_desc_label)
+
+	vbox.add_child(HSeparator.new())
+
+	_choices_box = VBoxContainer.new()
+	_choices_box.add_theme_constant_override("separation", 10)
+	vbox.add_child(_choices_box)
 
 
-func _refresh_event_queue() -> void:
-	var all_events = EventManager.active_social_events.duplicate()
-	if EventManager.active_cosmic_event != null:
-		all_events.append(EventManager.active_cosmic_event)
-
-	_event_queue = all_events
-	event_counter.text = str(all_events.size())
-	event_counter.visible = all_events.size() > 0
-
-	if _current_event == null and not _event_queue.is_empty():
-		_show_event(_event_queue[0])
-
-
-func _show_event(event: EventManager.GameEvent) -> void:
-	_current_event = event
+func activate_blocker() -> void:
 	visible = true
-
-	event_title.text = _get_event_title(event)
-	event_description.text = _get_event_description(event)
-	urgency_label.text = _urgency_text(event.urgency)
-
-	_build_choice_buttons(event)
+	_blocker.visible = true
+	_panel.visible = false
 
 
-func _get_event_title(event: EventManager.GameEvent) -> String:
-	var key = "EVENT_" + event.id.to_upper() + "_TITLE"
-	var translated = L.t(key)
-	# Fallback if no translation key exists
-	return translated if translated != key else event.title
+func show_event(event) -> void:
+	_current_event = event
 
+	var color = URGENCY_TITLE_COLOR.get(event.urgency, Color.WHITE)
+	_title_label.text = event.title
+	_title_label.add_theme_color_override("font_color", color)
+	_desc_label.text = event.description
 
-func _get_event_description(event: EventManager.GameEvent) -> String:
-	var key = "EVENT_" + event.id.to_upper() + "_DESC"
-	var translated = L.t(key)
-	return translated if translated != key else event.description
-
-
-func _build_choice_buttons(event: EventManager.GameEvent) -> void:
-	for btn in _choice_buttons:
-		btn.queue_free()
-	_choice_buttons.clear()
+	for child in _choices_box.get_children():
+		child.queue_free()
 
 	for i in range(event.choices.size()):
-		var choice_key = event.choices[i]
-		var btn = Button.new()
-		btn.text = L.t("CHOICE_" + str(choice_key).to_upper())
-		btn.pressed.connect(_on_choice_pressed.bind(i))
-		choices_container.add_child(btn)
-		_choice_buttons.append(btn)
+		_add_choice_button(event.choices[i], i)
+
+	_panel.visible = true
+
+	# Center panel after layout is computed
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var pw = _panel.size.x
+	var ph = _panel.size.y
+	_panel.position = Vector2(
+		(390.0 - pw) / 2.0,
+		52.0 + (792.0 - ph) / 2.0
+	)
+
+
+func _add_choice_button(choice, index: int) -> void:
+	var container = VBoxContainer.new()
+	container.add_theme_constant_override("separation", 3)
+	_choices_box.add_child(container)
+
+	var btn = Button.new()
+	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn.add_theme_font_size_override("font_size", 14)
+
+	var consequence_text := ""
+	if choice is Dictionary:
+		btn.text = choice.get("label", "")
+		consequence_text = choice.get("consequence", "")
+	else:
+		btn.text = str(choice)
+
+	btn.pressed.connect(_on_choice_pressed.bind(index))
+	container.add_child(btn)
+
+	if consequence_text != "":
+		var cons = Label.new()
+		cons.text = consequence_text
+		cons.add_theme_font_size_override("font_size", 11)
+		cons.add_theme_color_override("font_color", Color(0.55, 0.55, 0.55))
+		cons.autowrap_mode = TextServer.AUTOWRAP_WORD
+		cons.custom_minimum_size = Vector2(314, 0)
+		container.add_child(cons)
 
 
 func _on_choice_pressed(index: int) -> void:
 	if _current_event == null:
 		return
-	emit_signal("choice_made", _current_event, index)
-	EventManager.resolve_event(_current_event, index)
+	var resolved = _current_event
+	resolved.chosen_choice_index = index
+	var deferred: bool = (
+		resolved.urgency == EventManager.EventUrgency.CRITICAL or
+		resolved.urgency == EventManager.EventUrgency.FATAL
+	)
+	if not deferred:
+		EventManager.resolve_event(resolved, index)
 	_current_event = null
+	_panel.visible = false
+	_blocker.visible = false
 	visible = false
-
-
-func _urgency_text(urgency: int) -> String:
-	match urgency:
-		EventManager.EventUrgency.CRITICAL:
-			return "🔴 " + L.t("URGENCY_CRITICAL")
-		EventManager.EventUrgency.URGENT:
-			return "🟠 " + L.t("URGENCY_URGENT")
-		_:
-			return "🟡 " + L.t("URGENCY_MANAGEABLE")
+	event_resolved.emit(resolved)
 
 
 func show_lifeboat_option() -> void:
-	# Synthetic event: population critical
 	var ev = EventManager.GameEvent.new()
 	ev.id = "lifeboat_warning"
 	ev.type = "social"
 	ev.urgency = EventManager.EventUrgency.CRITICAL
-	ev.title = L.t("LIVING_OMINI_LABEL")
-	ev.description = "Only 2 survivors remain."
-	ev.choices = ["pray"]
+	ev.title = "Population Critical"
+	ev.description = "Only 2 survivors remain. Your civilization is on the brink of extinction."
+	ev.choices = [{"id": "pray", "label": "Pray for survival", "consequence": "Hope for a miracle"}]
 	ev.created_at = Time.get_unix_time_from_system()
 	ev.expires_in_hours = 24.0
-	_show_event(ev)
+	activate_blocker()
+	show_event(ev)

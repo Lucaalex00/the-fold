@@ -37,8 +37,17 @@ func _check_daily_reset() -> void:
 func _perform_daily_reset() -> void:
 	GameState.current_day += 1
 	advance_game_year()
+	_check_entity_deaths()
+	GameState.regen_planet_hp(randf_range(1.0, 2.0))
+	GameState.purge_dead_entities()
 	EventManager.generate_daily_events()
 	SaveManager.save_game()
+
+
+func _check_entity_deaths() -> void:
+	for entity in GameState.entities:
+		if entity.is_alive and (entity.stats.get("health", 1) as int) <= 0:
+			GameState.register_entity_death(entity, "health_depleted")
 
 
 func advance_game_year() -> void:

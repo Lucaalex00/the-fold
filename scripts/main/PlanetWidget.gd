@@ -40,6 +40,9 @@ var _drag_entity_direction: int = 0
 var _drag_entity_layer_timer: float = 0.0
 var _rotation_resume_timer: float = 0.0
 var _overlay: ColorRect = null
+var _hp_bar_bg: ColorRect = null
+var _hp_bar_fill: ColorRect = null
+var _hp_label: Label = null
 
 @onready var expanded_panel: Control = $ExpandedPanel
 @onready var layer_dots: HBoxContainer = $ExpandedPanel/LayerDots
@@ -64,14 +67,14 @@ func _build_entity_sprites() -> void:
 			es.queue_free()
 	_entity_sprites.clear()
 
-	var living = GameState.get_living_entities()
-	for i in range(living.size()):
-		var entity_data = living[i]
+	var all_entities = GameState.entities
+	for i in range(all_entities.size()):
+		var entity_data = all_entities[i]
 		var es = EntitySpriteScript.new()
 		var offset = ENTITY_OFFSETS[i % ENTITY_OFFSETS.size()]
-		get_parent().add_child(es)
 		es.z_index = 10
 		es.setup(entity_data, EXPANDED_POS + offset)
+		get_parent().add_child(es)
 		es.visible = false
 		es.layer_transitioned.connect(_on_entity_layer_transitioned)
 		_entity_sprites.append(es)
@@ -172,6 +175,7 @@ func _snap_to_layer(layer_idx: int) -> void:
 func _to_corner(animated: bool) -> void:
 	_is_expanded = false
 	_destroy_overlay()
+	_destroy_hp_bar()
 	_hide_entities()
 	if _planet_sprite:
 		if animated:
@@ -191,6 +195,7 @@ func _to_corner(animated: bool) -> void:
 func _to_expanded() -> void:
 	_is_expanded = true
 	_create_overlay()
+	_create_hp_bar()
 	if _planet_sprite:
 		var tw = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		tw.tween_property(_planet_sprite, "position", EXPANDED_POS, 0.5)
@@ -350,6 +355,56 @@ func _create_overlay() -> void:
 	get_parent().move_child(_overlay, 0)
 	var tw = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	tw.tween_property(_overlay, "color:a", 0.5, 0.5)
+
+
+func _create_hp_bar() -> void:
+	if _hp_bar_bg and is_instance_valid(_hp_bar_bg):
+		return
+	var bar_w := 180.0
+	var bar_h := 5.0
+	var bar_x := EXPANDED_POS.x - bar_w / 2.0
+	var bar_y := EXPANDED_POS.y - 165.0
+
+	_hp_bar_bg = ColorRect.new()
+	_hp_bar_bg.color = Color(0.2, 0.03, 0.03, 0.9)
+	_hp_bar_bg.position = Vector2(bar_x, bar_y)
+	_hp_bar_bg.size = Vector2(bar_w, bar_h)
+	get_parent().add_child(_hp_bar_bg)
+
+	_hp_bar_fill = ColorRect.new()
+	_hp_bar_fill.color = Color(0.88, 0.1, 0.1)
+	_hp_bar_fill.position = Vector2(bar_x, bar_y)
+	_hp_bar_fill.size = Vector2(bar_w, bar_h)
+	get_parent().add_child(_hp_bar_fill)
+
+	_hp_label = Label.new()
+	_hp_label.add_theme_font_size_override("font_size", 12)
+	_hp_label.add_theme_color_override("font_color", Color(0.95, 0.15, 0.15))
+	_hp_label.position = Vector2(bar_x, bar_y - 18.0)
+	_hp_label.size = Vector2(bar_w, 16.0)
+	_hp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	get_parent().add_child(_hp_label)
+	_refresh_hp_bar()
+
+
+func _refresh_hp_bar() -> void:
+	if not _hp_bar_fill or not is_instance_valid(_hp_bar_fill):
+		return
+	var ratio := GameState.get_planet_hp_ratio()
+	var bar_w := 180.0
+	_hp_bar_fill.size.x = bar_w * ratio
+	var hp := int(GameState.get_planet_hp())
+	var hp_max := int(GameState.get_planet_hp_max())
+	_hp_label.text = "%d / %d HP" % [hp, hp_max]
+
+
+func _destroy_hp_bar() -> void:
+	for node in [_hp_bar_bg, _hp_bar_fill, _hp_label]:
+		if node and is_instance_valid(node):
+			node.queue_free()
+	_hp_bar_bg = null
+	_hp_bar_fill = null
+	_hp_label = null
 
 
 func _destroy_overlay() -> void:

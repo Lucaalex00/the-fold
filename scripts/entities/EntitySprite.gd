@@ -21,6 +21,9 @@ const IDLE_MAX = 4.5
 
 var data: GameState.EntityData
 var _sprite: Sprite2D
+var _name_label: Label
+var _hp_bar_bg: ColorRect
+var _hp_bar_fill: ColorRect
 var _size_mod: float = 1.0
 var _move_target: Vector2
 var _is_moving: bool = false
@@ -34,6 +37,9 @@ func setup(entity_data: GameState.EntityData, screen_pos: Vector2) -> void:
 	_move_target = screen_pos
 	_build_sprite()
 	_timer = randf_range(0.5, 3.0)
+	if not data.is_alive:
+		_apply_dead_visual()
+	GameState.entity_died.connect(_on_entity_died)
 
 
 func _build_sprite() -> void:
@@ -49,6 +55,33 @@ func _build_sprite() -> void:
 	_sprite.scale = ENTITY_SCALE * _size_mod * BASE_SCALE_MULT
 	_sprite.centered = true
 	add_child(_sprite)
+	_build_nameplate()
+
+
+func _build_nameplate() -> void:
+	_name_label = Label.new()
+	_name_label.text = data.name if data else ""
+	_name_label.add_theme_font_size_override("font_size", 8)
+	_name_label.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
+	_name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_name_label.position = Vector2(-20, -42)
+	_name_label.size = Vector2(40, 12)
+	add_child(_name_label)
+
+	# HP bar background
+	_hp_bar_bg = ColorRect.new()
+	_hp_bar_bg.color = Color(0.25, 0.04, 0.04, 0.9)
+	_hp_bar_bg.position = Vector2(-14, -30)
+	_hp_bar_bg.size = Vector2(28, 3)
+	add_child(_hp_bar_bg)
+
+	# HP bar fill
+	_hp_bar_fill = ColorRect.new()
+	_hp_bar_fill.color = Color(0.9, 0.12, 0.12)
+	_hp_bar_fill.position = Vector2(-14, -30)
+	_hp_bar_fill.size = Vector2(28, 3)
+	add_child(_hp_bar_fill)
+	_update_hp_bar()
 
 
 func lift() -> void:
@@ -68,6 +101,13 @@ func drop() -> void:
 
 
 func _process(delta: float) -> void:
+	if not data:
+		return
+	if data.is_alive and (data.stats.get("health", 1) as int) <= 0:
+		GameState.register_entity_death(data, "health_depleted")
+	if not data.is_alive:
+		_apply_dead_visual()
+		return
 	if not visible or not _sprite or _is_lifted:
 		return
 	_timer -= delta
@@ -76,6 +116,27 @@ func _process(delta: float) -> void:
 	elif _timer <= 0.0:
 		_pick_target()
 	_update_perspective()
+
+
+func _on_entity_died(entity_data: GameState.EntityData) -> void:
+	if entity_data != data:
+		return
+	_apply_dead_visual()
+
+
+func _apply_dead_visual() -> void:
+	if not _sprite:
+		return
+	_sprite.rotation = PI / 2.0
+	_sprite.modulate = Color(0.35, 0.35, 0.35, 0.55)
+	_is_moving = false
+	_timer = 9999.0
+	if _name_label:
+		_name_label.modulate.a = 0.4
+	if _hp_bar_bg:
+		_hp_bar_bg.visible = false
+	if _hp_bar_fill:
+		_hp_bar_fill.visible = false
 
 
 func _step_toward_target(delta: float) -> void:
@@ -123,4 +184,30 @@ func _check_layer_edge() -> void:
 
 
 func refresh_visibility(view_layer: int) -> void:
-	visible = data != null and data.is_alive and data.layer == view_layer
+	if data == null:
+		visible = false
+		return
+	visible = data.layer == view_layer
+	if not visible:
+		return
+	if data.is_alive:
+		if _sprite:
+			_sprite.modulate = Color.WHITE
+			_sprite.rotation = 0.0
+		if _name_label:
+			_name_label.modulate.a = 1.0
+		if _hp_bar_bg:
+			_hp_bar_bg.visible = true
+		if _hp_bar_fill:
+			_hp_bar_fill.visible = true
+		_update_hp_bar()
+	else:
+		_apply_dead_visual()
+
+
+func _update_hp_bar() -> void:
+	if not _hp_bar_fill or not data:
+		return
+	var cap: float = float(GameState.ERA_STAT_CAP.get(GameState.current_era, 15) as int)
+	var ratio: float = clamp(float(data.stats.get("health", 0) as int) / cap, 0.0, 1.0)
+	_hp_bar_fill.size.x = 28.0 * ratio

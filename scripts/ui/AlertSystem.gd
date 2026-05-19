@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+signal alert_finished(event)
+
 enum AlertType { NOTIFY, WARNING, CRITICAL, FATAL }
 
 const FRAMES_DIR = "res://assets/alerts/frames/"
@@ -16,10 +18,10 @@ const TYPE_NAME = {
 	AlertType.NOTIFY:   "notify",
 }
 const HOLD_TIME = {
-	AlertType.NOTIFY:   3.0,
-	AlertType.WARNING:  4.0,
-	AlertType.CRITICAL: 5.0,
-	AlertType.FATAL:    6.0,
+	AlertType.NOTIFY:   1.2,
+	AlertType.WARNING:  1.5,
+	AlertType.CRITICAL: 1.8,
+	AlertType.FATAL:    2.2,
 }
 const TYPE_COLOR = {
 	AlertType.NOTIFY:   Vector3(0.1, 0.4, 1.0),
@@ -30,6 +32,7 @@ const TYPE_COLOR = {
 
 var _queue: Array = []
 var _busy: bool = false
+var _current_item: Dictionary = {}
 var _container: Control
 var _sprite: TextureRect
 var _vignette: Control = null
@@ -74,20 +77,32 @@ func _build_vignette() -> void:
 
 
 func notify(message: String = "") -> void:
-	_enqueue(AlertType.NOTIFY, message)
+	_enqueue(AlertType.NOTIFY, null)
 
 func warning(message: String = "") -> void:
-	_enqueue(AlertType.WARNING, message)
+	_enqueue(AlertType.WARNING, null)
 
 func critical(message: String = "") -> void:
-	_enqueue(AlertType.CRITICAL, message)
+	_enqueue(AlertType.CRITICAL, null)
 
 func fatal(message: String = "") -> void:
-	_enqueue(AlertType.FATAL, message)
+	_enqueue(AlertType.FATAL, null)
+
+func notify_event(event) -> void:
+	_enqueue(AlertType.NOTIFY, event)
+
+func warning_event(event) -> void:
+	_enqueue(AlertType.WARNING, event)
+
+func critical_event(event) -> void:
+	_enqueue(AlertType.CRITICAL, event)
+
+func fatal_event(event) -> void:
+	_enqueue(AlertType.FATAL, event)
 
 
-func _enqueue(type: AlertType, message: String) -> void:
-	_queue.append({type = type, message = message})
+func _enqueue(type: AlertType, event) -> void:
+	_queue.append({type = type, event = event})
 	if not _busy:
 		_show_next()
 
@@ -97,11 +112,11 @@ func _show_next() -> void:
 		_busy = false
 		return
 	_busy = true
-	var item = _queue.pop_front()
-	_set_frame(item.type)
-	_play_fx(item.type)
+	_current_item = _queue.pop_front()
+	_set_frame(_current_item.type)
+	_play_fx(_current_item.type)
 
-	var hold = HOLD_TIME[item.type]
+	var hold = HOLD_TIME[_current_item.type]
 	var tw = create_tween()
 	tw.tween_property(_container, "position", Vector2(DISPLAY_X, TOPBAR_Y), 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	tw.parallel().tween_property(_container, "modulate:a", 1.0, 0.25)
@@ -156,4 +171,7 @@ func _set_frame(type: AlertType) -> void:
 func _on_banner_done() -> void:
 	_container.position = Vector2(DISPLAY_X, TOPBAR_Y - DISPLAY_HEIGHT)
 	_container.modulate.a = 0.0
+	var finished_event = _current_item.get("event", null)
+	_current_item = {}
+	alert_finished.emit(finished_event)
 	_show_next()

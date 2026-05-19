@@ -53,6 +53,10 @@ func get_cohesion_state() -> String:
 	return "collapse"
 
 
+func get_warrior_ratio() -> float:
+	return _get_trait_ratio("warrior", GameState.get_living_entities())
+
+
 func get_war_penalty() -> float:
 	# Reduces advance speed when there is conflict
 	match get_cohesion_state():

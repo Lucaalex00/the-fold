@@ -9,15 +9,26 @@ extends Node2D
 @onready var planet_widget: Control = $PlanetLayer/PlanetInput
 
 var _is_new_game: bool = false
+var _event_queue: Array = []
+var _processing_event: bool = false
 var _bg_files: Array[String] = []
 var _current_bg: Sprite2D = null
 var _current_bg_index: int = -1
+var _timer_chips: CanvasLayer = null
 
 
 func _ready() -> void:
+	_setup_timer_chips()
 	_connect_signals()
 	_setup_background()
 	_init_game()
+
+
+func _setup_timer_chips() -> void:
+	var script = load("res://scripts/ui/EventTimerChips.gd")
+	_timer_chips = CanvasLayer.new()
+	_timer_chips.set_script(script)
+	add_child(_timer_chips)
 
 
 func _setup_background() -> void:
@@ -86,12 +97,17 @@ func _on_bg_timer() -> void:
 
 func _connect_signals() -> void:
 	GameState.entity_died.connect(_on_entity_died)
+	GameState.entities_purged.connect(_on_entities_purged)
 	GameState.era_changed.connect(_on_era_changed)
 	GameState.prestige_triggered.connect(_on_prestige_triggered)
 	GameState.cohesion_changed.connect(_on_cohesion_changed)
 	PrestigeSystem.prestige_sequence_started.connect(_on_prestige_sequence_started)
 	PrestigeSystem.prestige_sequence_finished.connect(_on_prestige_sequence_finished)
 	PrestigeSystem.god_message_ready.connect(_on_god_message_ready)
+	EventManager.event_created.connect(_on_event_created)
+	AlertSystem.alert_finished.connect(_on_alert_finished)
+	event_panel.event_resolved.connect(_on_event_resolved)
+	_timer_chips.chip_clicked.connect(_on_chip_clicked)
 
 
 func _init_game() -> void:
@@ -103,6 +119,7 @@ func _init_game() -> void:
 		_load_existing_game()
 
 	hud.refresh()
+	EventManager.generate_daily_events()
 
 
 func _start_new_game() -> void:
@@ -147,10 +164,64 @@ func _apply_prestige_bonuses_to_founders() -> void:
 			)
 
 
+# --- Event flow ---
+
+func _on_event_created(event: EventManager.GameEvent) -> void:
+	_timer_chips.add_chip(event)
+	_event_queue.append(event)
+	if not _processing_event:
+		_process_next_event()
+
+
+func _process_next_event() -> void:
+	if _event_queue.is_empty():
+		_processing_event = false
+		return
+	_processing_event = true
+	var event = _event_queue.pop_front()
+	event_panel.activate_blocker()
+	match event.urgency:
+		EventManager.EventUrgency.FATAL:    AlertSystem.fatal_event(event)
+		EventManager.EventUrgency.CRITICAL: AlertSystem.critical_event(event)
+		EventManager.EventUrgency.URGENT:   AlertSystem.warning_event(event)
+		_:                                  AlertSystem.notify_event(event)
+
+
+func _on_alert_finished(event) -> void:
+	if event == null:
+		return
+	await get_tree().create_timer(0.3).timeout
+	event_panel.show_event(event)
+
+
+func _on_event_resolved(event) -> void:
+	if event != null:
+		var keep: bool = (
+			event.urgency == EventManager.EventUrgency.CRITICAL or
+			event.urgency == EventManager.EventUrgency.FATAL
+		)
+		if not keep:
+			_timer_chips.remove_chip(event.id)
+	if _event_queue.is_empty():
+		_processing_event = false
+		return
+	await get_tree().create_timer(2.5).timeout
+	_process_next_event()
+
+
+func _on_chip_clicked(event) -> void:
+	event_panel.activate_blocker()
+	event_panel.show_event(event)
+
+
 # --- Signal handlers ---
 
 func _on_entity_died(entity_data) -> void:
 	_check_population_collapse()
+	planet_widget.refresh_entities()
+
+
+func _on_entities_purged() -> void:
 	planet_widget.refresh_entities()
 
 
