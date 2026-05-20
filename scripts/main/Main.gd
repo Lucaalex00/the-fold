@@ -176,10 +176,11 @@ func _on_event_created(event: EventManager.GameEvent) -> void:
 func _process_next_event() -> void:
 	if _event_queue.is_empty():
 		_processing_event = false
+		event_panel.unlock_input()
 		return
 	_processing_event = true
+	event_panel.lock_input()
 	var event = _event_queue.pop_front()
-	event_panel.activate_blocker()
 	match event.urgency:
 		EventManager.EventUrgency.FATAL:    AlertSystem.fatal_event(event)
 		EventManager.EventUrgency.CRITICAL: AlertSystem.critical_event(event)
@@ -191,6 +192,7 @@ func _on_alert_finished(event) -> void:
 	if event == null:
 		return
 	await get_tree().create_timer(0.3).timeout
+	event_panel.activate_blocker()
 	event_panel.show_event(event)
 
 
@@ -204,6 +206,7 @@ func _on_event_resolved(event) -> void:
 			_timer_chips.remove_chip(event.id)
 	if _event_queue.is_empty():
 		_processing_event = false
+		event_panel.unlock_input()
 		return
 	await get_tree().create_timer(2.5).timeout
 	_process_next_event()

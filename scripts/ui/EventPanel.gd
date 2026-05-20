@@ -29,6 +29,7 @@ func _build_ui() -> void:
 	_blocker.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
 	_blocker.visible = false
+	_blocker.gui_input.connect(_on_blocker_input)
 	add_child(_blocker)
 
 	_panel = PanelContainer.new()
@@ -71,8 +72,22 @@ func _build_ui() -> void:
 	vbox.add_child(_choices_box)
 
 
+func lock_input() -> void:
+	visible = true
+	_blocker.color = Color(0.0, 0.0, 0.0, 0.0)
+	_blocker.visible = true
+	_panel.visible = false
+
+
+func unlock_input() -> void:
+	_panel.visible = false
+	_blocker.visible = false
+	visible = false
+
+
 func activate_blocker() -> void:
 	visible = true
+	_blocker.color = Color(0.0, 0.0, 0.0, 0.55)
 	_blocker.visible = true
 	_panel.visible = false
 
@@ -88,8 +103,9 @@ func show_event(event) -> void:
 	for child in _choices_box.get_children():
 		child.queue_free()
 
+	var locked: bool = event.chosen_choice_index >= 0
 	for i in range(event.choices.size()):
-		_add_choice_button(event.choices[i], i)
+		_add_choice_button(event.choices[i], i, locked, event.chosen_choice_index)
 
 	_panel.visible = true
 
@@ -104,7 +120,7 @@ func show_event(event) -> void:
 	)
 
 
-func _add_choice_button(choice, index: int) -> void:
+func _add_choice_button(choice, index: int, locked: bool = false, chosen: int = -1) -> void:
 	var container = VBoxContainer.new()
 	container.add_theme_constant_override("separation", 3)
 	_choices_box.add_child(container)
@@ -113,14 +129,43 @@ func _add_choice_button(choice, index: int) -> void:
 	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn.add_theme_font_size_override("font_size", 14)
 
+	var label_text := ""
 	var consequence_text := ""
 	if choice is Dictionary:
-		btn.text = choice.get("label", "")
+		label_text = choice.get("label", "")
 		consequence_text = choice.get("consequence", "")
 	else:
-		btn.text = str(choice)
+		label_text = str(choice)
 
-	btn.pressed.connect(_on_choice_pressed.bind(index))
+	var is_chosen := locked and index == chosen
+	if is_chosen:
+		btn.text = "✅ " + label_text
+		btn.add_theme_color_override("font_color", Color(0.4, 0.95, 0.5))
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color(0.08, 0.28, 0.1, 0.9)
+		style.border_width_left = 2
+		style.border_width_right = 2
+		style.border_width_top = 2
+		style.border_width_bottom = 2
+		style.border_color = Color(0.3, 0.85, 0.4)
+		style.corner_radius_top_left = 4
+		style.corner_radius_top_right = 4
+		style.corner_radius_bottom_left = 4
+		style.corner_radius_bottom_right = 4
+		btn.add_theme_stylebox_override("normal", style)
+		btn.add_theme_stylebox_override("hover", style)
+		btn.add_theme_stylebox_override("pressed", style)
+		btn.add_theme_stylebox_override("disabled", style)
+	else:
+		btn.text = label_text
+
+	if locked:
+		btn.disabled = true
+		if not is_chosen:
+			btn.modulate.a = 0.4
+	else:
+		btn.pressed.connect(_on_choice_pressed.bind(index))
+
 	container.add_child(btn)
 
 	if consequence_text != "":
@@ -131,6 +176,21 @@ func _add_choice_button(choice, index: int) -> void:
 		cons.autowrap_mode = TextServer.AUTOWRAP_WORD
 		cons.custom_minimum_size = Vector2(314, 0)
 		container.add_child(cons)
+
+
+func _on_blocker_input(event: InputEvent) -> void:
+	if not _panel.visible:
+		return
+	var is_tap: bool = (event is InputEventMouseButton and (event as InputEventMouseButton).pressed and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT)
+	var is_touch: bool = (event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed)
+	if not (is_tap or is_touch):
+		return
+	var ev: EventManager.GameEvent = _current_event
+	_current_event = null
+	_panel.visible = false
+	_blocker.color = Color(0.0, 0.0, 0.0, 0.0)
+	if ev != null:
+		event_resolved.emit(ev)
 
 
 func _on_choice_pressed(index: int) -> void:
@@ -146,8 +206,7 @@ func _on_choice_pressed(index: int) -> void:
 		EventManager.resolve_event(resolved, index)
 	_current_event = null
 	_panel.visible = false
-	_blocker.visible = false
-	visible = false
+	_blocker.color = Color(0.0, 0.0, 0.0, 0.0)
 	event_resolved.emit(resolved)
 
 
