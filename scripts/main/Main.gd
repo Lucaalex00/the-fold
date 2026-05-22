@@ -198,9 +198,11 @@ func _on_alert_finished(event) -> void:
 
 func _on_event_resolved(event) -> void:
 	if event != null:
+		# Keep chip for: CRITICAL/FATAL (always), or any urgency dismissed without choice
 		var keep: bool = (
 			event.urgency == EventManager.EventUrgency.CRITICAL or
-			event.urgency == EventManager.EventUrgency.FATAL
+			event.urgency == EventManager.EventUrgency.FATAL or
+			event.chosen_choice_index < 0
 		)
 		if not keep:
 			_timer_chips.remove_chip(event.id)

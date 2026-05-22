@@ -41,7 +41,7 @@ Ogni file feature segue questo formato:
 ---
 
 ## 📊 STATO ATTUALE
-> Aggiornato: 2026-05-20
+> Aggiornato: 2026-05-22
 
 | Feature | Stato | Note |
 |---|---|---|
@@ -78,9 +78,11 @@ Ogni file feature segue questo formato:
 | PlanetWidget | ✅ | 6-layer system, swipe nav, auto-rotation, entity drag, overlay 50%, HP bar |
 | EntitySprite | ✅ | Rendering spritesheet, movimento autonomo, prospettiva, layer transition, name+HP bar |
 | Tests | ✅ | TestRunner + 6 suite: GameState, Entity, Culture, Genetic, Prestige, L10n |
+| ConsequenceSystem | ✅ | Autoload, modulare (StatType/Scope/EffectType), applica effects da choice.effects o default_effects |
+| Events.json effects | ✅ | 35 eventi, 105 choices, tutti con effects + default_effects bilanciati |
+| Event expiry logic | ✅ | default_effects applicati su scadenza o tap esterno senza scelta |
 | Tutorial | ❌ | Non iniziato |
-| Event expiry logic | ❌ | default_consequence su scadenza, hard reset su FATAL scaduto |
-| Consequence handlers | ❌ | choices → effetti reali (spawn entity, ±cohesion, ±divine energy, planet damage) |
+| Hard Reset screen | ❌ | "You died" quando planet HP=0 |
 | Universe Map UI | ❌ | visualizzazione bot planets, distanza relativa |
 
 ### Decisioni design sessione 2026-05-19 — Sistema Pianeta a 6 Layer

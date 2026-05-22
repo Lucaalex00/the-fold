@@ -29,6 +29,7 @@ class GameEvent:
 	var description: String = ""
 	var expires_in_hours: float = 24.0
 	var choices: Array = []
+	var default_effects: Array = []
 	var triggered_by: String = ""
 	var created_at: int = 0
 	var chosen_choice_index: int = -1
@@ -139,6 +140,7 @@ func _spawn_social_event(event_def: Dictionary, urgency: int) -> void:
 	ev.description = event_def.get("description", "")
 	ev.expires_in_hours = _urgency_to_hours(urgency)
 	ev.choices = event_def.get("choices", [])
+	ev.default_effects = event_def.get("default_effects", [])
 	ev.triggered_by = event_def.get("trigger", "")
 	ev.created_at = Time.get_unix_time_from_system()
 	active_social_events.append(ev)
@@ -183,6 +185,7 @@ func _spawn_cosmic_event(event_def: Dictionary, urgency: int) -> void:
 	ev.description = event_def.get("description", "")
 	ev.expires_in_hours = float(event_def.get("warning_hours", 6))
 	ev.choices = event_def.get("choices", [])
+	ev.default_effects = event_def.get("default_effects", [])
 	ev.triggered_by = "cosmos"
 	ev.created_at = Time.get_unix_time_from_system()
 	active_cosmic_event = ev
@@ -193,6 +196,13 @@ func _spawn_cosmic_event(event_def: Dictionary, urgency: int) -> void:
 # --- Event resolution ---
 
 func resolve_event(event: GameEvent, choice_index: int) -> void:
+	# Apply effects: chosen choice when index >= 0, otherwise default_effects
+	if choice_index >= 0 and choice_index < event.choices.size():
+		var choice: Dictionary = event.choices[choice_index]
+		ConsequenceSystem.apply_effects(choice.get("effects", []))
+	else:
+		ConsequenceSystem.apply_effects(event.default_effects)
+
 	if event.type == "social":
 		active_social_events.erase(event)
 	elif event.type == "cosmic":
@@ -211,11 +221,14 @@ func _expire_old_events() -> void:
 		if hours_passed >= ev.expires_in_hours:
 			to_remove.append(ev)
 	for ev in to_remove:
+		# Expired without player choice → apply default_effects
+		ConsequenceSystem.apply_effects(ev.default_effects)
 		active_social_events.erase(ev)
 
 	if active_cosmic_event != null:
 		var hours_passed = float(now - active_cosmic_event.created_at) / 3600.0
 		if hours_passed >= active_cosmic_event.expires_in_hours:
+			ConsequenceSystem.apply_effects(active_cosmic_event.default_effects)
 			active_cosmic_event = null
 
 

@@ -11,6 +11,7 @@ const TEST_SUITES = [
 	"res://tests/test_genetic_system.gd",
 	"res://tests/test_prestige_system.gd",
 	"res://tests/test_localization.gd",
+	"res://tests/test_consequence_system.gd",
 ]
 
 var _total: int = 0

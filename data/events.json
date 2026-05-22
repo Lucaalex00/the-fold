@@ -6,10 +6,17 @@
       "description": "One of your entities stumbled upon something unusual while exploring the surface. It's not clear what it means — but it feels significant.",
       "trigger": "random:0.3",
       "choices": [
-        { "id": "investigate", "label": "Investigate", "consequence": "+15 research to the finder — takes them off-duty for one cycle" },
-        { "id": "share_find", "label": "Share With Everyone", "consequence": "+5 research all entities, +8 cohesion" },
-        { "id": "ignore", "label": "Ignore It", "consequence": "Nothing happens" }
-      ]
+        { "id": "investigate", "label": "Investigate", "consequence": "+15 research to one entity",
+          "effects": [{ "type": "stat", "stat": "research", "delta": 15, "scope": "random_one" }] },
+        { "id": "share_find", "label": "Share With Everyone", "consequence": "+5 research all, +8 cohesion",
+          "effects": [
+            { "type": "stat", "stat": "research", "delta": 5, "scope": "all" },
+            { "type": "cohesion", "delta": 8 }
+          ] },
+        { "id": "ignore", "label": "Ignore It", "consequence": "Nothing happens",
+          "effects": [] }
+      ],
+      "default_effects": []
     },
     {
       "id": "born_leader",
@@ -17,10 +24,18 @@
       "description": "One of your younger entities is showing remarkable natural authority. Others are already looking to them for guidance.",
       "trigger": "population>=4",
       "choices": [
-        { "id": "appoint_leader", "label": "Appoint as Leader", "consequence": "+20 cohesion — that entity gains +10 diplomacy, -5 harvest" },
-        { "id": "let_it_happen", "label": "Let It Happen Naturally", "consequence": "+10 cohesion over time — slower but no forced stat changes" },
-        { "id": "suppress", "label": "Suppress the Influence", "consequence": "Cohesion -10 — no leadership forms, entity loses morale" }
-      ]
+        { "id": "appoint_leader", "label": "Appoint as Leader", "consequence": "+20 cohesion, leader +10 diplomacy / -5 harvest",
+          "effects": [
+            { "type": "cohesion", "delta": 20 },
+            { "type": "stat", "stat": "diplomacy", "delta": 10, "scope": "random_one" },
+            { "type": "stat", "stat": "harvest", "delta": -5, "scope": "random_one" }
+          ] },
+        { "id": "let_it_happen", "label": "Let It Happen Naturally", "consequence": "+10 cohesion",
+          "effects": [{ "type": "cohesion", "delta": 10 }] },
+        { "id": "suppress", "label": "Suppress the Influence", "consequence": "-10 cohesion",
+          "effects": [{ "type": "cohesion", "delta": -10 }] }
+      ],
+      "default_effects": [{ "type": "cohesion", "delta": -5 }]
     },
     {
       "id": "harvest_song",
@@ -28,10 +43,14 @@
       "description": "Your people have composed a song that spreads joy through the settlement. Even the warriors are humming it.",
       "trigger": "cohesion>=70",
       "choices": [
-        { "id": "embrace_song", "label": "Embrace the Tradition", "consequence": "+15 cohesion, culture trait begins forming" },
-        { "id": "teach_children", "label": "Teach the Children", "consequence": "Future generations +5 base intelligence" },
-        { "id": "ignore", "label": "Let It Fade", "consequence": "Nothing happens" }
-      ]
+        { "id": "embrace_song", "label": "Embrace the Tradition", "consequence": "+15 cohesion",
+          "effects": [{ "type": "cohesion", "delta": 15 }] },
+        { "id": "teach_children", "label": "Teach the Children", "consequence": "+5 intelligence all",
+          "effects": [{ "type": "stat", "stat": "intelligence", "delta": 5, "scope": "all" }] },
+        { "id": "ignore", "label": "Let It Fade", "consequence": "Nothing happens",
+          "effects": [] }
+      ],
+      "default_effects": []
     },
     {
       "id": "ancient_ruins",
@@ -39,10 +58,17 @@
       "description": "Your people discovered the remains of a civilization that came before yours. No one knows who they were.",
       "trigger": "random:0.2",
       "choices": [
-        { "id": "excavate", "label": "Excavate the Site", "consequence": "+30 research — 2 entities off-duty for one cycle" },
-        { "id": "build_over", "label": "Build Over Them", "consequence": "+20 construction efficiency — ruins lost forever" },
-        { "id": "preserve", "label": "Preserve and Study", "consequence": "+10 research per cycle for 3 cycles — no immediate bonus" }
-      ]
+        { "id": "excavate", "label": "Excavate the Site", "consequence": "+15 research all",
+          "effects": [{ "type": "stat", "stat": "research", "delta": 15, "scope": "all" }] },
+        { "id": "build_over", "label": "Build Over Them", "consequence": "+10 construction all",
+          "effects": [{ "type": "stat", "stat": "construction", "delta": 10, "scope": "all" }] },
+        { "id": "preserve", "label": "Preserve and Study", "consequence": "+8 research all, +5 cohesion",
+          "effects": [
+            { "type": "stat", "stat": "research", "delta": 8, "scope": "all" },
+            { "type": "cohesion", "delta": 5 }
+          ] }
+      ],
+      "default_effects": []
     },
     {
       "id": "dream_vision",
@@ -50,10 +76,17 @@
       "description": "Your most intelligent entity reports a vivid, recurring dream — of stars falling in a specific pattern, of a path through the cosmos.",
       "trigger": "random:0.15",
       "choices": [
-        { "id": "record_dream", "label": "Record the Dream", "consequence": "+20 research — may become relevant in era 4+" },
-        { "id": "spread_story", "label": "Spread the Story", "consequence": "+15 cohesion — entity seen as prophet, +5 diplomacy" },
-        { "id": "dismiss", "label": "Dismiss It", "consequence": "Nothing — for now" }
-      ]
+        { "id": "record_dream", "label": "Record the Dream", "consequence": "+10 research strongest entity",
+          "effects": [{ "type": "stat", "stat": "research", "delta": 10, "scope": "strongest" }] },
+        { "id": "spread_story", "label": "Spread the Story", "consequence": "+12 cohesion, +5 diplomacy all",
+          "effects": [
+            { "type": "cohesion", "delta": 12 },
+            { "type": "stat", "stat": "diplomacy", "delta": 5, "scope": "all" }
+          ] },
+        { "id": "dismiss", "label": "Dismiss It", "consequence": "Nothing — for now",
+          "effects": [] }
+      ],
+      "default_effects": []
     },
     {
       "id": "trading_post",
@@ -61,10 +94,20 @@
       "description": "A distant group has made contact and is offering goods in exchange for what you produce. The deal seems fair — on the surface.",
       "trigger": "era>=2",
       "choices": [
-        { "id": "trade_food", "label": "Trade Food Surplus", "consequence": "+25 divine energy, -2 food buffer days" },
-        { "id": "trade_knowledge", "label": "Trade Knowledge", "consequence": "+15 diplomacy all, -10 research" },
-        { "id": "refuse", "label": "Refuse the Deal", "consequence": "+5 cohesion from isolationist pride — no material gain" }
-      ]
+        { "id": "trade_food", "label": "Trade Food Surplus", "consequence": "+20 divine energy, -3 health all",
+          "effects": [
+            { "type": "divine_energy", "delta": 20 },
+            { "type": "stat", "stat": "health", "delta": -3, "scope": "all" }
+          ] },
+        { "id": "trade_knowledge", "label": "Trade Knowledge", "consequence": "+8 diplomacy all, -10 research all",
+          "effects": [
+            { "type": "stat", "stat": "diplomacy", "delta": 8, "scope": "all" },
+            { "type": "stat", "stat": "research", "delta": -10, "scope": "all" }
+          ] },
+        { "id": "refuse", "label": "Refuse the Deal", "consequence": "+5 cohesion",
+          "effects": [{ "type": "cohesion", "delta": 5 }] }
+      ],
+      "default_effects": []
     },
     {
       "id": "child_prodigy",
@@ -72,10 +115,20 @@
       "description": "A young entity born in your civilization is displaying abilities far beyond their age. The others don't know whether to revere or fear them.",
       "trigger": "population>=6",
       "choices": [
-        { "id": "nurture", "label": "Nurture the Gift", "consequence": "Entity gains +20 intelligence and a unique trait — costs 20 divine energy" },
-        { "id": "integrate", "label": "Integrate Normally", "consequence": "Entity develops at natural pace — safe, no risks" },
-        { "id": "isolate", "label": "Isolate for Study", "consequence": "Entity gains +30 research — cohesion -10, seen as experiment" }
-      ]
+        { "id": "nurture", "label": "Nurture the Gift", "consequence": "+15 intelligence one entity, -20 divine energy",
+          "effects": [
+            { "type": "stat", "stat": "intelligence", "delta": 15, "scope": "random_one" },
+            { "type": "divine_energy", "delta": -20 }
+          ] },
+        { "id": "integrate", "label": "Integrate Normally", "consequence": "Safe, no changes",
+          "effects": [] },
+        { "id": "isolate", "label": "Isolate for Study", "consequence": "+20 research strongest, -10 cohesion",
+          "effects": [
+            { "type": "stat", "stat": "research", "delta": 20, "scope": "strongest" },
+            { "type": "cohesion", "delta": -10 }
+          ] }
+      ],
+      "default_effects": [{ "type": "cohesion", "delta": -3 }]
     },
     {
       "id": "comet_blessing",
@@ -83,10 +136,17 @@
       "description": "A rare comet passes close to your planet, leaving a trail of cosmic dust and strange energy. Your people gaze up in wonder.",
       "trigger": "random:0.15",
       "choices": [
-        { "id": "harvest_dust", "label": "Harvest Cosmic Dust", "consequence": "+25 research, +20 divine energy — 2 entities off-duty" },
-        { "id": "worship_comet", "label": "Worship the Comet", "consequence": "+30 cohesion — random entity gains Mystic trait" },
-        { "id": "ignore", "label": "Ignore It", "consequence": "Comet passes — no bonus, no cost" }
-      ]
+        { "id": "harvest_dust", "label": "Harvest Cosmic Dust", "consequence": "+10 research all, +15 divine energy",
+          "effects": [
+            { "type": "stat", "stat": "research", "delta": 10, "scope": "all" },
+            { "type": "divine_energy", "delta": 15 }
+          ] },
+        { "id": "worship_comet", "label": "Worship the Comet", "consequence": "+20 cohesion",
+          "effects": [{ "type": "cohesion", "delta": 20 }] },
+        { "id": "ignore", "label": "Ignore It", "consequence": "Nothing happens",
+          "effects": [] }
+      ],
+      "default_effects": []
     },
     {
       "id": "great_harvest",
@@ -94,10 +154,17 @@
       "description": "An unexpected abundance of resources has been found near the settlement. The population is celebrating.",
       "trigger": "random:0.25",
       "choices": [
-        { "id": "store_reserves", "label": "Store Reserves", "consequence": "+3 food buffer days" },
-        { "id": "expand_population", "label": "Expand Population", "consequence": "Spawn one new entity — cohesion -5 from overcrowding" },
-        { "id": "trade", "label": "Trade the Surplus", "consequence": "+30 divine energy — food surplus lost" }
-      ]
+        { "id": "store_reserves", "label": "Store Reserves", "consequence": "+8 health all",
+          "effects": [{ "type": "stat", "stat": "health", "delta": 8, "scope": "all" }] },
+        { "id": "feast", "label": "Hold a Feast", "consequence": "+15 cohesion, +3 energy all",
+          "effects": [
+            { "type": "cohesion", "delta": 15 },
+            { "type": "stat", "stat": "energy", "delta": 3, "scope": "all" }
+          ] },
+        { "id": "trade", "label": "Trade the Surplus", "consequence": "+25 divine energy",
+          "effects": [{ "type": "divine_energy", "delta": 25 }] }
+      ],
+      "default_effects": [{ "type": "stat", "stat": "health", "delta": 3, "scope": "all" }]
     },
     {
       "id": "alien_probe",
@@ -105,10 +172,14 @@
       "description": "A mechanical object of unknown origin has entered your atmosphere. It appears to be scanning your civilization.",
       "trigger": "era>=3",
       "choices": [
-        { "id": "study_probe", "label": "Study the Probe", "consequence": "+40 research all — probe self-destructs, fragments remain" },
-        { "id": "destroy_probe", "label": "Destroy It", "consequence": "Safe — sender may detect hostile action" },
-        { "id": "communicate", "label": "Try to Communicate", "consequence": "+20 diplomacy all — unknown response may follow" }
-      ]
+        { "id": "study_probe", "label": "Study the Probe", "consequence": "+20 research all",
+          "effects": [{ "type": "stat", "stat": "research", "delta": 20, "scope": "all" }] },
+        { "id": "destroy_probe", "label": "Destroy It", "consequence": "+5 cohesion",
+          "effects": [{ "type": "cohesion", "delta": 5 }] },
+        { "id": "communicate", "label": "Try to Communicate", "consequence": "+12 diplomacy all",
+          "effects": [{ "type": "stat", "stat": "diplomacy", "delta": 12, "scope": "all" }] }
+      ],
+      "default_effects": []
     }
   ],
 
@@ -119,10 +190,20 @@
       "description": "Two factions are forming within your civilization. Tensions are rising and violence could erupt at any moment.",
       "trigger": "cohesion<60",
       "choices": [
-        { "id": "mediate", "label": "Mediate", "consequence": "+15 cohesion, costs 20 divine energy" },
-        { "id": "divide_territories", "label": "Divide Territories", "consequence": "-10 cohesion, -20% harvest — conflict stops" },
-        { "id": "ignore", "label": "Ignore", "consequence": "Escalates — war likely next cycle" }
-      ]
+        { "id": "mediate", "label": "Mediate", "consequence": "+15 cohesion, -20 divine energy",
+          "effects": [
+            { "type": "cohesion", "delta": 15 },
+            { "type": "divine_energy", "delta": -20 }
+          ] },
+        { "id": "divide_territories", "label": "Divide Territories", "consequence": "-8 cohesion, -5 harvest all",
+          "effects": [
+            { "type": "cohesion", "delta": -8 },
+            { "type": "stat", "stat": "harvest", "delta": -5, "scope": "all" }
+          ] },
+        { "id": "ignore", "label": "Ignore", "consequence": "Escalates — heavy cohesion loss",
+          "effects": [{ "type": "cohesion", "delta": -20 }] }
+      ],
+      "default_effects": [{ "type": "cohesion", "delta": -25 }]
     },
     {
       "id": "territorial_dispute",
@@ -130,9 +211,25 @@
       "description": "Two groups within your settlement are fighting over the best land. The dispute is turning violent.",
       "trigger": "random:0.2",
       "choices": [
-        { "id": "draw_borders", "label": "Draw Borders", "consequence": "+10 cohesion — harvest -10% from divided land" },
-        { "id": "let_them_fight", "label": "Let Them Fight", "consequence": "-15 health to fighters — winner gets all land, +20% harvest" },
-        { "id": "redistribute", "label": "Redistribute Equally", "consequence": "Costs 20 divine energy — both groups neutral" }
+        { "id": "draw_borders", "label": "Draw Borders", "consequence": "+8 cohesion, -5 harvest all",
+          "effects": [
+            { "type": "cohesion", "delta": 8 },
+            { "type": "stat", "stat": "harvest", "delta": -5, "scope": "all" }
+          ] },
+        { "id": "let_them_fight", "label": "Let Them Fight", "consequence": "-10 health weakest, +8 harvest all",
+          "effects": [
+            { "type": "stat", "stat": "health", "delta": -10, "scope": "weakest" },
+            { "type": "stat", "stat": "harvest", "delta": 8, "scope": "all" }
+          ] },
+        { "id": "redistribute", "label": "Redistribute Equally", "consequence": "-20 divine energy, +10 cohesion",
+          "effects": [
+            { "type": "divine_energy", "delta": -20 },
+            { "type": "cohesion", "delta": 10 }
+          ] }
+      ],
+      "default_effects": [
+        { "type": "cohesion", "delta": -10 },
+        { "type": "stat", "stat": "health", "delta": -5, "scope": "all" }
       ]
     },
     {
@@ -141,10 +238,17 @@
       "description": "A small group of strangers has arrived at your settlement. They carry different customs and unknown skills.",
       "trigger": "random:0.2",
       "choices": [
-        { "id": "welcome", "label": "Welcome Them", "consequence": "New entity joins with random trait — cohesion -10 from cultural clash" },
-        { "id": "refuse_entry", "label": "Turn Them Away", "consequence": "Cohesion +5 — they may return as enemies" },
-        { "id": "test_loyalty", "label": "Test Their Loyalty", "consequence": "50% join with bonus, 50% leave offended" }
-      ]
+        { "id": "welcome", "label": "Welcome Them", "consequence": "+8 diplomacy all, -8 cohesion",
+          "effects": [
+            { "type": "stat", "stat": "diplomacy", "delta": 8, "scope": "all" },
+            { "type": "cohesion", "delta": -8 }
+          ] },
+        { "id": "refuse_entry", "label": "Turn Them Away", "consequence": "+5 cohesion",
+          "effects": [{ "type": "cohesion", "delta": 5 }] },
+        { "id": "test_loyalty", "label": "Test Their Loyalty", "consequence": "+5 diplomacy all",
+          "effects": [{ "type": "stat", "stat": "diplomacy", "delta": 5, "scope": "all" }] }
+      ],
+      "default_effects": []
     },
     {
       "id": "food_shortage",
@@ -152,9 +256,25 @@
       "description": "Stores are running low. The mood in the settlement is tense. If nothing is done, this shortage becomes a crisis within days.",
       "trigger": "food_deficit>1",
       "choices": [
-        { "id": "expand_harvest", "label": "Expand Harvesting", "consequence": "2 entities switch to harvest duty — other stats drop temporarily" },
-        { "id": "ration_food", "label": "Enforce Rationing", "consequence": "-5 energy all — cohesion -8, crisis delayed 3 days" },
-        { "id": "pray", "label": "Pray for Abundance", "consequence": "Costs 25 divine energy — food buffer +2" }
+        { "id": "expand_harvest", "label": "Expand Harvesting", "consequence": "+8 harvest all, -5 research all",
+          "effects": [
+            { "type": "stat", "stat": "harvest", "delta": 8, "scope": "all" },
+            { "type": "stat", "stat": "research", "delta": -5, "scope": "all" }
+          ] },
+        { "id": "ration_food", "label": "Enforce Rationing", "consequence": "-5 energy all, -8 cohesion",
+          "effects": [
+            { "type": "stat", "stat": "energy", "delta": -5, "scope": "all" },
+            { "type": "cohesion", "delta": -8 }
+          ] },
+        { "id": "pray", "label": "Pray for Abundance", "consequence": "-25 divine energy, +8 health all",
+          "effects": [
+            { "type": "divine_energy", "delta": -25 },
+            { "type": "stat", "stat": "health", "delta": 8, "scope": "all" }
+          ] }
+      ],
+      "default_effects": [
+        { "type": "stat", "stat": "health", "delta": -10, "scope": "all" },
+        { "type": "cohesion", "delta": -10 }
       ]
     },
     {
@@ -163,9 +283,22 @@
       "description": "Your warriors are bored. Too much peace has made them restless and aggressive. They are picking fights within the settlement.",
       "trigger": "warrior_ratio>0.4",
       "choices": [
-        { "id": "send_on_mission", "label": "Send on Patrol", "consequence": "+10 attack all warriors — 20% chance one gets injured" },
-        { "id": "build_arena", "label": "Build a Training Arena", "consequence": "Costs 30 construction — warriors gain +8 attack, cohesion improves" },
-        { "id": "suppress", "label": "Enforce Discipline", "consequence": "Cohesion -15 — temporary calm, resentment builds" }
+        { "id": "send_on_mission", "label": "Send on Patrol", "consequence": "+8 attack warriors, -5 health weakest",
+          "effects": [
+            { "type": "stat", "stat": "attack", "delta": 8, "scope": "warriors" },
+            { "type": "stat", "stat": "health", "delta": -5, "scope": "weakest" }
+          ] },
+        { "id": "build_arena", "label": "Build a Training Arena", "consequence": "+10 attack warriors, +5 cohesion",
+          "effects": [
+            { "type": "stat", "stat": "attack", "delta": 10, "scope": "warriors" },
+            { "type": "cohesion", "delta": 5 }
+          ] },
+        { "id": "suppress", "label": "Enforce Discipline", "consequence": "-12 cohesion",
+          "effects": [{ "type": "cohesion", "delta": -12 }] }
+      ],
+      "default_effects": [
+        { "type": "cohesion", "delta": -10 },
+        { "type": "stat", "stat": "health", "delta": -5, "scope": "all" }
       ]
     },
     {
@@ -174,9 +307,22 @@
       "description": "Your oldest entity is fading. They have lived a long life, seen much, and carry wisdom that will be lost with them.",
       "trigger": "population>=4",
       "choices": [
-        { "id": "gather_wisdom", "label": "Gather Their Wisdom", "consequence": "+20 intelligence to one chosen entity — elder dies peacefully" },
-        { "id": "heal_elder", "label": "Try to Heal Them", "consequence": "Costs 40 divine energy — 60% chance of success, 40% they die anyway" },
-        { "id": "let_go", "label": "Let Them Go", "consequence": "Elder dies — +15 cohesion from shared mourning ritual" }
+        { "id": "gather_wisdom", "label": "Gather Their Wisdom", "consequence": "+12 intelligence strongest, elder dies",
+          "effects": [
+            { "type": "stat", "stat": "intelligence", "delta": 12, "scope": "strongest" },
+            { "type": "kill", "count": 1, "scope": "weakest", "cause": "old_age" }
+          ] },
+        { "id": "heal_elder", "label": "Try to Heal Them", "consequence": "-40 divine energy",
+          "effects": [{ "type": "divine_energy", "delta": -40 }] },
+        { "id": "let_go", "label": "Let Them Go", "consequence": "+12 cohesion, elder dies",
+          "effects": [
+            { "type": "cohesion", "delta": 12 },
+            { "type": "kill", "count": 1, "scope": "weakest", "cause": "old_age" }
+          ] }
+      ],
+      "default_effects": [
+        { "type": "kill", "count": 1, "scope": "weakest", "cause": "old_age" },
+        { "type": "cohesion", "delta": -5 }
       ]
     },
     {
@@ -185,10 +331,23 @@
       "description": "Two distinct cultures have emerged within your civilization. They share the same land but no longer share the same values.",
       "trigger": "cohesion<50",
       "choices": [
-        { "id": "force_unity", "label": "Force Unity", "consequence": "Cohesion +20 now, -5 per cycle until cause is resolved" },
-        { "id": "allow_diversity", "label": "Allow Two Cultures", "consequence": "Cohesion stabilizes at current value — diversity bonuses possible later" },
-        { "id": "exile_minority", "label": "Exile the Minority", "consequence": "One entity leaves permanently — cohesion +25, population -1" }
-      ]
+        { "id": "force_unity", "label": "Force Unity", "consequence": "+18 cohesion now, -5 health all",
+          "effects": [
+            { "type": "cohesion", "delta": 18 },
+            { "type": "stat", "stat": "health", "delta": -5, "scope": "all" }
+          ] },
+        { "id": "allow_diversity", "label": "Allow Two Cultures", "consequence": "+5 cohesion, +5 diplomacy all",
+          "effects": [
+            { "type": "cohesion", "delta": 5 },
+            { "type": "stat", "stat": "diplomacy", "delta": 5, "scope": "all" }
+          ] },
+        { "id": "exile_minority", "label": "Exile the Minority", "consequence": "+20 cohesion, 1 entity dies",
+          "effects": [
+            { "type": "cohesion", "delta": 20 },
+            { "type": "kill", "count": 1, "scope": "weakest", "cause": "exile" }
+          ] }
+      ],
+      "default_effects": [{ "type": "cohesion", "delta": -15 }]
     },
     {
       "id": "prolonged_eclipse",
@@ -197,9 +356,20 @@
       "trigger": "random:0.15",
       "warning_hours": 12,
       "choices": [
-        { "id": "artificial_light", "label": "Create Artificial Light", "consequence": "Costs 35 divine energy — harvest -30% but entities safe" },
-        { "id": "use_reserves", "label": "Use Food Reserves", "consequence": "No deaths — buffer drops to zero" },
-        { "id": "panic_rites", "label": "Perform Panic Rites", "consequence": "Cohesion -25, random entity gains Mystic trait — eclipse ends sooner" }
+        { "id": "artificial_light", "label": "Create Artificial Light", "consequence": "-35 divine energy, -5 harvest all",
+          "effects": [
+            { "type": "divine_energy", "delta": -35 },
+            { "type": "stat", "stat": "harvest", "delta": -5, "scope": "all" }
+          ] },
+        { "id": "use_reserves", "label": "Use Food Reserves", "consequence": "-8 health all",
+          "effects": [{ "type": "stat", "stat": "health", "delta": -8, "scope": "all" }] },
+        { "id": "panic_rites", "label": "Perform Panic Rites", "consequence": "-20 cohesion",
+          "effects": [{ "type": "cohesion", "delta": -20 }] }
+      ],
+      "default_effects": [
+        { "type": "stat", "stat": "health", "delta": -15, "scope": "all" },
+        { "type": "cohesion", "delta": -10 },
+        { "type": "planet_hp", "delta": -10 }
       ]
     },
     {
@@ -209,10 +379,17 @@
       "trigger": "random:0.2",
       "warning_hours": 48,
       "choices": [
-        { "id": "analyze", "label": "Analyze Signal", "consequence": "+20 research all — source remains unknown" },
-        { "id": "respond", "label": "Respond to Signal", "consequence": "Unknown — could be first contact or a fatal mistake" },
-        { "id": "ignore", "label": "Ignore It", "consequence": "Signal fades — nothing happens for now" }
-      ]
+        { "id": "analyze", "label": "Analyze Signal", "consequence": "+15 research all",
+          "effects": [{ "type": "stat", "stat": "research", "delta": 15, "scope": "all" }] },
+        { "id": "respond", "label": "Respond to Signal", "consequence": "+10 diplomacy all, -10 cohesion",
+          "effects": [
+            { "type": "stat", "stat": "diplomacy", "delta": 10, "scope": "all" },
+            { "type": "cohesion", "delta": -10 }
+          ] },
+        { "id": "ignore", "label": "Ignore It", "consequence": "Nothing happens",
+          "effects": [] }
+      ],
+      "default_effects": []
     },
     {
       "id": "approaching_star",
@@ -221,9 +398,22 @@
       "trigger": "random:0.1",
       "warning_hours": 8,
       "choices": [
-        { "id": "lower_temperature", "label": "Lower Temperature", "consequence": "Costs 40 divine energy — all safe" },
-        { "id": "force_mutation", "label": "Force Adaptation", "consequence": "+10 health all, random stat shift ±5" },
-        { "id": "build_shields", "label": "Build Heat Shields", "consequence": "Costs 30 construction — -15 health temporary, long-term protection" }
+        { "id": "lower_temperature", "label": "Lower Temperature", "consequence": "-40 divine energy",
+          "effects": [{ "type": "divine_energy", "delta": -40 }] },
+        { "id": "force_mutation", "label": "Force Adaptation", "consequence": "+8 health all, -5 intelligence all",
+          "effects": [
+            { "type": "stat", "stat": "health", "delta": 8, "scope": "all" },
+            { "type": "stat", "stat": "intelligence", "delta": -5, "scope": "all" }
+          ] },
+        { "id": "build_shields", "label": "Build Heat Shields", "consequence": "-30 construction all, -5 health all",
+          "effects": [
+            { "type": "stat", "stat": "construction", "delta": -30, "scope": "all" },
+            { "type": "stat", "stat": "health", "delta": -5, "scope": "all" }
+          ] }
+      ],
+      "default_effects": [
+        { "type": "stat", "stat": "health", "delta": -20, "scope": "all" },
+        { "type": "planet_hp", "delta": -15 }
       ]
     }
   ],
@@ -235,9 +425,25 @@
       "description": "The warrior faction demands leadership. They are armed, organized, and will not wait much longer.",
       "trigger": "warrior_ratio>0.5",
       "choices": [
-        { "id": "negotiate", "label": "Negotiate Power", "consequence": "+15 cohesion, warriors gain partial control — attack +10 all" },
-        { "id": "suppress", "label": "Suppress by Force", "consequence": "Warrior leader dies — attack -5 all, cohesion -20" },
-        { "id": "yield", "label": "Yield Control", "consequence": "Warriors take over — unknown long-term consequences" }
+        { "id": "negotiate", "label": "Negotiate Power", "consequence": "+12 cohesion, +8 attack all",
+          "effects": [
+            { "type": "cohesion", "delta": 12 },
+            { "type": "stat", "stat": "attack", "delta": 8, "scope": "all" }
+          ] },
+        { "id": "suppress", "label": "Suppress by Force", "consequence": "1 warrior dies, -18 cohesion",
+          "effects": [
+            { "type": "kill", "count": 1, "scope": "warriors", "cause": "suppression" },
+            { "type": "cohesion", "delta": -18 }
+          ] },
+        { "id": "yield", "label": "Yield Control", "consequence": "+15 attack warriors, -10 diplomacy all",
+          "effects": [
+            { "type": "stat", "stat": "attack", "delta": 15, "scope": "warriors" },
+            { "type": "stat", "stat": "diplomacy", "delta": -10, "scope": "all" }
+          ] }
+      ],
+      "default_effects": [
+        { "type": "cohesion", "delta": -25 },
+        { "type": "kill", "count": 1, "scope": "weakest", "cause": "uprising" }
       ]
     },
     {
@@ -246,9 +452,26 @@
       "description": "A mysterious illness is spreading rapidly through your settlement. The sick are dying. The healthy are terrified.",
       "trigger": "random:0.12",
       "choices": [
-        { "id": "quarantine", "label": "Enforce Quarantine", "consequence": "-20 health infected, cohesion -15 — disease contained" },
-        { "id": "treat_all", "label": "Treat Everyone", "consequence": "Costs 50 divine energy — most survive, some permanent health loss" },
-        { "id": "isolate_sick", "label": "Abandon the Sick", "consequence": "Weakest 2 entities die — survivors gain disease immunity" }
+        { "id": "quarantine", "label": "Enforce Quarantine", "consequence": "-12 health all, -10 cohesion",
+          "effects": [
+            { "type": "stat", "stat": "health", "delta": -12, "scope": "all" },
+            { "type": "cohesion", "delta": -10 }
+          ] },
+        { "id": "treat_all", "label": "Treat Everyone", "consequence": "-50 divine energy, -3 health all",
+          "effects": [
+            { "type": "divine_energy", "delta": -50 },
+            { "type": "stat", "stat": "health", "delta": -3, "scope": "all" }
+          ] },
+        { "id": "isolate_sick", "label": "Abandon the Sick", "consequence": "1 weakest dies, +5 health all",
+          "effects": [
+            { "type": "kill", "count": 1, "scope": "weakest", "cause": "plague" },
+            { "type": "stat", "stat": "health", "delta": 5, "scope": "all" }
+          ] }
+      ],
+      "default_effects": [
+        { "type": "kill", "count": 2, "scope": "weakest", "cause": "plague" },
+        { "type": "stat", "stat": "health", "delta": -15, "scope": "all" },
+        { "type": "planet_hp", "delta": -10 }
       ]
     },
     {
@@ -257,9 +480,20 @@
       "description": "The harvest failed completely. Starvation is spreading. Every day without food brings your people closer to collapse.",
       "trigger": "food_deficit>2",
       "choices": [
-        { "id": "strict_ration", "label": "Enforce Rationing", "consequence": "-10 health all — no deaths, crisis contained" },
-        { "id": "sacrifice_weakest", "label": "Sacrifice the Weak", "consequence": "Weakest entity dies — others survive at full health" },
-        { "id": "divine_intervention", "label": "Divine Intervention", "consequence": "Costs 40 divine energy — crisis resolved instantly" }
+        { "id": "strict_ration", "label": "Enforce Rationing", "consequence": "-10 health all",
+          "effects": [{ "type": "stat", "stat": "health", "delta": -10, "scope": "all" }] },
+        { "id": "sacrifice_weakest", "label": "Sacrifice the Weak", "consequence": "1 weakest dies, +5 health survivors",
+          "effects": [
+            { "type": "kill", "count": 1, "scope": "weakest", "cause": "starvation" },
+            { "type": "stat", "stat": "health", "delta": 5, "scope": "all" }
+          ] },
+        { "id": "divine_intervention", "label": "Divine Intervention", "consequence": "-40 divine energy",
+          "effects": [{ "type": "divine_energy", "delta": -40 }] }
+      ],
+      "default_effects": [
+        { "type": "kill", "count": 2, "scope": "weakest", "cause": "starvation" },
+        { "type": "stat", "stat": "health", "delta": -20, "scope": "all" },
+        { "type": "cohesion", "delta": -15 }
       ]
     },
     {
@@ -271,9 +505,19 @@
       "layers_hit": 1,
       "hit_side": "right",
       "choices": [
-        { "id": "deflect", "label": "Deflect It", "consequence": "Costs 60 divine energy — meteorite destroyed" },
-        { "id": "evacuate_layer", "label": "Evacuate the Layer", "consequence": "All entities moved — layer destroyed, entities survive" },
-        { "id": "accept_fate", "label": "Accept Fate", "consequence": "All entities on hit layer perish — crater becomes permanent" }
+        { "id": "deflect", "label": "Deflect It", "consequence": "-60 divine energy",
+          "effects": [{ "type": "divine_energy", "delta": -60 }] },
+        { "id": "evacuate_layer", "label": "Evacuate the Layer", "consequence": "-8 health all",
+          "effects": [{ "type": "stat", "stat": "health", "delta": -8, "scope": "all" }] },
+        { "id": "accept_fate", "label": "Accept Fate", "consequence": "1 entity dies, -20 planet HP",
+          "effects": [
+            { "type": "kill", "count": 1, "scope": "random_one", "cause": "meteorite" },
+            { "type": "planet_hp", "delta": -20 }
+          ] }
+      ],
+      "default_effects": [
+        { "type": "kill", "count": 2, "scope": "weakest", "cause": "meteorite" },
+        { "type": "planet_hp", "delta": -30 }
       ]
     },
     {
@@ -283,9 +527,19 @@
       "trigger": "era>=2",
       "warning_hours": 6,
       "choices": [
-        { "id": "go_underground", "label": "Go Underground", "consequence": "-10 health all — survive, tech disrupted 1 cycle" },
-        { "id": "harvest_energy", "label": "Harvest the Energy", "consequence": "+50 divine energy — 30% chance one entity dies from radiation" },
-        { "id": "build_shielding", "label": "Build Shielding", "consequence": "Costs 40 construction — full protection, no health loss" }
+        { "id": "go_underground", "label": "Go Underground", "consequence": "-10 health all",
+          "effects": [{ "type": "stat", "stat": "health", "delta": -10, "scope": "all" }] },
+        { "id": "harvest_energy", "label": "Harvest the Energy", "consequence": "+40 divine energy, -15 health weakest",
+          "effects": [
+            { "type": "divine_energy", "delta": 40 },
+            { "type": "stat", "stat": "health", "delta": -15, "scope": "weakest" }
+          ] },
+        { "id": "build_shielding", "label": "Build Shielding", "consequence": "-25 construction all",
+          "effects": [{ "type": "stat", "stat": "construction", "delta": -25, "scope": "all" }] }
+      ],
+      "default_effects": [
+        { "type": "stat", "stat": "health", "delta": -18, "scope": "all" },
+        { "type": "planet_hp", "delta": -15 }
       ]
     },
     {
@@ -297,9 +551,23 @@
       "layers_hit": 2,
       "hit_side": "left",
       "choices": [
-        { "id": "evacuate_coast", "label": "Evacuate Affected Layers", "consequence": "Entities survive — two layers lose all structures" },
-        { "id": "build_barriers", "label": "Build Barriers", "consequence": "Costs 45 construction — half damage absorbed, some health loss" },
-        { "id": "anchor_down", "label": "Anchor Down", "consequence": "-20 health all — no structural loss" }
+        { "id": "evacuate_coast", "label": "Evacuate Affected Layers", "consequence": "-5 health all, -10 planet HP",
+          "effects": [
+            { "type": "stat", "stat": "health", "delta": -5, "scope": "all" },
+            { "type": "planet_hp", "delta": -10 }
+          ] },
+        { "id": "build_barriers", "label": "Build Barriers", "consequence": "-30 construction all, -5 health all",
+          "effects": [
+            { "type": "stat", "stat": "construction", "delta": -30, "scope": "all" },
+            { "type": "stat", "stat": "health", "delta": -5, "scope": "all" }
+          ] },
+        { "id": "anchor_down", "label": "Anchor Down", "consequence": "-15 health all",
+          "effects": [{ "type": "stat", "stat": "health", "delta": -15, "scope": "all" }] }
+      ],
+      "default_effects": [
+        { "type": "stat", "stat": "health", "delta": -20, "scope": "all" },
+        { "type": "planet_hp", "delta": -25 },
+        { "type": "kill", "count": 1, "scope": "weakest", "cause": "tide" }
       ]
     },
     {
@@ -308,9 +576,22 @@
       "description": "A large portion of your population wants to leave. They have lost faith in the civilization's future and are preparing to go.",
       "trigger": "cohesion<20",
       "choices": [
-        { "id": "stop_them", "label": "Stop the Exodus", "consequence": "Costs 50 divine energy — they stay, deeply resentful, cohesion -10" },
-        { "id": "let_them_go", "label": "Let Them Go", "consequence": "Lose 1-2 entities — remaining ones gain cohesion +20 from relief" },
-        { "id": "offer_hope", "label": "Offer Them Hope", "consequence": "+25 cohesion — you must deliver on the promise or they leave next cycle" }
+        { "id": "stop_them", "label": "Stop the Exodus", "consequence": "-50 divine energy, -8 cohesion",
+          "effects": [
+            { "type": "divine_energy", "delta": -50 },
+            { "type": "cohesion", "delta": -8 }
+          ] },
+        { "id": "let_them_go", "label": "Let Them Go", "consequence": "1 entity leaves, +18 cohesion",
+          "effects": [
+            { "type": "kill", "count": 1, "scope": "weakest", "cause": "exodus" },
+            { "type": "cohesion", "delta": 18 }
+          ] },
+        { "id": "offer_hope", "label": "Offer Them Hope", "consequence": "+20 cohesion",
+          "effects": [{ "type": "cohesion", "delta": 20 }] }
+      ],
+      "default_effects": [
+        { "type": "kill", "count": 2, "scope": "weakest", "cause": "exodus" },
+        { "type": "cohesion", "delta": -10 }
       ]
     },
     {
@@ -322,9 +603,26 @@
       "layers_hit": 3,
       "hit_side": "left",
       "choices": [
-        { "id": "mass_migration", "label": "Mass Migration", "consequence": "All entities move to warmer layers — 3 layers become uninhabitable" },
-        { "id": "stockpile", "label": "Stockpile Resources", "consequence": "+5 food buffer — -20 health all from cold, entities survive" },
-        { "id": "force_adaptation", "label": "Force Adaptation", "consequence": "Costs 60 divine energy — all entities gain cold resistance permanently" }
+        { "id": "mass_migration", "label": "Mass Migration", "consequence": "-10 health all, -15 planet HP",
+          "effects": [
+            { "type": "stat", "stat": "health", "delta": -10, "scope": "all" },
+            { "type": "planet_hp", "delta": -15 }
+          ] },
+        { "id": "stockpile", "label": "Stockpile Resources", "consequence": "-15 health all, +5 cohesion",
+          "effects": [
+            { "type": "stat", "stat": "health", "delta": -15, "scope": "all" },
+            { "type": "cohesion", "delta": 5 }
+          ] },
+        { "id": "force_adaptation", "label": "Force Adaptation", "consequence": "-60 divine energy, +10 health all",
+          "effects": [
+            { "type": "divine_energy", "delta": -60 },
+            { "type": "stat", "stat": "health", "delta": 10, "scope": "all" }
+          ] }
+      ],
+      "default_effects": [
+        { "type": "stat", "stat": "health", "delta": -25, "scope": "all" },
+        { "type": "planet_hp", "delta": -30 },
+        { "type": "kill", "count": 1, "scope": "weakest", "cause": "ice_age" }
       ]
     },
     {
@@ -333,9 +631,22 @@
       "description": "With so few left, no one is in charge. Decisions aren't being made. Resources aren't being allocated. The civilization is drifting.",
       "trigger": "population<3",
       "choices": [
-        { "id": "appoint_strongest", "label": "Appoint the Strongest", "consequence": "Strongest entity leads — attack +15, diplomacy -10" },
-        { "id": "shared_rule", "label": "Shared Rule", "consequence": "Cohesion +20 — decisions are slower, -10% all output" },
-        { "id": "let_chaos", "label": "Let Chaos Reign", "consequence": "Random outcomes each cycle until population grows again" }
+        { "id": "appoint_strongest", "label": "Appoint the Strongest", "consequence": "+15 attack strongest, -8 diplomacy all",
+          "effects": [
+            { "type": "stat", "stat": "attack", "delta": 15, "scope": "strongest" },
+            { "type": "stat", "stat": "diplomacy", "delta": -8, "scope": "all" }
+          ] },
+        { "id": "shared_rule", "label": "Shared Rule", "consequence": "+18 cohesion, -5 harvest all",
+          "effects": [
+            { "type": "cohesion", "delta": 18 },
+            { "type": "stat", "stat": "harvest", "delta": -5, "scope": "all" }
+          ] },
+        { "id": "let_chaos", "label": "Let Chaos Reign", "consequence": "-15 cohesion",
+          "effects": [{ "type": "cohesion", "delta": -15 }] }
+      ],
+      "default_effects": [
+        { "type": "cohesion", "delta": -20 },
+        { "type": "stat", "stat": "energy", "delta": -8, "scope": "all" }
       ]
     },
     {
@@ -344,9 +655,19 @@
       "description": "Someone has stolen the accumulated research of your civilization. All records, all progress — gone. The thief is still inside your settlement.",
       "trigger": "research>80",
       "choices": [
-        { "id": "hunt_thief", "label": "Hunt the Thief", "consequence": "70% success: research recovered. 30%: thief escapes with it." },
-        { "id": "rebuild_knowledge", "label": "Rebuild from Memory", "consequence": "-50% research all — recovered slowly over 5 cycles" },
-        { "id": "accept_loss", "label": "Accept the Loss", "consequence": "Research resets — cohesion +10 from solidarity in adversity" }
+        { "id": "hunt_thief", "label": "Hunt the Thief", "consequence": "-10 research all",
+          "effects": [{ "type": "stat", "stat": "research", "delta": -10, "scope": "all" }] },
+        { "id": "rebuild_knowledge", "label": "Rebuild from Memory", "consequence": "-20 research all",
+          "effects": [{ "type": "stat", "stat": "research", "delta": -20, "scope": "all" }] },
+        { "id": "accept_loss", "label": "Accept the Loss", "consequence": "-30 research all, +12 cohesion",
+          "effects": [
+            { "type": "stat", "stat": "research", "delta": -30, "scope": "all" },
+            { "type": "cohesion", "delta": 12 }
+          ] }
+      ],
+      "default_effects": [
+        { "type": "stat", "stat": "research", "delta": -40, "scope": "all" },
+        { "type": "cohesion", "delta": -10 }
       ]
     }
   ],
@@ -360,9 +681,23 @@
       "warning_hours": 48,
       "layers_hit": 6,
       "choices": [
-        { "id": "escape_trajectory", "label": "Attempt Escape", "consequence": "Costs everything — planet moves, civilization survives with nothing" },
-        { "id": "resist_gravity", "label": "Resist the Pull", "consequence": "Half your entities are lost — survivors gain extraordinary abilities" },
-        { "id": "embrace_void", "label": "Embrace the Void", "consequence": "Triggers prestige — civilization transcends into the black hole" }
+        { "id": "escape_trajectory", "label": "Attempt Escape", "consequence": "-90 divine energy, -20 planet HP",
+          "effects": [
+            { "type": "divine_energy", "delta": -90 },
+            { "type": "planet_hp", "delta": -20 }
+          ] },
+        { "id": "resist_gravity", "label": "Resist the Pull", "consequence": "Half population dies, survivors +20 all stats",
+          "effects": [
+            { "type": "kill", "count": 2, "scope": "weakest", "cause": "black_hole" },
+            { "type": "stat", "stat": "intelligence", "delta": 20, "scope": "all" },
+            { "type": "stat", "stat": "health", "delta": 20, "scope": "all" }
+          ] },
+        { "id": "embrace_void", "label": "Embrace the Void", "consequence": "Triggers prestige",
+          "effects": [{ "type": "planet_hp", "delta": -100 }] }
+      ],
+      "default_effects": [
+        { "type": "kill", "count": 5, "scope": "weakest", "cause": "black_hole" },
+        { "type": "planet_hp", "delta": -50 }
       ]
     },
     {
@@ -371,9 +706,26 @@
       "description": "Your civilization has fractured completely. Armed groups are fighting in the streets. There is no negotiating now — only survival.",
       "trigger": "cohesion<10",
       "choices": [
-        { "id": "back_strongest", "label": "Back the Strongest Side", "consequence": "War ends — losing side's entities die, winner gains full control" },
-        { "id": "divine_ceasefire", "label": "Force a Ceasefire", "consequence": "Costs 80 divine energy — both sides disarmed, cohesion 30" },
-        { "id": "let_it_burn", "label": "Let It Burn", "consequence": "Most entities die — only the strongest survives, starts over alone" }
+        { "id": "back_strongest", "label": "Back the Strongest Side", "consequence": "1 weakest dies, +15 cohesion",
+          "effects": [
+            { "type": "kill", "count": 1, "scope": "weakest", "cause": "civil_war" },
+            { "type": "cohesion", "delta": 15 }
+          ] },
+        { "id": "divine_ceasefire", "label": "Force a Ceasefire", "consequence": "-80 divine energy, +30 cohesion",
+          "effects": [
+            { "type": "divine_energy", "delta": -80 },
+            { "type": "cohesion", "delta": 30 }
+          ] },
+        { "id": "let_it_burn", "label": "Let It Burn", "consequence": "2 die, only strongest remains",
+          "effects": [
+            { "type": "kill", "count": 2, "scope": "weakest", "cause": "civil_war" },
+            { "type": "cohesion", "delta": -30 }
+          ] }
+      ],
+      "default_effects": [
+        { "type": "kill", "count": 3, "scope": "weakest", "cause": "civil_war" },
+        { "type": "cohesion", "delta": -40 },
+        { "type": "planet_hp", "delta": -25 }
       ]
     },
     {
@@ -383,9 +735,23 @@
       "trigger": "population<4",
       "warning_hours": 6,
       "choices": [
-        { "id": "burn_infected", "label": "Burn the Infected", "consequence": "Infected entities die — survivors sealed, 50% survival rate" },
-        { "id": "mutate_all", "label": "Force Mass Mutation", "consequence": "Costs 70 divine energy — all stats randomize, 80% survive with new traits" },
-        { "id": "accept_end", "label": "Accept the End", "consequence": "All entities perish — civilization ends, prestige is triggered" }
+        { "id": "burn_infected", "label": "Burn the Infected", "consequence": "1 weakest dies",
+          "effects": [{ "type": "kill", "count": 1, "scope": "weakest", "cause": "virus" }] },
+        { "id": "mutate_all", "label": "Force Mass Mutation", "consequence": "-70 divine energy, ±10 health all",
+          "effects": [
+            { "type": "divine_energy", "delta": -70 },
+            { "type": "stat", "stat": "health", "delta": -10, "scope": "all" },
+            { "type": "stat", "stat": "intelligence", "delta": 10, "scope": "all" }
+          ] },
+        { "id": "accept_end", "label": "Accept the End", "consequence": "All die — prestige triggered",
+          "effects": [
+            { "type": "kill", "count": 99, "scope": "all", "cause": "virus" },
+            { "type": "planet_hp", "delta": -100 }
+          ] }
+      ],
+      "default_effects": [
+        { "type": "kill", "count": 3, "scope": "weakest", "cause": "virus" },
+        { "type": "stat", "stat": "health", "delta": -30, "scope": "all" }
       ]
     },
     {
@@ -396,9 +762,25 @@
       "warning_hours": 24,
       "layers_hit": 4,
       "choices": [
-        { "id": "build_ark", "label": "Build an Ark", "consequence": "Costs everything — saves all entities, planet destroyed, new start" },
-        { "id": "deep_bunkers", "label": "Build Deep Bunkers", "consequence": "Costs 80 construction — 4 layers destroyed, bunker layers survive" },
-        { "id": "harness_explosion", "label": "Harness the Explosion", "consequence": "+100 divine energy — 40% of entities die from radiation exposure" }
+        { "id": "build_ark", "label": "Build an Ark", "consequence": "-50 construction all, -30 planet HP",
+          "effects": [
+            { "type": "stat", "stat": "construction", "delta": -50, "scope": "all" },
+            { "type": "planet_hp", "delta": -30 }
+          ] },
+        { "id": "deep_bunkers", "label": "Build Deep Bunkers", "consequence": "-60 construction all, -40 planet HP",
+          "effects": [
+            { "type": "stat", "stat": "construction", "delta": -60, "scope": "all" },
+            { "type": "planet_hp", "delta": -40 }
+          ] },
+        { "id": "harness_explosion", "label": "Harness the Explosion", "consequence": "+80 divine energy, 1 dies",
+          "effects": [
+            { "type": "divine_energy", "delta": 80 },
+            { "type": "kill", "count": 1, "scope": "random_one", "cause": "radiation" }
+          ] }
+      ],
+      "default_effects": [
+        { "type": "kill", "count": 3, "scope": "weakest", "cause": "supernova" },
+        { "type": "planet_hp", "delta": -60 }
       ]
     },
     {
@@ -407,9 +789,26 @@
       "description": "Your divine energy has collapsed to zero. The connection to the cosmos is severed. Your people feel utterly alone — and they are right.",
       "trigger": "cohesion>=80",
       "choices": [
-        { "id": "sacrifice", "label": "Make a Great Sacrifice", "consequence": "One entity chosen and sacrificed — divine connection restored, +60 energy" },
-        { "id": "rebuild_faith", "label": "Rebuild Faith Slowly", "consequence": "+5 divine energy per cycle for 10 cycles — slow, but no loss" },
-        { "id": "embrace_atheism", "label": "Embrace Self-Reliance", "consequence": "Divine energy disabled permanently — all stats +15, no more god powers" }
+        { "id": "sacrifice", "label": "Make a Great Sacrifice", "consequence": "1 dies, +60 divine energy",
+          "effects": [
+            { "type": "kill", "count": 1, "scope": "weakest", "cause": "sacrifice" },
+            { "type": "divine_energy", "delta": 60 }
+          ] },
+        { "id": "rebuild_faith", "label": "Rebuild Faith Slowly", "consequence": "+15 divine energy, +5 cohesion",
+          "effects": [
+            { "type": "divine_energy", "delta": 15 },
+            { "type": "cohesion", "delta": 5 }
+          ] },
+        { "id": "embrace_atheism", "label": "Embrace Self-Reliance", "consequence": "+10 all stats",
+          "effects": [
+            { "type": "stat", "stat": "intelligence", "delta": 10, "scope": "all" },
+            { "type": "stat", "stat": "construction", "delta": 10, "scope": "all" },
+            { "type": "stat", "stat": "harvest", "delta": 10, "scope": "all" }
+          ] }
+      ],
+      "default_effects": [
+        { "type": "divine_energy", "delta": -50 },
+        { "type": "cohesion", "delta": -25 }
       ]
     }
   ]

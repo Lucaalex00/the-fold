@@ -22,6 +22,7 @@ config/icon="res://icon.svg"
 GameState="*res://scripts/core/GameState.gd"
 TimeManager="*res://scripts/core/TimeManager.gd"
 EventManager="*res://scripts/core/EventManager.gd"
+ConsequenceSystem="*res://scripts/core/ConsequenceSystem.gd"
 SaveManager="*res://scripts/core/SaveManager.gd"
 L="*res://scripts/core/LocalizationManager.gd"
 DivinePowersSystem="*res://scripts/core/DivinePowersSystem.gd"
@@ -31,6 +32,7 @@ GeneticSystem="*res://scripts/entities/GeneticSystem.gd"
 CultureSystem="*res://scripts/planet/CultureSystem.gd"
 ResourceSystem="*res://scripts/planet/ResourceSystem.gd"
 PrestigeSystem="*res://scripts/prestige/PrestigeSystem.gd"
+AlertSystem="*res://scripts/ui/AlertSystem.gd"
 
 [display]
 
