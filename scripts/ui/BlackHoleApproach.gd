@@ -5,24 +5,37 @@ signal enter_pressed
 const SPRITE_PATH = "res://assets/planets/events/black_hole_01.png"
 const SCREEN_W: float = 390.0
 const SCREEN_H: float = 844.0
-const TARGET_FILL_SIZE: float = 760.0  # ~90% of viewport height
-const MIN_FILL_SIZE: float = 80.0      # starts at ~10% of viewport width when first visible
-const ENTER_BTN_FONT_SIZE: int = 56
-const FADE_BLOCK_THRESHOLD: float = 0.70
+const MIN_FRAME_DISPLAY: float = 80.0   # px of single-frame at first appearance
+const MAX_FRAME_DISPLAY: float = 1100.0  # at distance 0 → covers full viewport (>844 tall)
+const MAX_DIM_ALPHA: float = 0.92         # darkness at distance 0
+const FRAME_TOTAL: int = 16
+const FRAME_TICK_MS: int = 90
+const ENTER_BTN_FONT_SIZE: int = 60
 
+var _dim_bg: ColorRect = null
 var _sprite: Sprite2D = null
 var _enter_button: Button = null
-var _ui_dim_overlay: ColorRect = null
-var _shown_enter_button: bool = false
 var _min_scale: float = 0.05
+var _max_scale: float = 1.0
+var _shown_enter_button: bool = false
 
 
 func _ready() -> void:
-	layer = -5
+	# Layer 67: above planets/HUD (60) and modifier bars/chips (65), below event panel (70)
+	layer = 67
+	_build_dim_bg()
 	_build_sprite()
 	_build_enter_button()
-	_build_ui_dim()
 	visible = false
+
+
+func _build_dim_bg() -> void:
+	# Full-screen black overlay that progressively darkens the entire world
+	_dim_bg = ColorRect.new()
+	_dim_bg.color = Color(0.0, 0.0, 0.0, 0.0)
+	_dim_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_dim_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_dim_bg)
 
 
 func _build_sprite() -> void:
@@ -32,14 +45,14 @@ func _build_sprite() -> void:
 		return
 	_sprite = Sprite2D.new()
 	_sprite.texture = tex
-	_sprite.hframes = 16
+	_sprite.hframes = FRAME_TOTAL
 	_sprite.vframes = 1
 	_sprite.frame = 0
 	_sprite.centered = true
 	_sprite.position = Vector2(SCREEN_W * 0.5, SCREEN_H * 0.5)
-	# Compute scale based on a single frame width, not the whole strip
-	var frame_w: float = float(tex.get_width()) / 16.0
-	_min_scale = MIN_FILL_SIZE / frame_w
+	var frame_w: float = float(tex.get_width()) / float(FRAME_TOTAL)
+	_min_scale = MIN_FRAME_DISPLAY / frame_w
+	_max_scale = MAX_FRAME_DISPLAY / frame_w
 	_sprite.scale = Vector2(_min_scale, _min_scale)
 	add_child(_sprite)
 
@@ -48,12 +61,12 @@ func _build_enter_button() -> void:
 	_enter_button = Button.new()
 	_enter_button.text = "..."
 	_enter_button.add_theme_font_size_override("font_size", ENTER_BTN_FONT_SIZE)
-	_enter_button.add_theme_color_override("font_color", Color(0.85, 0.7, 1.0))
+	_enter_button.add_theme_color_override("font_color", Color(0.95, 0.85, 1.0))
 	_enter_button.modulate.a = 0.0
-	_enter_button.size = Vector2(120, 120)
+	_enter_button.size = Vector2(150, 150)
 	_enter_button.position = Vector2(
-		(SCREEN_W - 120.0) * 0.5,
-		(SCREEN_H - 120.0) * 0.5
+		(SCREEN_W - 150.0) * 0.5,
+		(SCREEN_H - 150.0) * 0.5
 	)
 	var style := StyleBoxEmpty.new()
 	_enter_button.add_theme_stylebox_override("normal", style)
@@ -65,55 +78,72 @@ func _build_enter_button() -> void:
 	add_child(_enter_button)
 
 
-func _build_ui_dim() -> void:
-	# When BH is near-full, this overlay darkens the rest of the world's UI
-	_ui_dim_overlay = ColorRect.new()
-	_ui_dim_overlay.color = Color(0.0, 0.0, 0.0, 0.0)
-	_ui_dim_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_ui_dim_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_ui_dim_overlay)
-
-
 func _process(_delta: float) -> void:
 	if not GameState.is_blackhole_visible():
 		if visible:
 			visible = false
+			_reset_button_state()
 		return
 	if not visible:
 		visible = true
 
 	var ratio: float = GameState.get_blackhole_proximity_ratio()  # 0..1
+	# Growth curve: pow(ratio, 0.45) grows fast at first appearance, plateaus near max
+	var growth: float = pow(ratio, 0.45)
+
+	# BH sprite scale
 	if _sprite:
-		# Curve: pow(ratio, 0.55) grows fast early then plateaus
-		var growth: float = pow(ratio, 0.55)
-		var frame_w: float = float(_sprite.texture.get_width()) / float(maxi(_sprite.hframes, 1))
-		var target_scale: float = TARGET_FILL_SIZE / frame_w
-		var current_scale: float = lerp(_min_scale, target_scale, growth)
+		var current_scale: float = lerp(_min_scale, _max_scale, growth)
 		_sprite.scale = Vector2(current_scale, current_scale)
-		# Animate frame slowly for "rotating" effect
-		var t: int = (Time.get_ticks_msec() / 100) % 16
+		var t: int = (Time.get_ticks_msec() / FRAME_TICK_MS) % FRAME_TOTAL
 		_sprite.frame = t
 
-	# When near-full, dim background UI and show enter button
-	if ratio >= FADE_BLOCK_THRESHOLD:
-		var dim_alpha: float = (ratio - FADE_BLOCK_THRESHOLD) / (1.0 - FADE_BLOCK_THRESHOLD)
-		_ui_dim_overlay.color.a = dim_alpha * 0.7
-	else:
-		_ui_dim_overlay.color.a = 0.0
+	# Background dim — grows with ratio (linear feels fine here)
+	if _dim_bg:
+		_dim_bg.color.a = MAX_DIM_ALPHA * ratio
 
-	# Show "..." button only when fully reached
-	if GameState.is_blackhole_reached() and not _shown_enter_button:
+	# "..." button only at distance 0 (exact full proximity)
+	var reached: bool = GameState.is_blackhole_reached()
+	if reached and not _shown_enter_button:
 		_shown_enter_button = true
 		_enter_button.visible = true
+		_enter_button.disabled = false
 		var tw := create_tween()
-		tw.tween_property(_enter_button, "modulate:a", 1.0, 1.2)
+		tw.tween_property(_enter_button, "modulate:a", 1.0, 1.0)
+	elif not reached and _shown_enter_button:
+		_reset_button_state()
+
+
+func _reset_button_state() -> void:
+	_shown_enter_button = false
+	if _enter_button:
+		_enter_button.visible = false
+		_enter_button.modulate.a = 0.0
+		_enter_button.disabled = false
 
 
 func _on_enter_pressed() -> void:
-	enter_pressed.emit()
-	# Fade out so the prestige screen can take over cleanly
-	var tw := create_tween()
-	tw.tween_property(_sprite, "modulate:a", 0.0, 0.6)
-	tw.parallel().tween_property(_enter_button, "modulate:a", 0.0, 0.4)
-	tw.tween_callback(func(): visible = false)
+	_enter_button.disabled = true
 	_shown_enter_button = false
+
+	# Dramatic "devour" sequence — BH expands huge, everything goes pitch black
+	var devour_target_scale: float = _max_scale * 2.4
+	var devour := create_tween()
+	# Hide the "..." quickly
+	devour.tween_property(_enter_button, "modulate:a", 0.0, 0.25)
+	# BH grows past the screen edge (like it's about to swallow the camera)
+	devour.parallel().tween_property(_sprite, "scale", Vector2(devour_target_scale, devour_target_scale), 1.4).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	devour.parallel().tween_property(_dim_bg, "color:a", 1.0, 1.2)
+	# Hold the full-black moment briefly so the player feels swallowed
+	devour.tween_interval(0.4)
+	# Now hand off to the prestige sequence
+	devour.tween_callback(_finish_devour)
+
+
+func _finish_devour() -> void:
+	enter_pressed.emit()
+	# Fade BH sprite and dim out so prestige can render on top
+	var fade := create_tween()
+	fade.tween_property(_sprite, "modulate:a", 0.0, 0.6)
+	fade.parallel().tween_property(_dim_bg, "color:a", 0.0, 0.6)
+	fade.tween_callback(func(): visible = false)
