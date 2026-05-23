@@ -13,6 +13,22 @@ var _notification_timer: float = 0.0
 const NOTIFICATION_DURATION = 3.0
 
 
+func _ready() -> void:
+	GameState.entity_died.connect(_on_entity_change)
+	GameState.entities_purged.connect(_on_entity_change)
+	GameState.era_changed.connect(_on_era_change)
+	SpawnSystem.spawned.connect(_on_entity_change)
+
+
+func _on_entity_change(_unused = null) -> void:
+	_update_population()
+
+
+func _on_era_change(_era: int) -> void:
+	_update_era()
+	_update_population()
+
+
 func _process(delta: float) -> void:
 	_update_distance()
 	_update_divine_energy()

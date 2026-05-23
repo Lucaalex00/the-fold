@@ -26,6 +26,8 @@ func get_all_trait_names() -> Array:
 	return _traits.keys()
 
 
+const MIN_HEALTH: int = 5
+
 # Returns base stats for a trait with ±20% random variation
 func get_base_stats(trait_name: String) -> Dictionary:
 	var trait_data = get_trait(trait_name)
@@ -42,6 +44,10 @@ func get_base_stats(trait_name: String) -> Dictionary:
 		# ±20% variation to make each entity unique
 		var variation = randf_range(-0.2, 0.2)
 		result[stat] = maxi(1, roundi(val * (1.0 + variation)))
+
+	# Guarantee a baseline of health so fresh entities don't die instantly
+	if result["health"] < MIN_HEALTH:
+		result["health"] = MIN_HEALTH
 
 	return result
 

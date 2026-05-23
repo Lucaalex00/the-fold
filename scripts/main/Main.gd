@@ -41,47 +41,49 @@ func _input(event: InputEvent) -> void:
 	if not k.pressed or k.echo:
 		return
 	match k.keycode:
-		KEY_1:
+		KEY_1, KEY_F1:
 			print("[DEBUG] Forcing collapse")
 			for e in GameState.entities:
 				if e.is_alive:
 					GameState.register_entity_death(e, "debug")
 			GameState.planet_base_hp = 0.0
 			GameState.emit_signal("planet_collapsed")
-		KEY_2:
+		KEY_2, KEY_F2:
 			print("[DEBUG] Distance -> 50000 (BH visible)")
 			GameState.distance_from_center = 50_000.0
-		KEY_3:
+		KEY_3, KEY_F3:
 			print("[DEBUG] Distance -> 0 (BH reached)")
 			GameState.distance_from_center = 0.0
-		KEY_4:
+		KEY_4, KEY_F4:
 			print("[DEBUG] Activate walking_dead (72h)")
 			WorldModifierSystem.activate("walking_dead", 72.0)
-		KEY_5:
+		KEY_5, KEY_F5:
 			print("[DEBUG] Activate poison_rain (48h)")
 			WorldModifierSystem.activate("poison_rain", 48.0)
-		KEY_6:
+		KEY_6, KEY_F6:
 			print("[DEBUG] Spawn child")
 			SpawnSystem.spawn("child")
-		KEY_7:
+		KEY_7, KEY_F7:
 			print("[DEBUG] Spawn founder")
 			SpawnSystem.spawn("founder")
 		KEY_8:
+			# Avoid F8 (Godot stops the project)
 			print("[DEBUG] +100 divine energy")
 			GameState.modify_divine_energy(100.0)
-		KEY_9:
+		KEY_9, KEY_F9:
 			print("[DEBUG] Damage random entity -20 health")
 			var living = GameState.get_living_entities()
 			if not living.is_empty():
 				var t = living[randi() % living.size()]
 				t.stats["health"] = maxi(int(t.stats.get("health", 0)) - 20, 0)
-		KEY_0:
+		KEY_0, KEY_F10:
 			print("[DEBUG] Force daily reset")
 			TimeManager._perform_daily_reset()
 		KEY_Q:
+			# Avoid F11 (fullscreen toggle)
 			print("[DEBUG] Generate social events")
 			EventManager.generate_social_events()
-		KEY_W:
+		KEY_W, KEY_F12:
 			print("[DEBUG] Generate cosmic event")
 			EventManager._maybe_generate_cosmic_event()
 		KEY_E:

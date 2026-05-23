@@ -110,6 +110,7 @@ func _ready() -> void:
 func _update_divine_energy_max_for_era() -> void:
 	divine_energy_max = DIVINE_ENERGY_BASE_MAX + float(current_era - 1) * DIVINE_ENERGY_ERA_INCREMENT
 	divine_energy = minf(divine_energy, divine_energy_max)
+	divine_energy_changed.emit(divine_energy, divine_energy_max)
 
 
 func modify_divine_energy(delta: float) -> void:
@@ -273,6 +274,7 @@ func reset_run() -> void:
 	current_day = 0
 	_update_divine_energy_max_for_era()
 	divine_energy = divine_energy_max * 0.5  # Start at half max
+	divine_energy_changed.emit(divine_energy, divine_energy_max)
 	distance_from_center = 1_000_000.0
 	entities.clear()
 	planet_base_hp = PLANET_BASE_HP_MAX
