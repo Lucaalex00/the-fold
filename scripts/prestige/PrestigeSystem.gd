@@ -180,4 +180,5 @@ func complete_prestige_reset() -> void:
 	EventManager.active_cosmic_event = null
 	WorldModifierSystem.reset()
 	current_mode = Mode.NORMAL
+	last_blackhole_multiplier = 1.0
 	SaveManager.save_game()

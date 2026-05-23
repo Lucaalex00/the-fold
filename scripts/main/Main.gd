@@ -241,12 +241,16 @@ func _start_new_game(random_rebirth: bool = false) -> void:
 	var planet = universe.get_player_planet()
 	if planet:
 		planet.entity_ids.clear()
+		# On rebirth, randomize the planet sprite so the new world looks different
+		if random_rebirth:
+			planet.sprite_index = randi() % PLAYER_PLANET_COUNT
 		planet.initialize_founders(random_rebirth)
 		_apply_prestige_bonuses_to_founders()
 		_setup_planet_widget(planet)
 		planet_widget.refresh_entities()
 	CultureSystem.update_cohesion()
 	ResourceSystem.daily_reset()
+	hud.refresh()
 	SaveManager.save_game()
 
 

@@ -6,14 +6,15 @@ const SPRITE_PATH = "res://assets/planets/events/black_hole_01.png"
 const SCREEN_W: float = 390.0
 const SCREEN_H: float = 844.0
 const TARGET_FILL_SIZE: float = 760.0  # ~90% of viewport height
-const MIN_SCALE: float = 0.05
+const MIN_FILL_SIZE: float = 80.0      # starts at ~10% of viewport width when first visible
 const ENTER_BTN_FONT_SIZE: int = 56
-const FADE_BLOCK_THRESHOLD: float = 0.85
+const FADE_BLOCK_THRESHOLD: float = 0.70
 
 var _sprite: Sprite2D = null
 var _enter_button: Button = null
 var _ui_dim_overlay: ColorRect = null
 var _shown_enter_button: bool = false
+var _min_scale: float = 0.05
 
 
 func _ready() -> void:
@@ -33,7 +34,9 @@ func _build_sprite() -> void:
 	_sprite.texture = tex
 	_sprite.centered = true
 	_sprite.position = Vector2(SCREEN_W * 0.5, SCREEN_H * 0.5)
-	_sprite.scale = Vector2(MIN_SCALE, MIN_SCALE)
+	var tex_w: float = float(tex.get_width())
+	_min_scale = MIN_FILL_SIZE / tex_w
+	_sprite.scale = Vector2(_min_scale, _min_scale)
 	add_child(_sprite)
 
 
@@ -77,10 +80,11 @@ func _process(_delta: float) -> void:
 
 	var ratio: float = GameState.get_blackhole_proximity_ratio()  # 0..1
 	if _sprite:
-		# Scale interpolates from MIN_SCALE to TARGET_FILL_SIZE / texture_width
+		# Curve: pow(ratio, 0.55) grows fast early then plateaus — more visible at every "magnitude step"
+		var growth: float = pow(ratio, 0.55)
 		var tex_w: float = float(_sprite.texture.get_width())
 		var target_scale: float = TARGET_FILL_SIZE / tex_w
-		var current_scale: float = lerp(MIN_SCALE, target_scale, ratio)
+		var current_scale: float = lerp(_min_scale, target_scale, growth)
 		_sprite.scale = Vector2(current_scale, current_scale)
 
 	# When near-full, dim background UI and show enter button

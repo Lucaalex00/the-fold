@@ -25,24 +25,39 @@ mouse_filter = 1
 
 [node name="VBox" type="VBoxContainer" parent="."]
 anchors_preset = 8
-anchor_left = 0.08
-anchor_top = 0.3
-anchor_right = 0.92
-anchor_bottom = 0.7
+anchor_left = 0.06
+anchor_top = 0.12
+anchor_right = 0.94
+anchor_bottom = 0.92
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 36
+theme_override_constants/separation = 22
 alignment = 1
 
 [node name="GodMessageLabel" type="Label" parent="VBox"]
 text = ""
 horizontal_alignment = 1
 autowrap_mode = 3
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 20
+modulate = Color(1, 1, 1, 0)
+
+[node name="StatsLabel" type="Label" parent="VBox"]
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 13
+modulate = Color(0.85, 0.85, 0.85, 0)
+
+[node name="BonusesLabel" type="Label" parent="VBox"]
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.55, 0.95, 0.65, 1)
 modulate = Color(1, 1, 1, 0)
 
 [node name="ContinueButton" type="Button" parent="VBox"]
 text = "REBORN"
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 22
 modulate = Color(1, 1, 1, 0)
