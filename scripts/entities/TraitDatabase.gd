@@ -26,7 +26,7 @@ func get_all_trait_names() -> Array:
 	return _traits.keys()
 
 
-const MIN_HEALTH: int = 5
+const STARTING_HEALTH: int = 15
 
 # Returns base stats for a trait with ±20% random variation
 func get_base_stats(trait_name: String) -> Dictionary:
@@ -40,14 +40,16 @@ func get_base_stats(trait_name: String) -> Dictionary:
 	}
 
 	for stat in base.keys():
+		if stat == "health":
+			# Health is deterministic — every new entity starts at full vitality
+			continue
 		var val: int = base[stat]
-		# ±20% variation to make each entity unique
+		# ±20% variation only on non-health stats (keeps each entity unique)
 		var variation = randf_range(-0.2, 0.2)
 		result[stat] = maxi(1, roundi(val * (1.0 + variation)))
 
-	# Guarantee a baseline of health so fresh entities don't die instantly
-	if result["health"] < MIN_HEALTH:
-		result["health"] = MIN_HEALTH
+	# Health is fixed at STARTING_HEALTH for every new entity — clean reset on rebirth
+	result["health"] = STARTING_HEALTH
 
 	return result
 

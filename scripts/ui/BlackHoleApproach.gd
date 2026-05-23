@@ -32,10 +32,14 @@ func _build_sprite() -> void:
 		return
 	_sprite = Sprite2D.new()
 	_sprite.texture = tex
+	_sprite.hframes = 16
+	_sprite.vframes = 1
+	_sprite.frame = 0
 	_sprite.centered = true
 	_sprite.position = Vector2(SCREEN_W * 0.5, SCREEN_H * 0.5)
-	var tex_w: float = float(tex.get_width())
-	_min_scale = MIN_FILL_SIZE / tex_w
+	# Compute scale based on a single frame width, not the whole strip
+	var frame_w: float = float(tex.get_width()) / 16.0
+	_min_scale = MIN_FILL_SIZE / frame_w
 	_sprite.scale = Vector2(_min_scale, _min_scale)
 	add_child(_sprite)
 
@@ -80,12 +84,15 @@ func _process(_delta: float) -> void:
 
 	var ratio: float = GameState.get_blackhole_proximity_ratio()  # 0..1
 	if _sprite:
-		# Curve: pow(ratio, 0.55) grows fast early then plateaus — more visible at every "magnitude step"
+		# Curve: pow(ratio, 0.55) grows fast early then plateaus
 		var growth: float = pow(ratio, 0.55)
-		var tex_w: float = float(_sprite.texture.get_width())
-		var target_scale: float = TARGET_FILL_SIZE / tex_w
+		var frame_w: float = float(_sprite.texture.get_width()) / float(maxi(_sprite.hframes, 1))
+		var target_scale: float = TARGET_FILL_SIZE / frame_w
 		var current_scale: float = lerp(_min_scale, target_scale, growth)
 		_sprite.scale = Vector2(current_scale, current_scale)
+		# Animate frame slowly for "rotating" effect
+		var t: int = (Time.get_ticks_msec() / 100) % 16
+		_sprite.frame = t
 
 	# When near-full, dim background UI and show enter button
 	if ratio >= FADE_BLOCK_THRESHOLD:
