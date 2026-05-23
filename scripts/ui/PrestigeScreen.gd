@@ -68,7 +68,10 @@ func _show_continue() -> void:
 
 
 func _on_sequence_finished() -> void:
-	pass  # Main.gd handles the rest after continue is pressed
+	# Ensure continue button appears even if no bonus_2 was assigned (no chain to _show_continue)
+	await get_tree().create_timer(2.0).timeout
+	if not continue_button.visible:
+		_show_continue()
 
 
 func _on_continue() -> void:

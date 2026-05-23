@@ -4,11 +4,16 @@ signal prestige_sequence_started
 signal prestige_sequence_finished
 signal god_message_ready(message: String)
 signal bonus_assigned(bonus_name: String, bonus_key: String)
+signal blackhole_bonus_applied(multiplier: float)
+
+enum Mode { NORMAL, COLLAPSE, BLACKHOLE }
 
 # Bonus slot cap: 3 from prestige 3 onward
 const MAX_BONUS_SLOTS = 3
 
 var active_bonuses: Array = []   # Array of bonus keys (persistent across runs)
+var current_mode: int = Mode.NORMAL
+var last_blackhole_multiplier: float = 1.0
 var _pending_bonus_2_key: String = ""
 
 
@@ -16,16 +21,40 @@ func can_trigger_prestige() -> bool:
 	return GameState.current_era >= 5 and GameState.distance_from_center <= 0.0
 
 
-func enter_black_hole() -> void:
+func trigger_collapse_prestige() -> void:
+	current_mode = Mode.COLLAPSE
 	emit_signal("prestige_sequence_started")
+
+
+func trigger_blackhole_ending() -> void:
+	current_mode = Mode.BLACKHOLE
+	emit_signal("prestige_sequence_started")
+
+
+func enter_black_hole() -> void:
+	# Called by PrestigeScreen after fade-in completes
 	var metrics = _analyze_run_metrics()
 	var god_msg = _get_god_message()
 	emit_signal("god_message_ready", god_msg)
 	_assign_prestige_bonuses(metrics)
+	if current_mode == Mode.BLACKHOLE:
+		_apply_blackhole_bonus(metrics)
 	_save_run_to_memory_book(metrics)
 	GameState.prestige_count += 1
 	GameState.apply_prestige_multiplier()
 	emit_signal("prestige_sequence_finished")
+
+
+func _apply_blackhole_bonus(metrics: Dictionary) -> void:
+	var mult: float = 2.0
+	mult += float(metrics.get("oldest_entity_age", 0)) / 30.0 * 0.5
+	mult += float(metrics.get("conflicts_won", 0)) * 0.05
+	mult += float(metrics.get("avg_cohesion", 0.0)) / 100.0
+	mult += float(metrics.get("planets_visited", 0)) * 0.2
+	mult += float(metrics.get("prestige_count", 0)) * 0.3
+	last_blackhole_multiplier = mult
+	GameState.prestige_resource_multiplier *= mult
+	emit_signal("blackhole_bonus_applied", mult)
 
 
 func _analyze_run_metrics() -> Dictionary:
@@ -40,6 +69,10 @@ func _analyze_run_metrics() -> Dictionary:
 
 
 func _get_god_message() -> String:
+	if current_mode == Mode.COLLAPSE:
+		return L.t("PRESTIGE_MSG_COLLAPSE")
+	if current_mode == Mode.BLACKHOLE:
+		return L.t("PRESTIGE_MSG_BLACKHOLE")
 	var p = GameState.prestige_count + 1  # count after this prestige
 	match p:
 		1: return L.t("PRESTIGE_MSG_1")
@@ -142,4 +175,9 @@ func _save_run_to_memory_book(metrics: Dictionary) -> void:
 
 func complete_prestige_reset() -> void:
 	GameState.reset_run()
+	# Clear any active events and world modifiers so they don't carry over
+	EventManager.active_social_events.clear()
+	EventManager.active_cosmic_event = null
+	WorldModifierSystem.reset()
+	current_mode = Mode.NORMAL
 	SaveManager.save_game()

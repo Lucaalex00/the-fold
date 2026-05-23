@@ -37,11 +37,19 @@ func _check_daily_reset() -> void:
 func _perform_daily_reset() -> void:
 	GameState.current_day += 1
 	advance_game_year()
+	WorldModifierSystem.process_daily_effects()
 	_check_entity_deaths()
 	GameState.regen_planet_hp(randf_range(1.0, 2.0))
-	GameState.purge_dead_entities()
+	_apply_cohesion_divine_gift()
+	if not WorldModifierSystem.is_active("walking_dead"):
+		GameState.purge_dead_entities()
 	EventManager.generate_daily_events()
 	SaveManager.save_game()
+
+
+func _apply_cohesion_divine_gift() -> void:
+	if CultureSystem.cohesion >= GameState.DAILY_COHESION_GIFT_THRESHOLD:
+		GameState.modify_divine_energy(GameState.DAILY_COHESION_GIFT_AMOUNT)
 
 
 func _check_entity_deaths() -> void:

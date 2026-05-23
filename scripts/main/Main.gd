@@ -15,6 +15,12 @@ var _bg_files: Array[String] = []
 var _current_bg: Sprite2D = null
 var _current_bg_index: int = -1
 var _timer_chips: CanvasLayer = null
+var _divine_chip: CanvasLayer = null
+var _spawn_modal: CanvasLayer = null
+var _pending_spawn_entity: GameState.EntityData = null
+var _blackhole_approach: CanvasLayer = null
+var _modifier_bars: CanvasLayer = null
+var _modifier_modal: CanvasLayer = null
 
 
 func _ready() -> void:
@@ -29,6 +35,35 @@ func _setup_timer_chips() -> void:
 	_timer_chips = CanvasLayer.new()
 	_timer_chips.set_script(script)
 	add_child(_timer_chips)
+
+	var de_script = load("res://scripts/ui/DivineEnergyChip.gd")
+	_divine_chip = CanvasLayer.new()
+	_divine_chip.set_script(de_script)
+	add_child(_divine_chip)
+
+	var sm_script = load("res://scripts/ui/SpawnReplacementModal.gd")
+	_spawn_modal = CanvasLayer.new()
+	_spawn_modal.set_script(sm_script)
+	add_child(_spawn_modal)
+	_spawn_modal.replace_chosen.connect(_on_spawn_replace_chosen)
+	_spawn_modal.skipped.connect(_on_spawn_skipped)
+
+	var bh_script = load("res://scripts/ui/BlackHoleApproach.gd")
+	_blackhole_approach = CanvasLayer.new()
+	_blackhole_approach.set_script(bh_script)
+	add_child(_blackhole_approach)
+	_blackhole_approach.enter_pressed.connect(_on_blackhole_enter_pressed)
+
+	var bars_script = load("res://scripts/ui/ModifierStatusBars.gd")
+	_modifier_bars = CanvasLayer.new()
+	_modifier_bars.set_script(bars_script)
+	add_child(_modifier_bars)
+	_modifier_bars.bar_clicked.connect(_on_modifier_bar_clicked)
+
+	var modal_script = load("res://scripts/ui/ModifierModal.gd")
+	_modifier_modal = CanvasLayer.new()
+	_modifier_modal.set_script(modal_script)
+	add_child(_modifier_modal)
 
 
 func _setup_background() -> void:
@@ -101,6 +136,10 @@ func _connect_signals() -> void:
 	GameState.era_changed.connect(_on_era_changed)
 	GameState.prestige_triggered.connect(_on_prestige_triggered)
 	GameState.cohesion_changed.connect(_on_cohesion_changed)
+	GameState.planet_collapsed.connect(_on_planet_collapsed)
+	GameState.blackhole_reached.connect(_on_blackhole_reached)
+	SpawnSystem.needs_replacement.connect(_on_spawn_needs_replacement)
+	SpawnSystem.spawned.connect(_on_spawn_completed)
 	PrestigeSystem.prestige_sequence_started.connect(_on_prestige_sequence_started)
 	PrestigeSystem.prestige_sequence_finished.connect(_on_prestige_sequence_finished)
 	PrestigeSystem.god_message_ready.connect(_on_god_message_ready)
@@ -108,6 +147,7 @@ func _connect_signals() -> void:
 	AlertSystem.alert_finished.connect(_on_alert_finished)
 	event_panel.event_resolved.connect(_on_event_resolved)
 	_timer_chips.chip_clicked.connect(_on_chip_clicked)
+	prestige_screen.continue_pressed.connect(_on_prestige_continue)
 
 
 func _init_game() -> void:
@@ -119,6 +159,15 @@ func _init_game() -> void:
 		_load_existing_game()
 
 	hud.refresh()
+
+	# If the save returned in a collapsed state, trigger the auto-prestige flow
+	# BEFORE generating any new events, so the player sees only the collapse screen.
+	if not _is_new_game and GameState.is_collapsed():
+		EventManager.active_social_events.clear()
+		EventManager.active_cosmic_event = null
+		_on_planet_collapsed()
+		return
+
 	EventManager.generate_daily_events()
 
 
@@ -219,6 +268,41 @@ func _on_chip_clicked(event) -> void:
 	event_panel.show_event(event)
 
 
+# --- Spawn flow ---
+
+func _on_spawn_needs_replacement(new_entity: GameState.EntityData, current_entities: Array) -> void:
+	_pending_spawn_entity = new_entity
+	_spawn_modal.show_replacement(new_entity, current_entities)
+
+
+func _on_spawn_replace_chosen(target_id: String) -> void:
+	if _pending_spawn_entity:
+		SpawnSystem.replace_entity(target_id, _pending_spawn_entity)
+		_pending_spawn_entity = null
+
+
+func _on_spawn_skipped() -> void:
+	if _pending_spawn_entity:
+		SpawnSystem.cancel_spawn(_pending_spawn_entity)
+		_pending_spawn_entity = null
+
+
+func _on_spawn_completed(_new_entity: GameState.EntityData) -> void:
+	planet_widget.refresh_entities()
+
+
+# --- Black Hole ending ---
+
+func _on_blackhole_enter_pressed() -> void:
+	_on_blackhole_reached()
+
+
+# --- World Modifier UI ---
+
+func _on_modifier_bar_clicked(modifier_id: String) -> void:
+	_modifier_modal.show_modifier(modifier_id)
+
+
 # --- Signal handlers ---
 
 func _on_entity_died(entity_data) -> void:
@@ -233,16 +317,40 @@ func _on_entities_purged() -> void:
 func _check_population_collapse() -> void:
 	var living = GameState.get_living_entities()
 	if living.size() == 0:
-		# Game over - all entities dead
-		_handle_civilization_end()
-	elif living.size() <= 2:
-		# Warning: near extinction
-		event_panel.show_lifeboat_option()
+		_on_planet_collapsed()
 
 
-func _handle_civilization_end() -> void:
-	# TODO: show game over screen / restart prompt
-	pass
+var _collapse_in_progress: bool = false
+
+
+func _on_planet_collapsed() -> void:
+	if _collapse_in_progress:
+		return
+	_collapse_in_progress = true
+	# Clear pending event flow before starting collapse
+	_event_queue.clear()
+	_processing_event = false
+	event_panel.unlock_input()
+	_clear_all_chips()
+	PrestigeSystem.trigger_collapse_prestige()
+
+
+func _on_blackhole_reached() -> void:
+	if _collapse_in_progress:
+		return
+	_collapse_in_progress = true
+	_event_queue.clear()
+	_processing_event = false
+	event_panel.unlock_input()
+	_clear_all_chips()
+	PrestigeSystem.trigger_blackhole_ending()
+
+
+func _clear_all_chips() -> void:
+	# Remove all chips since events are being wiped
+	if _timer_chips:
+		for id in _timer_chips._chips.keys():
+			_timer_chips.remove_chip(id)
 
 
 func _on_era_changed(new_era: int) -> void:
@@ -271,9 +379,17 @@ func _on_prestige_sequence_started() -> void:
 
 
 func _on_prestige_sequence_finished() -> void:
+	# Triggered after god message + bonus assignment; wait for player continue tap.
+	# Continue is wired below via prestige_screen.continue_pressed
+	pass
+
+
+func _on_prestige_continue() -> void:
 	PrestigeSystem.complete_prestige_reset()
 	hud.visible = true
+	event_panel.visible = false
 	prestige_screen.visible = false
+	_collapse_in_progress = false
 	_start_new_game()
 
 

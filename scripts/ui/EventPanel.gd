@@ -131,13 +131,21 @@ func _add_choice_button(choice, index: int, locked: bool = false, chosen: int = 
 
 	var label_text := ""
 	var consequence_text := ""
+	var divine_cost: float = 0.0
 	if choice is Dictionary:
 		label_text = choice.get("label", "")
 		consequence_text = choice.get("consequence", "")
+		var cost_dict: Dictionary = choice.get("cost", {})
+		divine_cost = float(cost_dict.get("divine_energy", 0.0))
 	else:
 		label_text = str(choice)
 
 	var is_chosen := locked and index == chosen
+	var cannot_afford: bool = divine_cost > 0.0 and not GameState.can_afford_divine_energy(divine_cost)
+
+	if divine_cost > 0.0 and not is_chosen:
+		label_text = "🔮 %d  %s" % [int(divine_cost), label_text]
+
 	if is_chosen:
 		btn.text = "✅ " + label_text
 		btn.add_theme_color_override("font_color", Color(0.4, 0.95, 0.5))
@@ -156,6 +164,10 @@ func _add_choice_button(choice, index: int, locked: bool = false, chosen: int = 
 		btn.add_theme_stylebox_override("hover", style)
 		btn.add_theme_stylebox_override("pressed", style)
 		btn.add_theme_stylebox_override("disabled", style)
+	elif divine_cost > 0.0:
+		btn.text = label_text
+		btn.add_theme_color_override("font_color", Color(0.7, 0.6, 1.0))
+
 	else:
 		btn.text = label_text
 
@@ -163,6 +175,9 @@ func _add_choice_button(choice, index: int, locked: bool = false, chosen: int = 
 		btn.disabled = true
 		if not is_chosen:
 			btn.modulate.a = 0.4
+	elif cannot_afford:
+		btn.disabled = true
+		btn.modulate.a = 0.45
 	else:
 		btn.pressed.connect(_on_choice_pressed.bind(index))
 
@@ -202,11 +217,13 @@ func _on_choice_pressed(index: int) -> void:
 		resolved.urgency == EventManager.EventUrgency.CRITICAL or
 		resolved.urgency == EventManager.EventUrgency.FATAL
 	)
-	if not deferred:
-		EventManager.resolve_event(resolved, index)
+	# Close UI first, then apply effects, then emit. Avoids sprite-rebuild glitch on modal.
 	_current_event = null
 	_panel.visible = false
 	_blocker.color = Color(0.0, 0.0, 0.0, 0.0)
+	await get_tree().process_frame
+	if not deferred:
+		EventManager.resolve_event(resolved, index)
 	event_resolved.emit(resolved)
 
 

@@ -6,6 +6,8 @@ signal entities_purged
 signal era_changed(new_era: int)
 signal prestige_triggered(count: int)
 signal cohesion_changed(new_value: float)
+signal planet_collapsed
+signal blackhole_reached
 
 # Balance constants
 const ERA_ENTITY_LIMIT = {1: 4, 2: 8, 3: 15, 4: 30, 5: 50}
@@ -18,9 +20,14 @@ var prestige_count: int = 0
 var current_day: int = 0
 
 # Divine energy
-var divine_energy: float = 100.0
-var divine_energy_max: float = 100.0
-var divine_energy_regen_per_hour: float = 5.0
+const DIVINE_ENERGY_BASE_MAX: float = 100.0
+const DIVINE_ENERGY_ERA_INCREMENT: float = 50.0
+const DAILY_COHESION_GIFT_THRESHOLD: float = 70.0
+const DAILY_COHESION_GIFT_AMOUNT: float = 10.0
+signal divine_energy_changed(new_value: float, new_max: float)
+
+var divine_energy: float = 50.0
+var divine_energy_max: float = DIVINE_ENERGY_BASE_MAX
 
 # Universe counter
 var distance_from_center: float = 1_000_000.0
@@ -95,19 +102,25 @@ class EntityData:
 
 
 func _ready() -> void:
-	_init_divine_energy_regen()
+	_update_divine_energy_max_for_era()
 
 
-func _init_divine_energy_regen() -> void:
-	var timer = Timer.new()
-	timer.wait_time = 3600.0
-	timer.autostart = true
-	timer.timeout.connect(_on_energy_regen_tick)
-	add_child(timer)
+# --- Divine Energy ---
+
+func _update_divine_energy_max_for_era() -> void:
+	divine_energy_max = DIVINE_ENERGY_BASE_MAX + float(current_era - 1) * DIVINE_ENERGY_ERA_INCREMENT
+	divine_energy = minf(divine_energy, divine_energy_max)
 
 
-func _on_energy_regen_tick() -> void:
-	divine_energy = min(divine_energy + divine_energy_regen_per_hour, divine_energy_max)
+func modify_divine_energy(delta: float) -> void:
+	var new_value: float = clampf(divine_energy + delta, 0.0, divine_energy_max)
+	if not is_equal_approx(new_value, divine_energy):
+		divine_energy = new_value
+		divine_energy_changed.emit(divine_energy, divine_energy_max)
+
+
+func can_afford_divine_energy(amount: float) -> bool:
+	return divine_energy >= amount
 
 
 # --- Planet HP ---
@@ -138,10 +151,43 @@ func purge_dead_entities() -> void:
 
 func damage_planet(amount: float) -> void:
 	planet_base_hp = maxf(planet_base_hp - amount, 0.0)
+	_check_collapse()
 
 
 func regen_planet_hp(amount: float) -> void:
 	planet_base_hp = minf(planet_base_hp + amount, PLANET_BASE_HP_MAX)
+
+
+func is_collapsed() -> bool:
+	return get_planet_hp() <= 0.0 or get_living_entities().is_empty()
+
+
+func _check_collapse() -> void:
+	if is_collapsed():
+		planet_collapsed.emit()
+
+
+# --- Black Hole proximity ---
+
+const BLACKHOLE_VISIBLE_DISTANCE: float = 100_000.0
+const BLACKHOLE_REACHED_DISTANCE: float = 0.0
+
+
+func is_blackhole_visible() -> bool:
+	return distance_from_center <= BLACKHOLE_VISIBLE_DISTANCE
+
+
+func get_blackhole_proximity_ratio() -> float:
+	# 0.0 = just appeared (at VISIBLE_DISTANCE), 1.0 = at the center
+	if distance_from_center >= BLACKHOLE_VISIBLE_DISTANCE:
+		return 0.0
+	if distance_from_center <= BLACKHOLE_REACHED_DISTANCE:
+		return 1.0
+	return 1.0 - (distance_from_center / BLACKHOLE_VISIBLE_DISTANCE)
+
+
+func is_blackhole_reached() -> bool:
+	return distance_from_center <= BLACKHOLE_REACHED_DISTANCE
 
 
 # --- Civilization queries ---
@@ -181,6 +227,7 @@ func advance_step() -> void:
 func _advance_era() -> void:
 	if current_era < 5:
 		current_era += 1
+		_update_divine_energy_max_for_era()
 		emit_signal("era_changed", current_era)
 
 
@@ -193,14 +240,15 @@ func register_entity_death(entity: EntityData, cause: String) -> void:
 	if entity.age_years > oldest_entity_age:
 		oldest_entity_age = entity.age_years
 	emit_signal("entity_died", entity)
+	_check_collapse()
 
 
 # --- Divine energy management ---
 
 func spend_divine_energy(amount: float) -> bool:
-	if divine_energy < amount:
+	if not can_afford_divine_energy(amount):
 		return false
-	divine_energy -= amount
+	modify_divine_energy(-amount)
 	return true
 
 
@@ -223,7 +271,8 @@ func reset_run() -> void:
 	current_era = 1
 	current_step = 1
 	current_day = 0
-	divine_energy = divine_energy_max
+	_update_divine_energy_max_for_era()
+	divine_energy = divine_energy_max * 0.5  # Start at half max
 	distance_from_center = 1_000_000.0
 	entities.clear()
 	planet_base_hp = PLANET_BASE_HP_MAX

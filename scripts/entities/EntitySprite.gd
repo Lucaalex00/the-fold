@@ -128,7 +128,11 @@ func _apply_dead_visual() -> void:
 	if not _sprite:
 		return
 	_sprite.rotation = PI / 2.0
-	_sprite.modulate = Color(0.35, 0.35, 0.35, 0.55)
+	# Zombies (walking_dead active) get a red tint; regular dead bodies are gray
+	if WorldModifierSystem.is_active("walking_dead"):
+		_sprite.modulate = Color(0.75, 0.25, 0.2, 0.75)
+	else:
+		_sprite.modulate = Color(0.35, 0.35, 0.35, 0.55)
 	_is_moving = false
 	_timer = 9999.0
 	if _name_label:

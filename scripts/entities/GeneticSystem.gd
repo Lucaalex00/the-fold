@@ -33,7 +33,6 @@ func generate_child(parent_a: GameState.EntityData, parent_b: GameState.EntityDa
 	# Visual DNA: parent mix with small variation
 	child.dna = _mix_dna(parent_a.dna, parent_b.dna)
 
-	_apply_era_cap(child)
 	return child
 
 

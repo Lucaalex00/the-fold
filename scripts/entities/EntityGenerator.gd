@@ -44,7 +44,6 @@ func _create_founder(trait_name: String, dna: Dictionary, origin_planet: String)
 	entity.origin_planet = origin_planet
 	entity.generation = 1
 	entity.stats = TraitDatabase.get_base_stats(trait_name)
-	_apply_era_cap(entity)
 	return entity
 
 
@@ -62,7 +61,6 @@ func create_entity(trait_name: String, origin_planet: String) -> GameState.Entit
 	entity.origin_planet = origin_planet
 	entity.generation = 1
 	entity.stats = TraitDatabase.get_base_stats(trait_name)
-	_apply_era_cap(entity)
 	return entity
 
 

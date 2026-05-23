@@ -57,6 +57,13 @@ func get_warrior_ratio() -> float:
 	return _get_trait_ratio("warrior", GameState.get_living_entities())
 
 
+func modify_cohesion(delta: float) -> void:
+	var new_value: float = clampf(cohesion + delta, 0.0, 100.0)
+	if not is_equal_approx(new_value, cohesion):
+		cohesion = new_value
+		GameState.emit_signal("cohesion_changed", cohesion)
+
+
 func get_war_penalty() -> float:
 	# Reduces advance speed when there is conflict
 	match get_cohesion_state():

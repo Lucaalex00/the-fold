@@ -3,7 +3,7 @@ extends Node
 func run_tests() -> Array:
 	return [
 		_test_stat_delta_all(),
-		_test_stat_delta_clamps_at_cap(),
+		_test_stat_delta_no_upper_cap(),
 		_test_stat_delta_clamps_at_zero(),
 		_test_stat_delta_random_one(),
 		_test_stat_delta_warriors_only(),
@@ -16,6 +16,8 @@ func run_tests() -> Array:
 		_test_nothing_type(),
 		_test_multiple_effects(),
 		_test_empty_effects(),
+		_test_collapse_effect(),
+		_test_world_modifier_activate_deactivate(),
 	]
 
 
@@ -35,18 +37,24 @@ func _snapshot_state() -> Dictionary:
 	return {
 		"entities": GameState.entities.duplicate(),
 		"divine_energy": GameState.divine_energy,
+		"divine_energy_max": GameState.divine_energy_max,
 		"planet_base_hp": GameState.planet_base_hp,
 		"cohesion": CultureSystem.cohesion,
 		"current_era": GameState.current_era,
+		"entities_lost": GameState.entities_lost,
+		"oldest_entity_age": GameState.oldest_entity_age,
 	}
 
 
 func _restore_state(snap: Dictionary) -> void:
 	GameState.entities = snap["entities"]
 	GameState.divine_energy = snap["divine_energy"]
+	GameState.divine_energy_max = snap["divine_energy_max"]
 	GameState.planet_base_hp = snap["planet_base_hp"]
 	CultureSystem.cohesion = snap["cohesion"]
 	GameState.current_era = snap["current_era"]
+	GameState.entities_lost = snap["entities_lost"]
+	GameState.oldest_entity_age = snap["oldest_entity_age"]
 
 
 # --- Tests ---
@@ -61,14 +69,14 @@ func _test_stat_delta_all() -> Dictionary:
 	return {"name": "stat delta applies to all entities", "passed": ok}
 
 
-func _test_stat_delta_clamps_at_cap() -> Dictionary:
+func _test_stat_delta_no_upper_cap() -> Dictionary:
 	var snap = _snapshot_state()
-	GameState.current_era = 1  # cap = 15
+	GameState.current_era = 1
 	GameState.entities = [_make_entity("builder", {"intelligence": 14})]
 	ConsequenceSystem.apply_effects([{"type": "stat", "stat": "intelligence", "delta": 50, "scope": "all"}])
-	var ok = GameState.entities[0].stats["intelligence"] == 15
+	var ok = GameState.entities[0].stats["intelligence"] == 64
 	_restore_state(snap)
-	return {"name": "stat delta clamps to era cap", "passed": ok}
+	return {"name": "stat delta has no upper cap", "passed": ok}
 
 
 func _test_stat_delta_clamps_at_zero() -> Dictionary:
@@ -228,3 +236,26 @@ func _test_empty_effects() -> Dictionary:
 	var ok = GameState.divine_energy == dh and GameState.entities[0].stats["health"] == 5
 	_restore_state(snap)
 	return {"name": "empty effects array is a no-op", "passed": ok}
+
+
+func _test_collapse_effect() -> Dictionary:
+	var snap = _snapshot_state()
+	GameState.planet_base_hp = 100.0
+	ConsequenceSystem.apply_effects([{"type": "collapse"}])
+	var ok = GameState.planet_base_hp == 0.0
+	_restore_state(snap)
+	return {"name": "collapse effect zeroes planet HP", "passed": ok}
+
+
+func _test_world_modifier_activate_deactivate() -> Dictionary:
+	WorldModifierSystem.reset()
+	ConsequenceSystem.apply_effects([
+		{"type": "world_modifier", "action": "activate", "id": "walking_dead", "duration": 24.0}
+	])
+	var active_after = WorldModifierSystem.is_active("walking_dead")
+	ConsequenceSystem.apply_effects([
+		{"type": "world_modifier", "action": "deactivate", "id": "walking_dead"}
+	])
+	var inactive_after = not WorldModifierSystem.is_active("walking_dead")
+	WorldModifierSystem.reset()
+	return {"name": "world_modifier activate then deactivate", "passed": active_after and inactive_after}

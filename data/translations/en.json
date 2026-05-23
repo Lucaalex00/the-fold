@@ -101,6 +101,10 @@
   "PRESTIGE_MSG_4": "You are starting to see my true shape.",
   "PRESTIGE_MSG_5": "You cannot stop. You never could.",
   "PRESTIGE_MSG_DEFAULT": "The cycle continues.",
+  "PRESTIGE_MSG_COLLAPSE": "Your planet has fallen. But you remain.",
+  "PRESTIGE_MSG_BLACKHOLE": "You came willingly. I am pleased.",
+  "COLLAPSE_INTRO": "The planet has fallen silent...",
+  "BLACKHOLE_INTRO": "You step into the void.",
 
   "PRESTIGE_BONUS_WAR_GOD": "War God",
   "PRESTIGE_BONUS_HARMONY_GOD": "Harmony God",

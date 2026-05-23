@@ -28,6 +28,7 @@ func save_game() -> void:
 		"entities_lost": GameState.entities_lost,
 		"planets_visited": GameState.planets_visited,
 		"oldest_entity_age": GameState.oldest_entity_age,
+		"active_modifiers": WorldModifierSystem.serialize(),
 		"last_save_timestamp": Time.get_unix_time_from_system()
 	}
 	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -70,6 +71,8 @@ func _apply_save_data(data: Dictionary) -> void:
 	GameState.entities.clear()
 	for entity_raw in data.get("entities", []):
 		GameState.entities.append(_deserialize_entity(entity_raw))
+
+	WorldModifierSystem.deserialize(data.get("active_modifiers", []))
 
 	# Apply offline progress from seconds elapsed since last save
 	var last_ts = data.get("last_save_timestamp", 0)

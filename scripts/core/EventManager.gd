@@ -199,6 +199,11 @@ func resolve_event(event: GameEvent, choice_index: int) -> void:
 	# Apply effects: chosen choice when index >= 0, otherwise default_effects
 	if choice_index >= 0 and choice_index < event.choices.size():
 		var choice: Dictionary = event.choices[choice_index]
+		# Deduct divine energy cost (if any) before applying effects
+		var cost_dict: Dictionary = choice.get("cost", {})
+		var divine_cost: float = float(cost_dict.get("divine_energy", 0.0))
+		if divine_cost > 0.0:
+			GameState.spend_divine_energy(divine_cost)
 		ConsequenceSystem.apply_effects(choice.get("effects", []))
 	else:
 		ConsequenceSystem.apply_effects(event.default_effects)

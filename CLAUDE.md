@@ -41,7 +41,7 @@ Ogni file feature segue questo formato:
 ---
 
 ## 📊 STATO ATTUALE
-> Aggiornato: 2026-05-22
+> Aggiornato: 2026-05-23
 
 | Feature | Stato | Note |
 |---|---|---|
@@ -78,12 +78,20 @@ Ogni file feature segue questo formato:
 | PlanetWidget | ✅ | 6-layer system, swipe nav, auto-rotation, entity drag, overlay 50%, HP bar |
 | EntitySprite | ✅ | Rendering spritesheet, movimento autonomo, prospettiva, layer transition, name+HP bar |
 | Tests | ✅ | TestRunner + 6 suite: GameState, Entity, Culture, Genetic, Prestige, L10n |
-| ConsequenceSystem | ✅ | Autoload, modulare (StatType/Scope/EffectType), applica effects da choice.effects o default_effects |
-| Events.json effects | ✅ | 35 eventi, 105 choices, tutti con effects + default_effects bilanciati |
+| ConsequenceSystem | ✅ | Autoload, effects: stat, planet_hp, divine_energy, cohesion, kill, spawn, collapse, world_modifier, nothing |
+| Events.json effects | ✅ | 37 eventi (35 + walking_dead + poison_rain), 113 choices, 13 gating divine_energy |
 | Event expiry logic | ✅ | default_effects applicati su scadenza o tap esterno senza scelta |
+| Stats no upper cap | ✅ | Stats scalano all'infinito, solo floor 0. ERA_STAT_CAP rimane per reference UI |
+| Auto-prestige on collapse | ✅ | planet_hp=0 o pop=0 → fade + collapse god msg + standard prestige reset |
+| Black Hole approach | ✅ | Sprite centro schermo scala su `distance_from_center`, ratio 0→1, click "..." a 0 |
+| Black Hole ending | ✅ | Bonus multiplier basato su run metrics, somma a prestige normale |
+| Divine Energy rework | ✅ | No regen passivo. Max scala era (100 + 50/era). Gating choices con `cost`. Chip UI top-left |
+| SpawnSystem | ✅ | child/immigrant/founder. Replacement modal quando at cap |
+| WorldModifierSystem | ✅ | walking_dead + poison_rain MVP. Max 2 simultanei. Bars UI + modal (spread + accelerate) |
+| Walking Dead | ✅ | Dead bodies non purgati, attaccano viventi ogni daily reset, cura via timer |
 | Tutorial | ❌ | Non iniziato |
-| Hard Reset screen | ❌ | "You died" quando planet HP=0 |
 | Universe Map UI | ❌ | visualizzazione bot planets, distanza relativa |
+| ADS integration | ❌ | spawn_founder ha placeholder, manca SDK |
 
 ### Decisioni design sessione 2026-05-19 — Sistema Pianeta a 6 Layer
 
