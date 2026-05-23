@@ -42,7 +42,7 @@ var last_planet_rotate_time: int = 0
 # Planet HP — base component (regens); entity health is added on top
 var planet_base_hp: float = 100.0
 const PLANET_BASE_HP_MAX: float = 100.0
-2
+
 # Prestige multipliers (cumulative, never reset)
 var prestige_resource_multiplier: float = 1.0
 
