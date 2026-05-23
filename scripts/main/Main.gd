@@ -7,6 +7,7 @@ extends Node2D
 @onready var universe: Node2D = $Universe
 @onready var planet_corner_sprite: Sprite2D = $PlanetLayer/PlanetCornerSprite
 @onready var planet_widget: Control = $PlanetLayer/PlanetInput
+@onready var background_layer: CanvasLayer = $BackgroundLayer
 
 var _is_new_game: bool = false
 var _event_queue: Array = []
@@ -31,69 +32,68 @@ func _ready() -> void:
 
 
 # --- DEBUG SHORTCUTS (remove before release) ---
-# Letter keys to avoid conflict with Godot F-keys. Single-letter trigger on press.
+# Number keys with F-key fallbacks. Avoids F8 (Godot stop) and F11 (fullscreen).
 func _input(event: InputEvent) -> void:
 	if not OS.is_debug_build() and not OS.has_feature("editor"):
 		return
-	if not event is InputEventKey:
+	if not (event is InputEventKey):
 		return
-	var k := event as InputEventKey
+	var k: InputEventKey = event
 	if not k.pressed or k.echo:
 		return
-	match k.keycode:
-		KEY_1, KEY_F1:
-			print("[DEBUG] Forcing collapse")
-			for e in GameState.entities:
-				if e.is_alive:
-					GameState.register_entity_death(e, "debug")
-			GameState.planet_base_hp = 0.0
-			GameState.emit_signal("planet_collapsed")
-		KEY_2, KEY_F2:
-			print("[DEBUG] Distance -> 50000 (BH visible)")
-			GameState.distance_from_center = 50_000.0
-		KEY_3, KEY_F3:
-			print("[DEBUG] Distance -> 0 (BH reached)")
-			GameState.distance_from_center = 0.0
-		KEY_4, KEY_F4:
-			print("[DEBUG] Activate walking_dead (72h)")
-			WorldModifierSystem.activate("walking_dead", 72.0)
-		KEY_5, KEY_F5:
-			print("[DEBUG] Activate poison_rain (48h)")
-			WorldModifierSystem.activate("poison_rain", 48.0)
-		KEY_6, KEY_F6:
-			print("[DEBUG] Spawn child")
-			SpawnSystem.spawn("child")
-		KEY_7, KEY_F7:
-			print("[DEBUG] Spawn founder")
-			SpawnSystem.spawn("founder")
-		KEY_8:
-			# Avoid F8 (Godot stops the project)
-			print("[DEBUG] +100 divine energy")
-			GameState.modify_divine_energy(100.0)
-		KEY_9, KEY_F9:
-			print("[DEBUG] Damage random entity -20 health")
-			var living = GameState.get_living_entities()
-			if not living.is_empty():
-				var t = living[randi() % living.size()]
-				t.stats["health"] = maxi(int(t.stats.get("health", 0)) - 20, 0)
-		KEY_0, KEY_F10:
-			print("[DEBUG] Force daily reset")
-			TimeManager._perform_daily_reset()
-		KEY_Q:
-			# Avoid F11 (fullscreen toggle)
-			print("[DEBUG] Generate social events")
-			EventManager.generate_social_events()
-		KEY_W, KEY_F12:
-			print("[DEBUG] Generate cosmic event")
-			EventManager._maybe_generate_cosmic_event()
-		KEY_E:
-			print("[DEBUG] State dump:")
-			print("  Era: %d  Day: %d  Distance: %.0f" % [GameState.current_era, GameState.current_day, GameState.distance_from_center])
-			print("  Planet HP: %.1f / %.1f" % [GameState.get_planet_hp(), GameState.get_planet_hp_max()])
-			print("  Divine: %.0f / %.0f" % [GameState.divine_energy, GameState.divine_energy_max])
-			print("  Cohesion: %.0f" % CultureSystem.cohesion)
-			print("  Entities (living/total): %d/%d" % [GameState.get_living_entities().size(), GameState.entities.size()])
-			print("  Modifiers: %d" % WorldModifierSystem.active_modifiers.size())
+	var kc: int = k.keycode
+
+	if kc == KEY_1 or kc == KEY_F1:
+		print("[DEBUG] Forcing collapse")
+		for e in GameState.entities:
+			if e.is_alive:
+				GameState.register_entity_death(e, "debug")
+		GameState.planet_base_hp = 0.0
+		GameState.emit_signal("planet_collapsed")
+	elif kc == KEY_2 or kc == KEY_F2:
+		print("[DEBUG] Distance -> 50000 (BH visible)")
+		GameState.distance_from_center = 50_000.0
+	elif kc == KEY_3 or kc == KEY_F3:
+		print("[DEBUG] Distance -> 0 (BH reached)")
+		GameState.distance_from_center = 0.0
+	elif kc == KEY_4 or kc == KEY_F4:
+		print("[DEBUG] Activate walking_dead (72h)")
+		WorldModifierSystem.activate("walking_dead", 72.0)
+	elif kc == KEY_5 or kc == KEY_F5:
+		print("[DEBUG] Activate poison_rain (48h)")
+		WorldModifierSystem.activate("poison_rain", 48.0)
+	elif kc == KEY_6 or kc == KEY_F6:
+		print("[DEBUG] Spawn child")
+		SpawnSystem.spawn("child")
+	elif kc == KEY_7 or kc == KEY_F7:
+		print("[DEBUG] Spawn founder")
+		SpawnSystem.spawn("founder")
+	elif kc == KEY_8:
+		print("[DEBUG] +100 divine energy")
+		GameState.modify_divine_energy(100.0)
+	elif kc == KEY_9 or kc == KEY_F9:
+		print("[DEBUG] Damage random entity -20 health")
+		var living: Array = GameState.get_living_entities()
+		if not living.is_empty():
+			var t = living[randi() % living.size()]
+			t.stats["health"] = maxi(int(t.stats.get("health", 0)) - 20, 0)
+	elif kc == KEY_0 or kc == KEY_F10:
+		print("[DEBUG] Force daily reset")
+		TimeManager._perform_daily_reset()
+	elif kc == KEY_Q:
+		print("[DEBUG] Generate social events")
+		EventManager.generate_social_events()
+	elif kc == KEY_W or kc == KEY_F12:
+		print("[DEBUG] Generate cosmic event")
+		EventManager._maybe_generate_cosmic_event()
+	elif kc == KEY_E:
+		print("[DEBUG] State dump:")
+		print("  Era: %d  Day: %d  Distance: %.0f" % [GameState.current_era, GameState.current_day, GameState.distance_from_center])
+		print("  Planet HP: %.1f / %.1f" % [GameState.get_planet_hp(), GameState.get_planet_hp_max()])
+		print("  Divine: %.0f / %.0f" % [GameState.divine_energy, GameState.divine_energy_max])
+		print("  Cohesion: %.0f" % CultureSystem.cohesion)
+		print("  Entities (living/total): %d/%d" % [GameState.get_living_entities().size(), GameState.entities.size()])
+		print("  Modifiers: %d" % WorldModifierSystem.active_modifiers.size())
 
 
 func _setup_timer_chips() -> void:
@@ -119,6 +119,16 @@ func _setup_timer_chips() -> void:
 	_blackhole_approach.set_script(bh_script)
 	add_child(_blackhole_approach)
 	_blackhole_approach.enter_pressed.connect(_on_blackhole_enter_pressed)
+
+	# Background-only dim rect lives inside BackgroundLayer (layer -10)
+	# so it darkens ONLY the cosmos sprite, not planets/HUD/chips
+	var bh_bg_dim := ColorRect.new()
+	bh_bg_dim.color = Color(0.0, 0.0, 0.0, 0.0)
+	bh_bg_dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bh_bg_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bh_bg_dim.z_index = 100  # above the cosmos sprite (which has z_index -100)
+	background_layer.add_child(bh_bg_dim)
+	_blackhole_approach.set_bg_dim(bh_bg_dim)
 
 	var bars_script = load("res://scripts/ui/ModifierStatusBars.gd")
 	_modifier_bars = CanvasLayer.new()
