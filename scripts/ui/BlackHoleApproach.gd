@@ -14,17 +14,29 @@ const ENTER_BTN_FONT_SIZE: int = 60
 
 var _sprite: Sprite2D = null
 var _enter_button: Button = null
+var _button_layer: CanvasLayer = null  # nested layer at 67 so the "..." sits above the planet
 var _min_scale: float = 0.05
 var _max_scale: float = 1.0
 var _shown_enter_button: bool = false
 var _bg_dim_rect: ColorRect = null  # owned externally — set via set_bg_dim
+var _devouring: bool = false  # while true, _process leaves the sprite scale alone
 
 
 func _ready() -> void:
-	layer = 67
+	# BH sprite layer: above cosmos background (0) and dim (5), BELOW player planet (60),
+	# topbar (50), HUD (55), chips (65), modifier bars (65). So the planet stays in front.
+	layer = 10
 	_build_sprite()
+	_build_button_layer()
 	_build_enter_button()
 	visible = false
+
+
+func _build_button_layer() -> void:
+	# The "..." button MUST sit above the planet so it remains clickable when BH is reached.
+	_button_layer = CanvasLayer.new()
+	_button_layer.layer = 67
+	add_child(_button_layer)
 
 
 func set_bg_dim(rect: ColorRect) -> void:
@@ -67,18 +79,29 @@ func _build_enter_button() -> void:
 	_enter_button.add_theme_stylebox_override("focus", style)
 	_enter_button.pressed.connect(_on_enter_pressed)
 	_enter_button.visible = false
-	add_child(_enter_button)
+	if _button_layer:
+		_button_layer.add_child(_enter_button)
+	else:
+		add_child(_enter_button)
 
 
 func _process(_delta: float) -> void:
+	if _devouring:
+		# Devour animation owns the sprite and dim; do nothing here
+		return
+
 	if not GameState.is_blackhole_visible():
 		if visible:
 			visible = false
+			if _button_layer:
+				_button_layer.visible = false
 			_reset_button_state()
 		_set_bg_dim(0.0)
 		return
 	if not visible:
 		visible = true
+		if _button_layer:
+			_button_layer.visible = true
 
 	var ratio: float = GameState.get_blackhole_proximity_ratio()
 	var growth: float = pow(ratio, 0.45)
@@ -118,6 +141,7 @@ func _reset_button_state() -> void:
 func _on_enter_pressed() -> void:
 	_enter_button.disabled = true
 	_shown_enter_button = false
+	_devouring = true   # freeze _process scale/dim updates
 
 	var devour_target_scale: float = _max_scale * 2.4
 	var devour := create_tween()
@@ -130,13 +154,25 @@ func _on_enter_pressed() -> void:
 
 
 func _finish_devour() -> void:
+	# Emit the signal so PrestigeScreen starts taking over,
+	# but KEEP the BH visible & at full devour scale until prestige's own
+	# fade-in is well underway. _devouring stays true so _process won't shrink it.
 	enter_pressed.emit()
-	var fade := create_tween()
-	fade.tween_property(_sprite, "modulate:a", 0.0, 0.6)
-	if _bg_dim_rect:
-		fade.parallel().tween_property(_bg_dim_rect, "color:a", 0.0, 0.6)
-	fade.tween_callback(_hide_self)
+	# Wait a beat to let PrestigeScreen's fade-in cover the screen,
+	# then quietly hide the BH layer (no shrink animation).
+	var hide_tw := create_tween()
+	hide_tw.tween_interval(1.6)
+	hide_tw.tween_callback(_hide_self)
 
 
 func _hide_self() -> void:
 	visible = false
+	if _button_layer:
+		_button_layer.visible = false
+	_devouring = false
+	# Reset so next time BH appears it starts at min scale, not the devour scale
+	if _sprite:
+		_sprite.scale = Vector2(_min_scale, _min_scale)
+		_sprite.modulate.a = 1.0
+	if _bg_dim_rect:
+		_bg_dim_rect.color.a = 0.0

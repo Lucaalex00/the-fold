@@ -7,7 +7,6 @@ extends Node2D
 @onready var universe: Node2D = $Universe
 @onready var planet_corner_sprite: Sprite2D = $PlanetLayer/PlanetCornerSprite
 @onready var planet_widget: Control = $PlanetLayer/PlanetInput
-@onready var background_layer: CanvasLayer = $BackgroundLayer
 
 var _is_new_game: bool = false
 var _event_queue: Array = []
@@ -120,14 +119,18 @@ func _setup_timer_chips() -> void:
 	add_child(_blackhole_approach)
 	_blackhole_approach.enter_pressed.connect(_on_blackhole_enter_pressed)
 
-	# Background-only dim rect lives inside BackgroundLayer (layer -10)
-	# so it darkens ONLY the cosmos sprite, not planets/HUD/chips
+	# Cosmos dim: dedicated CanvasLayer at layer 5 → above background sprite (default
+	# layer 0, z_index -100), below TopBar (50), HUD (55), Planet (60), chips (65).
+	# Topbar, HUD, planet, chips, modifier bars, timer chips → all stay bright.
+	var bh_dim_layer := CanvasLayer.new()
+	bh_dim_layer.layer = 5
+	add_child(bh_dim_layer)
 	var bh_bg_dim := ColorRect.new()
 	bh_bg_dim.color = Color(0.0, 0.0, 0.0, 0.0)
-	bh_bg_dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bh_bg_dim.position = Vector2.ZERO
+	bh_bg_dim.size = Vector2(390, 844)
 	bh_bg_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bh_bg_dim.z_index = 100  # above the cosmos sprite (which has z_index -100)
-	background_layer.add_child(bh_bg_dim)
+	bh_dim_layer.add_child(bh_bg_dim)
 	_blackhole_approach.set_bg_dim(bh_bg_dim)
 
 	var bars_script = load("res://scripts/ui/ModifierStatusBars.gd")
