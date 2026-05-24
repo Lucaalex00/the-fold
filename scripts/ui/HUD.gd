@@ -46,7 +46,9 @@ func _update_distance() -> void:
 
 
 func _update_divine_energy() -> void:
-	divine_energy_label.text = "⚡ %d" % int(GameState.divine_energy)
+	# Hidden — canonical divine energy display is the chip at top-left
+	if divine_energy_label and divine_energy_label.visible:
+		divine_energy_label.visible = false
 
 
 func refresh() -> void:

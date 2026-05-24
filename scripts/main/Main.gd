@@ -21,6 +21,8 @@ var _pending_spawn_entity: GameState.EntityData = null
 var _blackhole_approach: CanvasLayer = null
 var _modifier_bars: CanvasLayer = null
 var _modifier_modal: CanvasLayer = null
+var _universe_map_modal: CanvasLayer = null
+var _universe_map_button: CanvasLayer = null
 
 
 func _ready() -> void:
@@ -143,6 +145,17 @@ func _setup_timer_chips() -> void:
 	_modifier_modal = CanvasLayer.new()
 	_modifier_modal.set_script(modal_script)
 	add_child(_modifier_modal)
+
+	var ummap_script = load("res://scripts/ui/UniverseMapModal.gd")
+	_universe_map_modal = CanvasLayer.new()
+	_universe_map_modal.set_script(ummap_script)
+	add_child(_universe_map_modal)
+
+	var ummbtn_script = load("res://scripts/ui/UniverseMapButton.gd")
+	_universe_map_button = CanvasLayer.new()
+	_universe_map_button.set_script(ummbtn_script)
+	add_child(_universe_map_button)
+	_universe_map_button.pressed.connect(_on_universe_map_button_pressed)
 
 
 func _setup_background() -> void:
@@ -388,6 +401,12 @@ func _on_modifier_bar_clicked(modifier_id: String) -> void:
 	_modifier_modal.show_modifier(modifier_id)
 
 
+# --- Universe Map ---
+
+func _on_universe_map_button_pressed() -> void:
+	_universe_map_modal.show_map(universe)
+
+
 # --- Signal handlers ---
 
 func _on_entity_died(entity_data) -> void:
@@ -468,6 +487,10 @@ func _on_prestige_sequence_started() -> void:
 		_modifier_bars.visible = false
 	if _timer_chips:
 		_timer_chips.visible = false
+	if _universe_map_button:
+		_universe_map_button.visible = false
+	if _universe_map_modal:
+		_universe_map_modal.visible = false
 
 
 func _on_prestige_sequence_finished() -> void:
@@ -488,6 +511,8 @@ func _on_prestige_continue() -> void:
 		_modifier_bars.visible = true
 	if _timer_chips:
 		_timer_chips.visible = true
+	if _universe_map_button:
+		_universe_map_button.visible = true
 	_collapse_in_progress = false
 	_start_new_game(true)  # rebirth → random pair of founders
 

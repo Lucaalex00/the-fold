@@ -23,7 +23,17 @@ func _build_ui() -> void:
 	_blocker.color = Color(0.0, 0.0, 0.0, 0.6)
 	_blocker.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
+	_blocker.gui_input.connect(_on_blocker_input)
 	add_child(_blocker)
+
+
+func _on_blocker_input(event: InputEvent) -> void:
+	if not visible:
+		return
+	var is_tap: bool = (event is InputEventMouseButton and (event as InputEventMouseButton).pressed and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT)
+	var is_touch: bool = (event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed)
+	if is_tap or is_touch:
+		_on_skip()
 
 	_panel = PanelContainer.new()
 	_panel.size = Vector2(350, 10)

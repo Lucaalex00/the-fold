@@ -2,11 +2,11 @@ extends CanvasLayer
 
 signal bar_clicked(modifier_id: String)
 
-const BAR_W: float = 110.0
-const BAR_H: float = 24.0
+const BAR_W: float = 130.0
+const BAR_H: float = 32.0
 const POS_START_X: float = 8.0
-const POS_START_Y: float = 92.0  # below DivineEnergyChip
-const BAR_GAP: float = 4.0
+const POS_START_Y: float = 96.0  # below DivineEnergyChip
+const BAR_GAP: float = 6.0
 
 # modifier_id → { container, fill, label }
 var _bars: Dictionary = {}

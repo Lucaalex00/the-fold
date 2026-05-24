@@ -11,7 +11,7 @@ signal continue_pressed
 
 const FADE_IN_TIME: float = 1.2
 const MSG_FADE_TIME: float = 1.2
-const TYPEWRITER_CPS: float = 45.0   # characters per second
+const TYPEWRITER_CPS: float = 90.0   # characters per second
 const FLASH_DURATION: float = 2.5
 const FADE_OUT_TIME: float = 1.0
 
