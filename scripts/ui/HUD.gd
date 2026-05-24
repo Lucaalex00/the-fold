@@ -7,6 +7,10 @@ extends CanvasLayer
 @onready var divine_energy_label: Label = $TopBar/StatsRow/EnergyLabel
 @onready var population_label: Label = $TopBar/StatsRow/PopLabel
 @onready var notification_label: Label = $NotificationLabel
+@onready var harvest_label: Label = $TopBar/ResourcesRow/HarvestLabel
+@onready var fishing_label: Label = $TopBar/ResourcesRow/FishingLabel
+@onready var labor_label: Label = $TopBar/ResourcesRow/LaborLabel
+@onready var trade_label: Label = $TopBar/ResourcesRow/TradeLabel
 
 const DISTANCE_START = 1_000_000.0
 var _notification_timer: float = 0.0
@@ -32,7 +36,18 @@ func _on_era_change(_era: int) -> void:
 func _process(delta: float) -> void:
 	_update_distance()
 	_update_divine_energy()
+	_update_resources()
 	_tick_notification(delta)
+
+
+func _update_resources() -> void:
+	if not harvest_label:
+		return
+	var r: Dictionary = ResourceSystem.resources
+	harvest_label.text = "🌾 %d" % int(r.get("harvest", 0))
+	fishing_label.text = "🐟 %d" % int(r.get("fishing", 0))
+	labor_label.text = "🔨 %d" % int(r.get("labor", 0))
+	trade_label.text = "🤝 %d" % int(r.get("trade", 0))
 
 
 func _update_distance() -> void:
@@ -59,7 +74,7 @@ func refresh() -> void:
 
 func update_cohesion(value: float) -> void:
 	var state = CultureSystem.get_cohesion_state()
-	cohesion_label.text = "💙 %s %d" % [L.t("COHESION_" + state.to_upper()), int(value)]
+	cohesion_label.text = "💙 %s - %d" % [L.t("COHESION_" + state.to_upper()), int(value)]
 
 
 func _update_era() -> void:

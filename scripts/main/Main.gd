@@ -23,7 +23,6 @@ var _modifier_bars: CanvasLayer = null
 var _modifier_modal: CanvasLayer = null
 var _universe_map_modal: CanvasLayer = null
 var _top_menu: CanvasLayer = null
-var _resources_chip: CanvasLayer = null
 var _entity_details_modal: CanvasLayer = null
 var _damage_feedback: CanvasLayer = null
 
@@ -182,12 +181,6 @@ func _setup_timer_chips() -> void:
 	add_child(_top_menu)
 	_top_menu.map_pressed.connect(_on_universe_map_button_pressed)
 	_top_menu.memory_pressed.connect(_on_memory_book_pressed)
-
-	# Bottom-center resources chip
-	var res_script = load("res://scripts/ui/ResourcesChip.gd")
-	_resources_chip = CanvasLayer.new()
-	_resources_chip.set_script(res_script)
-	add_child(_resources_chip)
 
 	# Entity details modal (opens on quick tap on entity)
 	var edm_script = load("res://scripts/ui/EntityDetailsModal.gd")
@@ -611,8 +604,6 @@ func _on_prestige_sequence_started() -> void:
 		_top_menu.visible = false
 	if _universe_map_modal:
 		_universe_map_modal.visible = false
-	if _resources_chip:
-		_resources_chip.visible = false
 
 
 func _on_prestige_sequence_finished() -> void:
@@ -635,8 +626,6 @@ func _on_prestige_continue() -> void:
 		_timer_chips.visible = true
 	if _top_menu:
 		_top_menu.visible = true
-	if _resources_chip:
-		_resources_chip.visible = true
 	_collapse_in_progress = false
 	_start_new_game(true)  # rebirth → random pair of founders
 

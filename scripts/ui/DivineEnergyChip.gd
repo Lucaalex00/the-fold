@@ -2,7 +2,7 @@ extends CanvasLayer
 
 const CHIP_W: float = 90.0
 const CHIP_H: float = 28.0
-const POS: Vector2 = Vector2(8.0, 60.0)
+const POS: Vector2 = Vector2(8.0, 86.0)  # below the new 2-row topbar
 const ACCENT: Color = Color(0.75, 0.55, 1.0)
 
 var _panel: PanelContainer
