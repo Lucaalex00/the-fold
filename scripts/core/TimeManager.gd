@@ -5,10 +5,12 @@ var offline_multiplier: float = 0.5
 
 # --- Event ticks (decoupled from daily reset) ---
 # Online: an event check fires every EVENT_TICK_HOURS hours.
-# Offline: if the gap on resume exceeds OFFLINE_BURST_THRESHOLD_HOURS,
-# we collapse the missed ticks into a SINGLE catch-up so the player isn't flooded.
+# Offline: missed ticks are folded into AT MOST MAX_OFFLINE_BURST_TICKS catch-ups
+# so a player coming back after weeks isn't flooded with events.
+# The clock advances on the 6-hour grid so the next tick stays aligned regardless
+# of whether the player opens the app every 5h, every 30 minutes, or after a month.
 const EVENT_TICK_HOURS: float = 6.0
-const OFFLINE_BURST_THRESHOLD_HOURS: float = 12.0
+const MAX_OFFLINE_BURST_TICKS: int = 1
 
 var _last_timestamp: int = 0
 var _last_daily_reset_date: String = ""
@@ -48,15 +50,29 @@ func _fire_event_tick() -> void:
 		EventManager._maybe_generate_cosmic_event()
 
 
-# Called from SaveManager on load to fold missed offline ticks into ONE catch-up
+# Called from SaveManager on load. Counts how many full tick windows elapsed
+# since the previous check (including offline time) and fires up to
+# MAX_OFFLINE_BURST_TICKS catch-up ticks. The clock advances to the EXACT
+# multiple of the tick interval so the next tick fires at the right grid moment.
+#
+# Examples (EVENT_TICK_HOURS=6, MAX_OFFLINE_BURST_TICKS=1):
+#   open every 5h → on each open, elapsed accumulates; once it crosses 6h,
+#     1 catch-up tick fires and _last_event_check_ts advances by exactly 6h.
+#     Next tick due 1h later → fires while the player is online.
+#   absent 30 days → on resume, elapsed=720h, missed=120, fires 1 (capped),
+#     clock skips to today so the player isn't drowned.
 func consolidate_offline_event_ticks() -> void:
 	var now: int = Time.get_unix_time_from_system()
-	var elapsed_h: float = float(now - _last_event_check_ts) / 3600.0
-	if elapsed_h >= OFFLINE_BURST_THRESHOLD_HOURS:
-		# Long absence — single consolidated tick (no flood)
+	var elapsed_s: int = now - _last_event_check_ts
+	if elapsed_s < int(EVENT_TICK_HOURS * 3600.0):
+		return
+	var missed_ticks: int = int(float(elapsed_s) / (EVENT_TICK_HOURS * 3600.0))
+	var to_fire: int = mini(missed_ticks, MAX_OFFLINE_BURST_TICKS)
+	for i in range(to_fire):
 		_fire_event_tick()
-	# Reset the clock so the next online tick fires EVENT_TICK_HOURS from NOW
-	_last_event_check_ts = now
+	# Advance the clock by the full elapsed grid windows (NOT capped to to_fire),
+	# so we don't re-trigger the same missed window on the next open.
+	_last_event_check_ts += missed_ticks * int(EVENT_TICK_HOURS * 3600.0)
 
 
 func get_last_event_check_ts() -> int:

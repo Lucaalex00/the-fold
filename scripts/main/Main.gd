@@ -32,6 +32,15 @@ func _ready() -> void:
 	_init_game()
 
 
+# Mobile app life-cycle: save on pause, consolidate offline ticks on resume.
+# Without this, going into background and back wouldn't trigger any event check.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_PAUSED:
+		SaveManager.save_game()
+	elif what == NOTIFICATION_APPLICATION_RESUMED:
+		TimeManager.consolidate_offline_event_ticks()
+
+
 # --- DEBUG SHORTCUTS (remove before release) ---
 # Number keys with F-key fallbacks. Avoids F8 (Godot stop) and F11 (fullscreen).
 func _input(event: InputEvent) -> void:
