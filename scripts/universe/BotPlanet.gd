@@ -8,6 +8,12 @@ var bot_era: int = 1
 var bot_step: int = 1
 var bot_distance: float = 1_000_000.0
 
+# Where the player will "encounter" this planet (their distance == this value)
+# Below this, the planet is considered passed and can become visitable.
+var encounter_distance: float = 500_000.0
+var was_encountered: bool = false
+var was_visited: bool = false
+
 # Bots advance very slowly — fraction of player speed
 const BOT_SPEED_MULTIPLIER = 0.05
 
@@ -21,6 +27,10 @@ func setup(p_id: String, p_name: String, p_sprite: int) -> void:
 	sprite_index = p_sprite
 	# Scatter bots at different starting distances
 	bot_distance = randf_range(800_000.0, 1_000_000.0)
+
+
+func set_encounter_distance(d: float) -> void:
+	encounter_distance = d
 
 
 func _process(delta: float) -> void:

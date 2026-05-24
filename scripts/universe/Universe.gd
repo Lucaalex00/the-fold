@@ -1,11 +1,16 @@
 extends Node2D
 
+signal planet_encountered(bot)
+
 const BOT_PLANET_COUNT = 5
 const PLANET_SPRITES = [
 	"Earth", "Mars", "Jupiter", "Saturn", "Neptune",
 	"Venus", "Mercury", "Moon", "Uranus", "Crystal",
 	"Hot", "Icy", "Radiated", "Terrestrial", "Sun"
 ]
+
+# Encounter distances: spread across the journey. First encounter ~750K, last ~120K.
+const ENCOUNTER_DISTANCES: Array = [750_000.0, 550_000.0, 380_000.0, 230_000.0, 120_000.0]
 
 var player_planet: Planet = null
 var bot_planets: Array = []
@@ -17,6 +22,33 @@ var bot_planets: Array = []
 func _ready() -> void:
 	_setup_player_planet()
 	_generate_bot_planets()
+	PrestigeSystem.prestige_sequence_finished.connect(_on_prestige_finished)
+
+
+func _on_prestige_finished() -> void:
+	regenerate_bot_planets()
+
+
+func regenerate_bot_planets() -> void:
+	for bot in bot_planets:
+		if is_instance_valid(bot):
+			bot.queue_free()
+	bot_planets.clear()
+	_generate_bot_planets()
+
+
+func _process(_delta: float) -> void:
+	_check_encounters()
+
+
+func _check_encounters() -> void:
+	var d: float = GameState.distance_from_center
+	for bot in bot_planets:
+		if bot.was_encountered:
+			continue
+		if d <= bot.encounter_distance:
+			bot.was_encountered = true
+			planet_encountered.emit(bot)
 
 
 func _setup_player_planet() -> void:
@@ -37,6 +69,10 @@ func _generate_bot_planets() -> void:
 			_random_planet_name(),
 			(i + 1) % PLANET_SPRITES.size()
 		)
+		# Assign a distinct encounter distance along the journey (±10% jitter)
+		var base_d: float = ENCOUNTER_DISTANCES[i % ENCOUNTER_DISTANCES.size()]
+		var jittered: float = base_d * randf_range(0.9, 1.1)
+		bot.set_encounter_distance(jittered)
 		bot_planets.append(bot)
 		add_child(bot)
 		bot.position = _bot_position(i)

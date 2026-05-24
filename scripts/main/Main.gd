@@ -234,6 +234,7 @@ func _connect_signals() -> void:
 	GameState.blackhole_reached.connect(_on_blackhole_reached)
 	SpawnSystem.needs_replacement.connect(_on_spawn_needs_replacement)
 	SpawnSystem.spawned.connect(_on_spawn_completed)
+	universe.planet_encountered.connect(_on_planet_encountered)
 	PrestigeSystem.prestige_sequence_started.connect(_on_prestige_sequence_started)
 	PrestigeSystem.prestige_sequence_finished.connect(_on_prestige_sequence_finished)
 	PrestigeSystem.god_message_ready.connect(_on_god_message_ready)
@@ -347,6 +348,14 @@ func _on_alert_finished(event) -> void:
 
 func _on_event_resolved(event) -> void:
 	if event != null:
+		# If this was an encounter event resolved with "Visit" (index 0),
+		# mark the corresponding bot as visited so the map can colour it
+		if String(event.id).begins_with("encounter_") and event.chosen_choice_index == 0:
+			var bot_id: String = String(event.id).substr("encounter_".length())
+			for bot in universe.bot_planets:
+				if String(bot.planet_id) == bot_id:
+					bot.was_visited = true
+					break
 		# Keep chip for: CRITICAL/FATAL (always), or any urgency dismissed without choice
 		var keep: bool = (
 			event.urgency == EventManager.EventUrgency.CRITICAL or
@@ -407,6 +416,40 @@ func _on_modifier_bar_clicked(modifier_id: String) -> void:
 
 func _on_universe_map_button_pressed() -> void:
 	_universe_map_modal.show_map(universe)
+
+
+# --- Planet encounter (player passes by a bot during their journey) ---
+
+func _on_planet_encountered(bot) -> void:
+	var ev := EventManager.GameEvent.new()
+	ev.id = "encounter_" + String(bot.planet_id)
+	ev.type = "encounter"
+	ev.urgency = EventManager.EventUrgency.MANAGEABLE
+	ev.title = "Encounter: " + String(bot.planet_name)
+	ev.description = "Your trajectory has brought you near %s. You can divert briefly to visit, or stay your course toward the void." % String(bot.planet_name)
+	ev.expires_in_hours = 24.0
+	ev.created_at = Time.get_unix_time_from_system()
+	ev.choices = [
+		{
+			"id": "visit",
+			"label": "Visit",
+			"consequence": "+1 planets visited, small divine boost",
+			"effects": [
+				{"type": "metric", "name": "planets_visited", "delta": 1},
+				{"type": "divine_energy", "delta": 10},
+			]
+		},
+		{
+			"id": "pass",
+			"label": "Pass by",
+			"consequence": "Stay your course",
+			"effects": []
+		}
+	]
+	ev.default_effects = []
+	# Inject into EventManager active list + emit so the alert/queue/chip flow handles it
+	EventManager.active_social_events.append(ev)
+	EventManager.event_created.emit(ev)
 
 
 # --- Debug helpers ---
