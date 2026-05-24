@@ -112,7 +112,8 @@ func _process(_delta: float) -> void:
 
 		var label: Label = node.get_node_or_null("TimeLabel") as Label
 		if label:
-			label.text = _format_time(remaining_s)
+			var prefix: String = "✅ " if event.chosen_choice_index >= 0 else ""
+			label.text = prefix + _format_time(remaining_s)
 
 		if remaining_s <= 0.0:
 			expired.append(event_id)

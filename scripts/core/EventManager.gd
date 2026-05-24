@@ -5,6 +5,9 @@ enum EventUrgency { MANAGEABLE, URGENT, CRITICAL, FATAL }
 signal event_created(event: GameEvent)
 
 const MAX_SOCIAL_EVENTS = 3
+# Absolute ceiling: no more than this many ACTIVE events at once (social + cosmic combined).
+# Keeps the on-screen chip stack tidy and the player's mental load low.
+const MAX_TOTAL_ACTIVE_EVENTS = 4
 
 # Real-time seconds between events of the same urgency
 const URGENCY_COOLDOWN = {
@@ -60,6 +63,8 @@ func generate_daily_events() -> void:
 func generate_social_events() -> void:
 	if active_social_events.size() >= MAX_SOCIAL_EVENTS:
 		return
+	if _total_active_events() >= MAX_TOTAL_ACTIVE_EVENTS:
+		return
 
 	# Build pool from all urgency buckets
 	var pool: Array = []
@@ -71,6 +76,8 @@ func generate_social_events() -> void:
 
 	for event_def in pool:
 		if active_social_events.size() >= MAX_SOCIAL_EVENTS:
+			break
+		if _total_active_events() >= MAX_TOTAL_ACTIVE_EVENTS:
 			break
 		if _is_event_active(event_def.get("id", "")):
 			continue
@@ -155,6 +162,9 @@ func _spawn_social_event(event_def: Dictionary, urgency: int) -> void:
 
 
 func _maybe_generate_cosmic_event() -> void:
+	# Respect the global cap regardless of social/cosmic split
+	if _total_active_events() >= MAX_TOTAL_ACTIVE_EVENTS:
+		return
 	# Events with warning_hours are treated as cosmic-style (timed threat)
 	var pool: Array = []
 	for bucket in ["notify", "warning", "critical", "fatal"]:
@@ -253,6 +263,13 @@ func _is_event_active(event_id: String) -> bool:
 		if ev.id == event_id:
 			return true
 	return false
+
+
+func _total_active_events() -> int:
+	var n: int = active_social_events.size()
+	if active_cosmic_event != null:
+		n += 1
+	return n
 
 
 func _cooldown_passed(urgency: int) -> bool:
