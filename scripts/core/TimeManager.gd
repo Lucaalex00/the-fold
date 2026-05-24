@@ -3,13 +3,23 @@ extends Node
 var base_speed_per_second: float = 1.0  # light years / second (base)
 var offline_multiplier: float = 0.5
 
+# --- Event ticks (decoupled from daily reset) ---
+# Online: an event check fires every EVENT_TICK_HOURS hours.
+# Offline: if the gap on resume exceeds OFFLINE_BURST_THRESHOLD_HOURS,
+# we collapse the missed ticks into a SINGLE catch-up so the player isn't flooded.
+const EVENT_TICK_HOURS: float = 6.0
+const OFFLINE_BURST_THRESHOLD_HOURS: float = 12.0
+
 var _last_timestamp: int = 0
 var _last_daily_reset_date: String = ""
+var _last_event_check_ts: int = 0
 
 
 func _ready() -> void:
 	_last_timestamp = Time.get_unix_time_from_system()
 	_last_daily_reset_date = Time.get_date_string_from_system()
+	if _last_event_check_ts == 0:
+		_last_event_check_ts = _last_timestamp
 
 
 func _process(delta: float) -> void:
@@ -17,6 +27,44 @@ func _process(delta: float) -> void:
 	GameState.distance_from_center -= _calculate_speed() * delta
 	GameState.distance_from_center = maxf(GameState.distance_from_center, 0.0)
 	_check_daily_reset()
+	_check_event_tick()
+
+
+# --- Event ticks ---
+
+func _check_event_tick() -> void:
+	var now: int = Time.get_unix_time_from_system()
+	var elapsed_h: float = float(now - _last_event_check_ts) / 3600.0
+	if elapsed_h >= EVENT_TICK_HOURS:
+		_last_event_check_ts = now
+		_fire_event_tick()
+
+
+func _fire_event_tick() -> void:
+	# One generation pass: events.json triggers + cooldowns + frequency
+	# all already handle the rest.
+	EventManager.generate_social_events()
+	if EventManager.active_cosmic_event == null:
+		EventManager._maybe_generate_cosmic_event()
+
+
+# Called from SaveManager on load to fold missed offline ticks into ONE catch-up
+func consolidate_offline_event_ticks() -> void:
+	var now: int = Time.get_unix_time_from_system()
+	var elapsed_h: float = float(now - _last_event_check_ts) / 3600.0
+	if elapsed_h >= OFFLINE_BURST_THRESHOLD_HOURS:
+		# Long absence — single consolidated tick (no flood)
+		_fire_event_tick()
+	# Reset the clock so the next online tick fires EVENT_TICK_HOURS from NOW
+	_last_event_check_ts = now
+
+
+func get_last_event_check_ts() -> int:
+	return _last_event_check_ts
+
+
+func set_last_event_check_ts(ts: int) -> void:
+	_last_event_check_ts = ts
 
 
 func _calculate_speed() -> float:
@@ -43,7 +91,10 @@ func _perform_daily_reset() -> void:
 	_apply_cohesion_divine_gift()
 	if not WorldModifierSystem.is_active("walking_dead"):
 		GameState.purge_dead_entities()
-	EventManager.generate_daily_events()
+	# Events are driven by 6-hour ticks now, not the daily reset.
+	# (See _check_event_tick + consolidate_offline_event_ticks.)
+	# We still run one expire-old-events pass to clear stale stuff.
+	EventManager._expire_old_events()
 	SaveManager.save_game()
 
 

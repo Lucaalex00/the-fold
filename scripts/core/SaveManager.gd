@@ -29,7 +29,8 @@ func save_game() -> void:
 		"planets_visited": GameState.planets_visited,
 		"oldest_entity_age": GameState.oldest_entity_age,
 		"active_modifiers": WorldModifierSystem.serialize(),
-		"last_save_timestamp": Time.get_unix_time_from_system()
+		"last_save_timestamp": Time.get_unix_time_from_system(),
+		"last_event_check_ts": TimeManager.get_last_event_check_ts(),
 	}
 	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -79,6 +80,12 @@ func _apply_save_data(data: Dictionary) -> void:
 	if last_ts > 0:
 		var elapsed = Time.get_unix_time_from_system() - last_ts
 		TimeManager.apply_offline_progress(float(elapsed))
+
+	# Restore event-tick clock and consolidate any missed offline ticks
+	var last_evt_ts: int = int(data.get("last_event_check_ts", 0))
+	if last_evt_ts > 0:
+		TimeManager.set_last_event_check_ts(last_evt_ts)
+	TimeManager.consolidate_offline_event_ticks()
 
 	TimeManager.update_timestamp()
 

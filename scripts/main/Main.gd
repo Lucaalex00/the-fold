@@ -272,7 +272,11 @@ func _init_game() -> void:
 		_on_planet_collapsed()
 		return
 
-	EventManager.generate_daily_events()
+	# Fresh save: give the player one immediate event tick so something happens
+	# (otherwise they'd wait up to 6 hours for the first event).
+	# Loaded saves already get consolidate_offline_event_ticks() in SaveManager.
+	if _is_new_game:
+		TimeManager._fire_event_tick()
 
 
 func _start_new_game(random_rebirth: bool = false) -> void:
