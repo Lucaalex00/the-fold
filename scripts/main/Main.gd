@@ -82,8 +82,8 @@ func _input(event: InputEvent) -> void:
 		print("[DEBUG] Force daily reset")
 		TimeManager._perform_daily_reset()
 	elif kc == KEY_Q:
-		print("[DEBUG] Generate social events")
-		EventManager.generate_social_events()
+		print("[DEBUG] Force-spawn random social event (skip triggers/cooldowns)")
+		_debug_force_event()
 	elif kc == KEY_W or kc == KEY_F12:
 		print("[DEBUG] Generate cosmic event")
 		EventManager._maybe_generate_cosmic_event()
@@ -120,6 +120,8 @@ func _setup_timer_chips() -> void:
 	_blackhole_approach.set_script(bh_script)
 	add_child(_blackhole_approach)
 	_blackhole_approach.enter_pressed.connect(_on_blackhole_enter_pressed)
+	# Tell BH about the planet widget so the "..." button auto-hides while expanded
+	_blackhole_approach.set_planet_widget(planet_widget)
 
 	# Cosmos dim: dedicated CanvasLayer at layer 5 → above background sprite (default
 	# layer 0, z_index -100), below TopBar (50), HUD (55), Planet (60), chips (65).
@@ -405,6 +407,26 @@ func _on_modifier_bar_clicked(modifier_id: String) -> void:
 
 func _on_universe_map_button_pressed() -> void:
 	_universe_map_modal.show_map(universe)
+
+
+# --- Debug helpers ---
+
+func _debug_force_event() -> void:
+	# Pick a random event from any urgency bucket and spawn it ignoring cooldowns
+	var bucket_names: Array = ["notify", "warning", "critical", "fatal"]
+	var bucket_name: String = bucket_names[randi() % bucket_names.size()]
+	var bucket: Array = EventManager._events_data.get(bucket_name, [])
+	if bucket.is_empty():
+		print("[DEBUG]   bucket %s is empty" % bucket_name)
+		return
+	var def: Dictionary = bucket[randi() % bucket.size()].duplicate()
+	def["_urgency"] = bucket_name
+	var urgency: int = EventManager._parse_urgency(bucket_name)
+	if def.has("warning_hours"):
+		EventManager._spawn_cosmic_event(def, urgency)
+	else:
+		EventManager._spawn_social_event(def, urgency)
+	print("[DEBUG]   spawned: %s (%s)" % [def.get("id", "?"), bucket_name])
 
 
 # --- Signal handlers ---

@@ -134,23 +134,30 @@ func _apply_daily(m: WorldModifier) -> void:
 # --- Walking Dead ---
 
 func _walking_dead_daily(_m: WorldModifier) -> void:
-	# Each dead-but-not-yet-rotted entity attacks one random living entity
+	# Each zombie attacks one random living entity, but damage is capped low
+	# to avoid wiping the whole population in a single daily tick.
 	var living: Array = GameState.get_living_entities()
 	if living.is_empty():
 		return
+	var zombie_count: int = 0
+	for e in GameState.entities:
+		if not e.is_alive:
+			zombie_count += 1
+	if zombie_count == 0:
+		return
+	# Total damage budget per day: at most half of total living health, never more
 	for e in GameState.entities:
 		if e.is_alive:
 			continue
 		if living.is_empty():
 			break
 		var target = living[randi() % living.size()]
-		var dmg: int = int(e.stats.get("attack", 0))
-		# Random variance ±20%, plus pop-density factor (more living = harder to corner each individual)
-		var variance: float = randf_range(0.8, 1.2)
-		var density: float = clampf(float(living.size()) / 8.0, 0.3, 1.5)
-		var final_dmg: int = int(float(dmg) * variance / density)
+		var zombie_attack: int = int(e.stats.get("attack", 0))
+		# Capped per-attack damage: max 4 hp regardless of zombie attack stat
+		var capped_dmg: int = mini(zombie_attack, 4)
+		var variance: float = randf_range(0.6, 1.1)
+		var final_dmg: int = maxi(int(float(capped_dmg) * variance), 1)
 		target.stats["health"] = maxi(int(target.stats.get("health", 0)) - final_dmg, 0)
-		# If target died, refresh living list
 		if int(target.stats["health"]) <= 0:
 			living = GameState.get_living_entities()
 

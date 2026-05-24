@@ -226,6 +226,10 @@ func _is_on_planet(pos: Vector2) -> bool:
 	return pos.distance_to(_planet_sprite.position) <= radius
 
 
+func is_planet_expanded() -> bool:
+	return _is_expanded
+
+
 func _gui_input(event: InputEvent) -> void:
 	var pos: Vector2
 	var is_press := false
@@ -436,12 +440,26 @@ const BUBBLE_TYPE_MAP: Dictionary = {
 func _on_bubble_requested(entity_data, bubble_type_string: String) -> void:
 	if not _is_expanded:
 		return
-	# Find matching sprite for this entity_data
+	# Find the entity's current visual position
+	var spawn_pos: Vector2 = Vector2.ZERO
+	var found: bool = false
 	for es in _entity_sprites:
 		if not is_instance_valid(es):
 			continue
-		if es.data == entity_data and es.visible:
-			var t: int = int(BUBBLE_TYPE_MAP.get(bubble_type_string, 1))
-			var BubbleLabelScript = load("res://scripts/ui/BubbleLabel.gd")
-			BubbleLabelScript.show_bubble(es, t)
-			return
+		if es.data == entity_data:
+			spawn_pos = es.position
+			found = true
+			break
+	if not found:
+		return
+	# Spawn the bubble on get_parent() (PlanetLayer) so it survives the entity
+	# sprite being freed during refresh_entities() right after a death.
+	var t: int = int(BUBBLE_TYPE_MAP.get(bubble_type_string, 1))
+	var scene := load("res://scenes/ui/BubbleLabel.tscn")
+	if scene == null:
+		return
+	var bubble := scene.instantiate()
+	bubble.position = spawn_pos + Vector2(0, -40)
+	bubble.z_index = 20
+	get_parent().add_child(bubble)
+	bubble.set_type(t)

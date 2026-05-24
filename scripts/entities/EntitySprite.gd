@@ -127,11 +127,13 @@ func _on_entity_died(entity_data: GameState.EntityData) -> void:
 func _apply_dead_visual() -> void:
 	if not _sprite:
 		return
-	_sprite.rotation = PI / 2.0
-	# Zombies (walking_dead active) get a red tint; regular dead bodies are gray
+	# Zombies (walking_dead active) stand upright + red.
+	# Regular dead bodies lie horizontal + grey.
 	if WorldModifierSystem.is_active("walking_dead"):
-		_sprite.modulate = Color(0.75, 0.25, 0.2, 0.75)
+		_sprite.rotation = 0.0
+		_sprite.modulate = Color(0.85, 0.25, 0.2, 0.85)
 	else:
+		_sprite.rotation = PI / 2.0
 		_sprite.modulate = Color(0.35, 0.35, 0.35, 0.55)
 	_is_moving = false
 	_timer = 9999.0

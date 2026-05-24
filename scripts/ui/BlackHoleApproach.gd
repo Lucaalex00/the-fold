@@ -14,22 +14,37 @@ const ENTER_BTN_FONT_SIZE: int = 60
 
 var _sprite: Sprite2D = null
 var _enter_button: Button = null
+var _button_layer: CanvasLayer = null  # nested high layer for the "..." button
 var _splatter_rect: ColorRect = null  # red flash overlay used during the devour
 var _min_scale: float = 0.05
 var _max_scale: float = 1.0
 var _shown_enter_button: bool = false
 var _bg_dim_rect: ColorRect = null  # owned externally — set via set_bg_dim
+var _planet_widget_ref: Control = null  # set via set_planet_widget — used to check expand state
 var _devouring: bool = false  # while true, _process leaves the sprite scale alone
 
 
 func _ready() -> void:
-	# BH sprite + button live BEHIND the player planet so the planet/UI stay in front.
-	# To click "...", player must close/swipe the planet to corner first.
+	# BH sprite lives BEHIND the player planet (layer 10).
+	# The "..." button needs to be ABOVE the planet (layer 67) so it remains clickable,
+	# but it AUTO-HIDES while the planet is expanded so it isn't visible on top of it.
 	layer = 10
 	_build_sprite()
+	_build_button_layer()
 	_build_enter_button()
 	_build_splatter()
 	visible = false
+
+
+func _build_button_layer() -> void:
+	_button_layer = CanvasLayer.new()
+	_button_layer.layer = 67
+	_button_layer.visible = false
+	add_child(_button_layer)
+
+
+func set_planet_widget(pw: Control) -> void:
+	_planet_widget_ref = pw
 
 
 func _build_splatter() -> void:
@@ -81,7 +96,10 @@ func _build_enter_button() -> void:
 	_enter_button.add_theme_stylebox_override("focus", style)
 	_enter_button.pressed.connect(_on_enter_pressed)
 	_enter_button.visible = false
-	add_child(_enter_button)
+	if _button_layer:
+		_button_layer.add_child(_enter_button)
+	else:
+		add_child(_enter_button)
 
 
 func _process(_delta: float) -> void:
@@ -110,14 +128,22 @@ func _process(_delta: float) -> void:
 	_set_bg_dim(MAX_DIM_ALPHA * ratio)
 
 	var reached: bool = GameState.is_blackhole_reached()
-	if reached and not _shown_enter_button:
-		_shown_enter_button = true
-		_enter_button.visible = true
-		_enter_button.disabled = false
-		var tw := create_tween()
-		tw.tween_property(_enter_button, "modulate:a", 1.0, 1.0)
-	elif not reached and _shown_enter_button:
-		_reset_button_state()
+	# Auto-hide the button while the planet is expanded so it doesn't sit on top of it
+	var planet_expanded: bool = _planet_widget_ref != null and _planet_widget_ref.has_method("is_planet_expanded") and _planet_widget_ref.is_planet_expanded()
+	if reached and not planet_expanded:
+		if not _shown_enter_button:
+			_shown_enter_button = true
+			_enter_button.visible = true
+			_enter_button.disabled = false
+			if _button_layer:
+				_button_layer.visible = true
+			var tw := create_tween()
+			tw.tween_property(_enter_button, "modulate:a", 1.0, 1.0)
+	else:
+		if _shown_enter_button:
+			_reset_button_state()
+		if _button_layer:
+			_button_layer.visible = false
 
 
 func _set_bg_dim(alpha: float) -> void:
