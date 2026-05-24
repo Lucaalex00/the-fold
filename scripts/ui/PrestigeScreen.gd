@@ -114,8 +114,35 @@ func _reveal_continue_button() -> void:
 	tw.tween_property(continue_button, "modulate:a", 1.0, 0.6)
 
 
+const COLLAPSE_CAUSE_LABELS: Dictionary = {
+	"old_age":         "the last of you died of old age",
+	"health_depleted": "your people starved",
+	"plague":          "a plague took everyone",
+	"starvation":      "famine claimed the last",
+	"meteorite":       "a meteorite shattered the world",
+	"radiation":       "radiation poisoned the world",
+	"poison":          "the poison rain finished you",
+	"virus":           "an extinction virus erased you",
+	"black_hole":      "the void pulled you in",
+	"supernova":       "a star exploded too close",
+	"ice_age":         "the world froze",
+	"tide":            "cosmic tides drowned the layers",
+	"civil_war":       "civil war tore you apart",
+	"uprising":        "your warriors took everything",
+	"exodus":          "your people fled",
+	"sacrifice":       "the last sacrifice was made",
+	"replaced":        "the cycle replaced you",
+	"debug":           "fate cut the thread (debug)",
+}
+
+
 func _build_stats_text() -> String:
 	var lines: Array = []
+	if PrestigeSystem.current_mode == PrestigeSystem.Mode.COLLAPSE:
+		var cause_key: String = String(GameState.last_death_cause)
+		var cause_text: String = String(COLLAPSE_CAUSE_LABELS.get(cause_key, cause_key if cause_key != "" else "the world simply ended"))
+		lines.append("Cause: %s" % cause_text)
+		lines.append("")
 	lines.append("— this run —")
 	lines.append("Era reached: %d" % GameState.current_era)
 	lines.append("Days survived: %d" % GameState.current_day)

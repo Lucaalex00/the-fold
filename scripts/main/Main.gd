@@ -22,7 +22,10 @@ var _blackhole_approach: CanvasLayer = null
 var _modifier_bars: CanvasLayer = null
 var _modifier_modal: CanvasLayer = null
 var _universe_map_modal: CanvasLayer = null
-var _universe_map_button: CanvasLayer = null
+var _top_menu: CanvasLayer = null
+var _resources_chip: CanvasLayer = null
+var _entity_details_modal: CanvasLayer = null
+var _damage_feedback: CanvasLayer = null
 
 
 func _ready() -> void:
@@ -171,11 +174,35 @@ func _setup_timer_chips() -> void:
 	_universe_map_modal.set_script(ummap_script)
 	add_child(_universe_map_modal)
 
-	var ummbtn_script = load("res://scripts/ui/UniverseMapButton.gd")
-	_universe_map_button = CanvasLayer.new()
-	_universe_map_button.set_script(ummbtn_script)
-	add_child(_universe_map_button)
-	_universe_map_button.pressed.connect(_on_universe_map_button_pressed)
+	# Top-right menu button replaces the standalone universe button.
+	# Contains Map + Memory Book entries (slide-up sub-buttons).
+	var topmenu_script = load("res://scripts/ui/TopMenu.gd")
+	_top_menu = CanvasLayer.new()
+	_top_menu.set_script(topmenu_script)
+	add_child(_top_menu)
+	_top_menu.map_pressed.connect(_on_universe_map_button_pressed)
+	_top_menu.memory_pressed.connect(_on_memory_book_pressed)
+
+	# Bottom-center resources chip
+	var res_script = load("res://scripts/ui/ResourcesChip.gd")
+	_resources_chip = CanvasLayer.new()
+	_resources_chip.set_script(res_script)
+	add_child(_resources_chip)
+
+	# Entity details modal (opens on quick tap on entity)
+	var edm_script = load("res://scripts/ui/EntityDetailsModal.gd")
+	_entity_details_modal = CanvasLayer.new()
+	_entity_details_modal.set_script(edm_script)
+	add_child(_entity_details_modal)
+	planet_widget.entity_tapped.connect(_on_entity_tapped)
+
+	# Damage feedback (red flash + screen shake on hits)
+	var df_script = load("res://scripts/ui/DamageFeedback.gd")
+	_damage_feedback = CanvasLayer.new()
+	_damage_feedback.set_script(df_script)
+	add_child(_damage_feedback)
+	# Shake the planet widget (most central element) rather than the whole world
+	_damage_feedback.set_shake_target(planet_widget)
 
 
 func _setup_background() -> void:
@@ -440,6 +467,15 @@ func _on_universe_map_button_pressed() -> void:
 	_universe_map_modal.show_map(universe)
 
 
+func _on_memory_book_pressed() -> void:
+	open_memory_book()
+
+
+func _on_entity_tapped(entity_data) -> void:
+	if _entity_details_modal:
+		_entity_details_modal.show_entity(entity_data)
+
+
 # --- Planet encounter (player passes by a bot during their journey) ---
 
 func _on_planet_encountered(bot) -> void:
@@ -571,10 +607,12 @@ func _on_prestige_sequence_started() -> void:
 		_modifier_bars.visible = false
 	if _timer_chips:
 		_timer_chips.visible = false
-	if _universe_map_button:
-		_universe_map_button.visible = false
+	if _top_menu:
+		_top_menu.visible = false
 	if _universe_map_modal:
 		_universe_map_modal.visible = false
+	if _resources_chip:
+		_resources_chip.visible = false
 
 
 func _on_prestige_sequence_finished() -> void:
@@ -595,8 +633,10 @@ func _on_prestige_continue() -> void:
 		_modifier_bars.visible = true
 	if _timer_chips:
 		_timer_chips.visible = true
-	if _universe_map_button:
-		_universe_map_button.visible = true
+	if _top_menu:
+		_top_menu.visible = true
+	if _resources_chip:
+		_resources_chip.visible = true
 	_collapse_in_progress = false
 	_start_new_game(true)  # rebirth → random pair of founders
 

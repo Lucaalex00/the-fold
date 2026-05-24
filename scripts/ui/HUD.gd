@@ -59,7 +59,7 @@ func refresh() -> void:
 
 func update_cohesion(value: float) -> void:
 	var state = CultureSystem.get_cohesion_state()
-	cohesion_label.text = "💙 " + L.t("COHESION_" + state.to_upper())
+	cohesion_label.text = "💙 %s %d" % [L.t("COHESION_" + state.to_upper()), int(value)]
 
 
 func _update_era() -> void:

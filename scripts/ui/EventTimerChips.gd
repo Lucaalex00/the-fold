@@ -8,6 +8,7 @@ const URGENCY_COLOR: Dictionary = {
 	EventManager.EventUrgency.CRITICAL:   Color(1.0, 0.25, 0.25),
 	EventManager.EventUrgency.FATAL:      Color(0.9, 0.0, 0.0),
 }
+const ENCOUNTER_COLOR: Color = Color(0.45, 0.7, 1.0)  # cool blue for planet encounters
 
 const CHIP_W: float = 82.0
 const CHIP_H: float = 28.0
@@ -44,7 +45,14 @@ func remove_chip(event_id: String) -> void:
 
 
 func _build_chip(event: EventManager.GameEvent) -> Control:
-	var color: Color = URGENCY_COLOR.get(event.urgency, Color.WHITE) as Color
+	# Encounter events get a distinctive blue chip so they don't look like
+	# generic notifications. Identified by id prefix "encounter_" (set in Main).
+	var is_encounter: bool = String(event.id).begins_with("encounter_")
+	var color: Color
+	if is_encounter:
+		color = ENCOUNTER_COLOR
+	else:
+		color = URGENCY_COLOR.get(event.urgency, Color.WHITE) as Color
 
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = Vector2(CHIP_W, CHIP_H)
@@ -112,7 +120,11 @@ func _process(_delta: float) -> void:
 
 		var label: Label = node.get_node_or_null("TimeLabel") as Label
 		if label:
-			var prefix: String = "✅ " if event.chosen_choice_index >= 0 else ""
+			var prefix: String = ""
+			if event.chosen_choice_index >= 0:
+				prefix = "✅ "
+			elif String(event.id).begins_with("encounter_"):
+				prefix = "🌐 "
 			label.text = prefix + _format_time(remaining_s)
 
 		if remaining_s <= 0.0:

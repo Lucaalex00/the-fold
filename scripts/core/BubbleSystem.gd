@@ -9,31 +9,12 @@ signal bubble_requested(entity_data, bubble_type_string: String)
 const TYPE_NAMES: Array = [
 	"question", "exclamation", "heart",
 	"sword", "ellipsis", "star",
-	"arrow_up", "sparkle",
+	"arrow_up", "sparkle", "skull",
+	"fish", "wheat", "hammer", "book",
 ]
 
-# Causes → bubble symbol mapping for natural reactions
-const DEATH_CAUSE_BUBBLE: Dictionary = {
-	"old_age":          "heart",
-	"health_depleted":  "heart",
-	"plague":           "exclamation",
-	"starvation":       "ellipsis",
-	"meteorite":        "sparkle",
-	"radiation":        "sparkle",
-	"poison":           "exclamation",
-	"virus":            "exclamation",
-	"black_hole":       "sparkle",
-	"supernova":        "sparkle",
-	"ice_age":          "ellipsis",
-	"tide":             "exclamation",
-	"civil_war":        "sword",
-	"uprising":         "sword",
-	"suppression":      "sword",
-	"sacrifice":        "heart",
-	"exile":            "ellipsis",
-	"exodus":           "ellipsis",
-	"replaced":         "ellipsis",
-}
+# Every death shows a skull. The cause is recorded separately on the entity.
+const DEATH_BUBBLE: String = "skull"
 
 
 func _ready() -> void:
@@ -55,9 +36,7 @@ func request_for_entity(entity_data, bubble_type_string: String) -> void:
 func _on_entity_died(entity_data) -> void:
 	if entity_data == null:
 		return
-	var cause: String = String(entity_data.death_cause)
-	var bubble: String = String(DEATH_CAUSE_BUBBLE.get(cause, "heart"))
-	bubble_requested.emit(entity_data, bubble)
+	bubble_requested.emit(entity_data, DEATH_BUBBLE)
 
 
 func _on_event_created(event) -> void:

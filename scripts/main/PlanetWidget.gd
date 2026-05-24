@@ -1,6 +1,7 @@
 extends Control
 
 signal layer_changed(layer_index: int)
+signal entity_tapped(entity_data)
 
 const LAYER_COUNT = 6
 const GAMEPLAY_FRAMES = [0, 3, 6, 9, 12, 15]
@@ -290,6 +291,9 @@ func _gui_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 		if _pressed_entity:
+			# Quick tap (no long-press, no drag) → request entity details modal
+			if is_instance_valid(_pressed_entity) and _pressed_entity.data != null and _long_press_elapsed < LONG_PRESS_SECS:
+				entity_tapped.emit(_pressed_entity.data)
 			_pressed_entity = null
 			_long_press_elapsed = 0.0
 			return
@@ -454,6 +458,11 @@ const BUBBLE_TYPE_MAP: Dictionary = {
 	"star":        5,
 	"arrow_up":    6,
 	"sparkle":     7,
+	"skull":       8,
+	"fish":        9,
+	"wheat":       10,
+	"hammer":      11,
+	"book":        12,
 }
 
 

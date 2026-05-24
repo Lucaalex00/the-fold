@@ -58,6 +58,8 @@ var avg_cohesion: float = 100.0
 var entities_lost: int = 0
 var planets_visited: int = 0
 var oldest_entity_age: int = 0
+# Last cause of death registered (used by REBORN screen)
+var last_death_cause: String = ""
 
 
 class EntityData:
@@ -237,6 +239,7 @@ func _advance_era() -> void:
 func register_entity_death(entity: EntityData, cause: String) -> void:
 	entity.is_alive = false
 	entity.death_cause = cause
+	last_death_cause = cause
 	entities_lost += 1
 	if entity.age_years > oldest_entity_age:
 		oldest_entity_age = entity.age_years
@@ -283,3 +286,4 @@ func reset_run() -> void:
 	entities_lost = 0
 	planets_visited = 0
 	oldest_entity_age = 0
+	last_death_cause = ""

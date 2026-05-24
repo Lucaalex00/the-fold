@@ -1,14 +1,19 @@
 extends Node2D
 
 enum BubbleType {
-	QUESTION,    # ?  confusion
-	EXCLAMATION, # !  discovery / danger
-	HEART,       # ♥  bond / birth / peaceful death
-	SWORD,       # ⚔  conflict
-	ELLIPSIS,    # …  waiting / tension
-	STAR,        # ★  evolution / milestone
-	ARROW_UP,    # ↑  growth / agreement
-	SPARKLE      # ✦  cosmic event perceived
+	QUESTION,    # ?   confusion
+	EXCLAMATION, # !   discovery / danger
+	HEART,       # ♥   bond / birth
+	SWORD,       # ⚔   conflict
+	ELLIPSIS,    # …   waiting / tension
+	STAR,        # ★   evolution / milestone
+	ARROW_UP,    # ↑   growth / agreement
+	SPARKLE,     # ✦   cosmic event perceived
+	SKULL,       # 💀  death
+	FISH,        # 🐟  fishing
+	WHEAT,       # 🌾  harvesting
+	HAMMER,      # 🔨  building
+	BOOK,        # 📖  research
 }
 
 const BUBBLE_SYMBOLS = {
@@ -19,7 +24,12 @@ const BUBBLE_SYMBOLS = {
 	BubbleType.ELLIPSIS:    "…",
 	BubbleType.STAR:        "★",
 	BubbleType.ARROW_UP:    "↑",
-	BubbleType.SPARKLE:     "✦"
+	BubbleType.SPARKLE:     "✦",
+	BubbleType.SKULL:       "💀",
+	BubbleType.FISH:        "🐟",
+	BubbleType.WHEAT:       "🌾",
+	BubbleType.HAMMER:      "🔨",
+	BubbleType.BOOK:        "📖",
 }
 
 const DISPLAY_DURATION = 2.5

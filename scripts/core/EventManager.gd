@@ -288,8 +288,10 @@ func _parse_urgency(urgency_str: String) -> int:
 
 
 func _urgency_to_hours(urgency: int) -> float:
+	# WARNING/CRITICAL/FATAL = real attention required (tight windows)
+	# NOTIFY = low-stakes flavour event, player can pass on it within a day
 	match urgency:
 		EventUrgency.FATAL:    return 2.0
 		EventUrgency.CRITICAL: return 4.0
 		EventUrgency.URGENT:   return 12.0
-		_:                     return 48.0
+		_:                     return 24.0
