@@ -40,7 +40,30 @@ func _apply_one(effect: Dictionary) -> void:
 		"spawn":          _apply_spawn(effect)
 		"collapse":       _apply_collapse(effect)
 		"world_modifier": _apply_world_modifier(effect)
+		"metric":         _apply_metric(effect)
+		"bubble":         _apply_bubble(effect)
 		"nothing", "":    pass
+
+
+func _apply_metric(effect: Dictionary) -> void:
+	var name: String = String(effect.get("name", ""))
+	var delta: int = int(effect.get("delta", 1))
+	match name:
+		"conflicts_won":
+			GameState.conflicts_won += delta
+		"planets_visited":
+			GameState.planets_visited += delta
+		_:
+			push_warning("ConsequenceSystem: unknown metric '%s'" % name)
+
+
+func _apply_bubble(effect: Dictionary) -> void:
+	# Fire a bubble (?, !, ♥, ⚔, …, ★, ↑, ✦) over a target entity
+	var bubble_type: String = String(effect.get("bubble_type", "exclamation"))
+	var scope: String = String(effect.get("scope", "random_one"))
+	var targets: Array = _select_targets(scope)
+	for entity in targets:
+		BubbleSystem.request_for_entity(entity, bubble_type)
 
 
 func _apply_world_modifier(effect: Dictionary) -> void:

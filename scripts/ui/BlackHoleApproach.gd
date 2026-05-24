@@ -14,6 +14,7 @@ const ENTER_BTN_FONT_SIZE: int = 60
 
 var _sprite: Sprite2D = null
 var _enter_button: Button = null
+var _splatter_rect: ColorRect = null  # red flash overlay used during the devour
 var _min_scale: float = 0.05
 var _max_scale: float = 1.0
 var _shown_enter_button: bool = false
@@ -27,7 +28,17 @@ func _ready() -> void:
 	layer = 10
 	_build_sprite()
 	_build_enter_button()
+	_build_splatter()
 	visible = false
+
+
+func _build_splatter() -> void:
+	_splatter_rect = ColorRect.new()
+	_splatter_rect.color = Color(0.85, 0.05, 0.05, 0.0)
+	_splatter_rect.position = Vector2.ZERO
+	_splatter_rect.size = Vector2(SCREEN_W, SCREEN_H)
+	_splatter_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_splatter_rect)
 
 
 func set_bg_dim(rect: ColorRect) -> void:
@@ -136,6 +147,16 @@ func _on_enter_pressed() -> void:
 	devour.tween_interval(0.4)
 	devour.tween_callback(_finish_devour)
 
+	# Splatter: two quick red pulses during the devour (subtle, not over-the-top)
+	if _splatter_rect:
+		var splat := create_tween()
+		splat.tween_interval(0.35)
+		splat.tween_property(_splatter_rect, "color:a", 0.55, 0.08)
+		splat.tween_property(_splatter_rect, "color:a", 0.0, 0.25)
+		splat.tween_interval(0.45)
+		splat.tween_property(_splatter_rect, "color:a", 0.7, 0.06)
+		splat.tween_property(_splatter_rect, "color:a", 0.0, 0.35)
+
 
 func _finish_devour() -> void:
 	# Emit the signal so PrestigeScreen starts taking over,
@@ -158,3 +179,5 @@ func _hide_self() -> void:
 		_sprite.modulate.a = 1.0
 	if _bg_dim_rect:
 		_bg_dim_rect.color.a = 0.0
+	if _splatter_rect:
+		_splatter_rect.color.a = 0.0

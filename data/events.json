@@ -511,6 +511,11 @@
             {
               "type": "cohesion",
               "delta": 15
+            },
+            {
+              "type": "metric",
+              "name": "conflicts_won",
+              "delta": 1
             }
           ],
           "cost": {
@@ -531,6 +536,11 @@
               "stat": "harvest",
               "delta": -5,
               "scope": "all"
+            },
+            {
+              "type": "metric",
+              "name": "conflicts_won",
+              "delta": 1
             }
           ]
         },
@@ -573,6 +583,11 @@
               "stat": "harvest",
               "delta": -5,
               "scope": "all"
+            },
+            {
+              "type": "metric",
+              "name": "conflicts_won",
+              "delta": 1
             }
           ]
         },
@@ -592,6 +607,11 @@
               "stat": "harvest",
               "delta": 8,
               "scope": "all"
+            },
+            {
+              "type": "metric",
+              "name": "conflicts_won",
+              "delta": 1
             }
           ]
         },
@@ -1145,6 +1165,11 @@
               "stat": "attack",
               "delta": 8,
               "scope": "all"
+            },
+            {
+              "type": "metric",
+              "name": "conflicts_won",
+              "delta": 1
             }
           ]
         },
@@ -1162,6 +1187,11 @@
             {
               "type": "cohesion",
               "delta": -18
+            },
+            {
+              "type": "metric",
+              "name": "conflicts_won",
+              "delta": 1
             }
           ]
         },
@@ -1561,6 +1591,11 @@
             {
               "type": "cohesion",
               "delta": -8
+            },
+            {
+              "type": "metric",
+              "name": "conflicts_won",
+              "delta": 1
             }
           ],
           "cost": {
@@ -1710,6 +1745,11 @@
               "stat": "diplomacy",
               "delta": -8,
               "scope": "all"
+            },
+            {
+              "type": "metric",
+              "name": "conflicts_won",
+              "delta": 1
             }
           ]
         },
@@ -1727,6 +1767,11 @@
               "stat": "harvest",
               "delta": -5,
               "scope": "all"
+            },
+            {
+              "type": "metric",
+              "name": "conflicts_won",
+              "delta": 1
             }
           ]
         },
@@ -2025,6 +2070,11 @@
             {
               "type": "cohesion",
               "delta": 15
+            },
+            {
+              "type": "metric",
+              "name": "conflicts_won",
+              "delta": 1
             }
           ]
         },
@@ -2036,6 +2086,11 @@
             {
               "type": "cohesion",
               "delta": 30
+            },
+            {
+              "type": "metric",
+              "name": "conflicts_won",
+              "delta": 1
             }
           ],
           "cost": {

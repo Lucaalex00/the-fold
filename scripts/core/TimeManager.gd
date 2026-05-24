@@ -54,8 +54,38 @@ func _apply_cohesion_divine_gift() -> void:
 
 func _check_entity_deaths() -> void:
 	for entity in GameState.entities:
-		if entity.is_alive and (entity.stats.get("health", 1) as int) <= 0:
+		if not entity.is_alive:
+			continue
+		# Health-depleted: always lethal
+		if (entity.stats.get("health", 1) as int) <= 0:
 			GameState.register_entity_death(entity, "health_depleted")
+			continue
+		# Old age — probabilistic roll on every daily reset
+		if _roll_old_age_death(entity):
+			GameState.register_entity_death(entity, "old_age")
+
+
+func _roll_old_age_death(entity: GameState.EntityData) -> bool:
+	var prob: float = _old_age_death_probability(entity.age_years)
+	if prob <= 0.0:
+		return false
+	return randf() < prob
+
+
+func _old_age_death_probability(age_years: int) -> float:
+	# Per-daily roll. GDD gives an aggregate "by age X" curve;
+	# we apply it as a small per-tick probability so the chance compounds across days.
+	var death_cap_bonus: int = PrestigeSystem.get_death_cap_bonus()
+	var safe_age: int = 20 + death_cap_bonus
+	if age_years < safe_age:
+		return 0.0
+	# Per-day probability ramps from ~3% at safe_age to ~15% at safe_age+10,
+	# then +0.2%/year beyond that. Hard floor 0%, soft ceiling ~80%.
+	var over: int = age_years - safe_age
+	var base: float = 0.03 + min(float(over) / 10.0, 1.0) * 0.12
+	if over > 10:
+		base += float(over - 10) * 0.002
+	return clampf(base, 0.0, 0.8)
 
 
 func advance_game_year() -> void:

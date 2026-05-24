@@ -59,6 +59,8 @@ func setup(sprite: Sprite2D, texture: Texture2D) -> void:
 	_to_corner(false)
 	_start_rotation()
 	_build_entity_sprites()
+	if not BubbleSystem.bubble_requested.is_connected(_on_bubble_requested):
+		BubbleSystem.bubble_requested.connect(_on_bubble_requested)
 
 
 func _build_entity_sprites() -> void:
@@ -415,3 +417,31 @@ func _destroy_overlay() -> void:
 	var tw = create_tween()
 	tw.tween_property(ol, "color:a", 0.0, 0.2)
 	tw.tween_callback(ol.queue_free)
+
+
+# --- Bubble system bridge ---
+
+const BUBBLE_TYPE_MAP: Dictionary = {
+	"question":    0,  # BubbleLabel.BubbleType.QUESTION
+	"exclamation": 1,
+	"heart":       2,
+	"sword":       3,
+	"ellipsis":    4,
+	"star":        5,
+	"arrow_up":    6,
+	"sparkle":     7,
+}
+
+
+func _on_bubble_requested(entity_data, bubble_type_string: String) -> void:
+	if not _is_expanded:
+		return
+	# Find matching sprite for this entity_data
+	for es in _entity_sprites:
+		if not is_instance_valid(es):
+			continue
+		if es.data == entity_data and es.visible:
+			var t: int = int(BUBBLE_TYPE_MAP.get(bubble_type_string, 1))
+			var BubbleLabelScript = load("res://scripts/ui/BubbleLabel.gd")
+			BubbleLabelScript.show_bubble(es, t)
+			return
