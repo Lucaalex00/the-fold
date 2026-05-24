@@ -82,10 +82,19 @@ func _input(event: InputEvent) -> void:
 		print("[DEBUG] Force daily reset")
 		TimeManager._perform_daily_reset()
 	elif kc == KEY_Q:
-		print("[DEBUG] Force-spawn random social event (skip triggers/cooldowns)")
-		_debug_force_event()
+		print("[DEBUG] Force-spawn random NOTIFY event")
+		_debug_force_event_from_bucket("notify")
+	elif kc == KEY_A:
+		print("[DEBUG] Force-spawn random WARNING event")
+		_debug_force_event_from_bucket("warning")
+	elif kc == KEY_S:
+		print("[DEBUG] Force-spawn random CRITICAL event")
+		_debug_force_event_from_bucket("critical")
+	elif kc == KEY_D:
+		print("[DEBUG] Force-spawn random FATAL event")
+		_debug_force_event_from_bucket("fatal")
 	elif kc == KEY_W or kc == KEY_F12:
-		print("[DEBUG] Generate cosmic event")
+		print("[DEBUG] Generate cosmic event (natural triggers)")
 		EventManager._maybe_generate_cosmic_event()
 	elif kc == KEY_E:
 		print("[DEBUG] State dump:")
@@ -454,10 +463,7 @@ func _on_planet_encountered(bot) -> void:
 
 # --- Debug helpers ---
 
-func _debug_force_event() -> void:
-	# Pick a random event from any urgency bucket and spawn it ignoring cooldowns
-	var bucket_names: Array = ["notify", "warning", "critical", "fatal"]
-	var bucket_name: String = bucket_names[randi() % bucket_names.size()]
+func _debug_force_event_from_bucket(bucket_name: String) -> void:
 	var bucket: Array = EventManager._events_data.get(bucket_name, [])
 	if bucket.is_empty():
 		print("[DEBUG]   bucket %s is empty" % bucket_name)
