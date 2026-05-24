@@ -1104,8 +1104,15 @@
         {
           "id": "lower_temperature",
           "label": "Lower Temperature",
-          "consequence": "−50 🔮 divine energy",
-          "effects": [],
+          "consequence": "−50 🔮 divine energy · +5 health (everyone)",
+          "effects": [
+            {
+              "type": "stat",
+              "stat": "health",
+              "delta": 5,
+              "scope": "all"
+            }
+          ],
           "cost": {
             "divine_energy": 50
           }
@@ -1275,12 +1282,18 @@
         {
           "id": "treat_all",
           "label": "Treat Everyone",
-          "consequence": "−60 🔮 divine energy · -3 health (everyone)",
+          "consequence": "−60 🔮 divine energy · +5 health (everyone) · +8 research (everyone)",
           "effects": [
             {
               "type": "stat",
               "stat": "health",
-              "delta": -3,
+              "delta": 5,
+              "scope": "all"
+            },
+            {
+              "type": "stat",
+              "stat": "research",
+              "delta": 8,
               "scope": "all"
             }
           ],
@@ -1369,8 +1382,21 @@
         {
           "id": "divine_intervention",
           "label": "Divine Intervention",
-          "consequence": "−50 🔮 divine energy",
-          "effects": [],
+          "consequence": "−50 🔮 divine energy · +10 health (everyone) · +8 harvest (everyone)",
+          "effects": [
+            {
+              "type": "stat",
+              "stat": "health",
+              "delta": 10,
+              "scope": "all"
+            },
+            {
+              "type": "stat",
+              "stat": "harvest",
+              "delta": 8,
+              "scope": "all"
+            }
+          ],
           "cost": {
             "divine_energy": 50
           }
@@ -1408,8 +1434,13 @@
         {
           "id": "deflect",
           "label": "Deflect It",
-          "consequence": "−70 🔮 divine energy",
-          "effects": [],
+          "consequence": "−70 🔮 divine energy · +15 planet HP",
+          "effects": [
+            {
+              "type": "planet_hp",
+              "delta": 15
+            }
+          ],
           "cost": {
             "divine_energy": 70
           }
@@ -1612,16 +1643,11 @@
         {
           "id": "stop_them",
           "label": "Stop the Exodus",
-          "consequence": "−60 🔮 divine energy · -8 cohesion · +1 conflicts won",
+          "consequence": "−60 🔮 divine energy · -8 cohesion",
           "effects": [
             {
               "type": "cohesion",
               "delta": -8
-            },
-            {
-              "type": "metric",
-              "name": "conflicts_won",
-              "delta": 1
             }
           ],
           "cost": {
@@ -1784,7 +1810,7 @@
         {
           "id": "shared_rule",
           "label": "Shared Rule",
-          "consequence": "+18 cohesion · -5 harvest (everyone) · +1 conflicts won",
+          "consequence": "+18 cohesion · -5 harvest (everyone)",
           "effects": [
             {
               "type": "cohesion",
@@ -1795,11 +1821,6 @@
               "stat": "harvest",
               "delta": -5,
               "scope": "all"
-            },
-            {
-              "type": "metric",
-              "name": "conflicts_won",
-              "delta": 1
             }
           ]
         },
@@ -1838,25 +1859,35 @@
         {
           "id": "hunt_thief",
           "label": "Hunt the Thief",
-          "consequence": "-10 research (everyone)",
+          "consequence": "+15 research (everyone) · -5 cohesion",
           "effects": [
             {
               "type": "stat",
               "stat": "research",
-              "delta": -10,
+              "delta": 15,
               "scope": "all"
+            },
+            {
+              "type": "cohesion",
+              "delta": -5
             }
           ]
         },
         {
           "id": "rebuild_knowledge",
           "label": "Rebuild from Memory",
-          "consequence": "-20 research (everyone)",
+          "consequence": "-10 research (everyone) · +5 intelligence (everyone)",
           "effects": [
             {
               "type": "stat",
               "stat": "research",
-              "delta": -20,
+              "delta": -10,
+              "scope": "all"
+            },
+            {
+              "type": "stat",
+              "stat": "intelligence",
+              "delta": 5,
               "scope": "all"
             }
           ]
@@ -1864,12 +1895,12 @@
         {
           "id": "accept_loss",
           "label": "Accept the Loss",
-          "consequence": "-30 research (everyone) · +12 cohesion",
+          "consequence": "-25 research (everyone) · +12 cohesion",
           "effects": [
             {
               "type": "stat",
               "stat": "research",
-              "delta": -30,
+              "delta": -25,
               "scope": "all"
             },
             {
@@ -2312,8 +2343,8 @@
     {
       "id": "divine_abandonment",
       "title": "The Gods Are Silent",
-      "description": "Your divine energy has collapsed to zero. The connection to the cosmos is severed. Your people feel utterly alone — and they are right.",
-      "trigger": "cohesion>=80",
+      "description": "Your divine connection has frayed to nothing. The cosmos has gone silent. Your people pray to an empty sky — and they are right to fear.",
+      "trigger": "era>=3",
       "choices": [
         {
           "id": "sacrifice",
