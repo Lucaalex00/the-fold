@@ -45,10 +45,6 @@ func _ready() -> void:
 	PrestigeSystem.prestige_sequence_finished.connect(_on_prestige_finished)
 
 
-func _on_prestige_finished() -> void:
-	regenerate_bot_planets()
-
-
 func regenerate_bot_planets() -> void:
 	for bot in bot_planets:
 		if is_instance_valid(bot):
@@ -57,18 +53,39 @@ func regenerate_bot_planets() -> void:
 	_generate_bot_planets()
 
 
+var _last_distance: float = -1.0
+
+
 func _process(_delta: float) -> void:
 	_check_encounters()
 
 
 func _check_encounters() -> void:
 	var d: float = GameState.distance_from_center
+	# Edge-detection: only fire when the player CROSSES the encounter threshold
+	# from above this frame. Prevents a burst of encounters when distance is reset
+	# (prestige flow regenerates bots while distance is still at 0, then resets to 1M).
+	if _last_distance < 0.0:
+		_last_distance = d
+		return
+	if d >= _last_distance:
+		# Distance increased (reset) or stayed — no new crossings to fire
+		_last_distance = d
+		return
 	for bot in bot_planets:
 		if bot.was_encountered:
 			continue
-		if d <= bot.encounter_distance:
+		# Crossed downward through encounter_distance this frame
+		if _last_distance > bot.encounter_distance and d <= bot.encounter_distance:
 			bot.was_encountered = true
 			planet_encountered.emit(bot)
+	_last_distance = d
+
+
+func _on_prestige_finished() -> void:
+	regenerate_bot_planets()
+	# Re-arm edge detection so the first frame after reset doesn't count as a crossing
+	_last_distance = -1.0
 
 
 func _setup_player_planet() -> void:

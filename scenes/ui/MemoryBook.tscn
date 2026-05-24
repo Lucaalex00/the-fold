@@ -4,40 +4,5 @@
 
 [node name="MemoryBook" type="CanvasLayer"]
 script = ExtResource("1")
-layer = 30
+layer = 73
 visible = false
-
-[node name="Panel" type="Panel" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="VBox" type="VBoxContainer" parent="Panel"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = -16.0
-offset_bottom = -16.0
-theme_override_constants/separation = 8
-
-[node name="TitleLabel" type="Label" parent="Panel/VBox"]
-text = "Memory Book"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 22
-
-[node name="Scroll" type="ScrollContainer" parent="Panel/VBox"]
-size_flags_vertical = 3
-
-[node name="EntriesContainer" type="VBoxContainer" parent="Panel/VBox/Scroll"]
-size_flags_horizontal = 3
-theme_override_constants/separation = 4
-
-[node name="EmptyLabel" type="Label" parent="Panel/VBox/Scroll"]
-text = "No souls recorded yet."
-horizontal_alignment = 1
-visible = false
-
-[node name="CloseButton" type="Button" parent="Panel/VBox"]
-text = "Close"

@@ -205,27 +205,33 @@ func _build_ui() -> void:
 
 
 func _make_planet_visual(bot, fallback_color: Color) -> Control:
-	# If the bot has a sprite path, render it via AtlasTexture (one frame from the strip).
-	# Otherwise fall back to a coloured circle.
+	# Render the bot planet sprite at the exact size we want.
+	# We wrap a Sprite2D inside a Control so layout works correctly and
+	# the sprite is hard-clamped to PLANET_NODE_DIAMETER (was rendering at native
+	# 200x200 with TextureRect + EXPAND_IGNORE_SIZE).
 	var path: String = String(bot.display_sprite_path) if "display_sprite_path" in bot else ""
 	if path != "":
 		var tex: Texture2D = load(path) as Texture2D
 		if tex:
+			var holder := Control.new()
+			holder.custom_minimum_size = Vector2(PLANET_NODE_DIAMETER, PLANET_NODE_DIAMETER)
+			holder.size = Vector2(PLANET_NODE_DIAMETER, PLANET_NODE_DIAMETER)
+			holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			holder.clip_contents = true
+			var sprite := Sprite2D.new()
+			sprite.texture = tex
+			sprite.hframes = 16
+			sprite.vframes = 1
 			var frame: int = int(bot.display_frame) if "display_frame" in bot else 0
+			sprite.frame = frame
+			sprite.centered = true
+			sprite.position = Vector2(PLANET_NODE_DIAMETER * 0.5, PLANET_NODE_DIAMETER * 0.5)
 			var frame_w: float = float(tex.get_width()) / 16.0
-			var frame_h: float = float(tex.get_height())
-			var atlas := AtlasTexture.new()
-			atlas.atlas = tex
-			atlas.region = Rect2(frame * frame_w, 0, frame_w, frame_h)
-			var tr := TextureRect.new()
-			tr.texture = atlas
-			tr.size = Vector2(PLANET_NODE_DIAMETER, PLANET_NODE_DIAMETER)
-			tr.custom_minimum_size = Vector2(PLANET_NODE_DIAMETER, PLANET_NODE_DIAMETER)
-			tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			tr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-			tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			return tr
+			var s: float = PLANET_NODE_DIAMETER / frame_w
+			sprite.scale = Vector2(s, s)
+			sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			holder.add_child(sprite)
+			return holder
 	# Fallback: a coloured circle
 	return _make_circle(PLANET_NODE_DIAMETER, fallback_color, Color(fallback_color.r * 0.55, fallback_color.g * 0.55, fallback_color.b * 0.55, 0.95))
 
