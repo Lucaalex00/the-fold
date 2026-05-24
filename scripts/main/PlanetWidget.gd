@@ -458,7 +458,9 @@ func _on_bubble_requested(entity_data, bubble_type_string: String) -> void:
 	var scene := load("res://scenes/ui/BubbleLabel.tscn")
 	if scene == null:
 		return
-	var bubble := scene.instantiate()
+	var bubble: Node2D = scene.instantiate() as Node2D
+	if bubble == null:
+		return
 	bubble.position = spawn_pos + Vector2(0, -40)
 	bubble.z_index = 20
 	get_parent().add_child(bubble)
