@@ -13,7 +13,7 @@ const ENCOUNTER_COLOR: Color = Color(0.45, 0.7, 1.0)  # cool blue for planet enc
 const CHIP_W: float = 82.0
 const CHIP_H: float = 28.0
 const CHIP_RIGHT_MARGIN: float = 8.0
-const CHIP_TOP_START: float = 86.0
+const CHIP_TOP_START: float = 108.0
 const CHIP_GAP: float = 4.0
 
 # event.id → { "node": Control, "event": EventManager.GameEvent }

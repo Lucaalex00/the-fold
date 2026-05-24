@@ -1,7 +1,7 @@
 extends CanvasLayer
 
-@onready var distance_label: Label = $TopBar/StatsRow/DistanceLabel
-@onready var distance_bar: ProgressBar = $TopBar/DistanceBar
+@onready var distance_label: Label = $TopBar/DistanceRow/DistanceLabel
+@onready var distance_bar: ProgressBar = $TopBar/DistanceRow/DistanceBar
 @onready var era_label: Label = $TopBar/StatsRow/EraLabel
 @onready var cohesion_label: Label = $TopBar/StatsRow/CohLabel
 @onready var divine_energy_label: Label = $TopBar/StatsRow/EnergyLabel
