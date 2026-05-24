@@ -102,8 +102,10 @@ func _hide_entities() -> void:
 
 
 func _start_rotation() -> void:
+	# Auto-rotation is purely decorative when the planet is in CORNER mode.
+	# 30s per full rotation (16 frames @ 1.875s each). Paused while expanded.
 	_rotation_timer = Timer.new()
-	_rotation_timer.wait_time = 10.0 / 16.0
+	_rotation_timer.wait_time = 30.0 / 16.0
 	_rotation_timer.autostart = true
 	_rotation_timer.timeout.connect(_on_rotation_tick)
 	add_child(_rotation_timer)
@@ -115,29 +117,20 @@ func _on_entity_layer_transitioned() -> void:
 
 
 func _on_rotation_tick() -> void:
-	if _rotation_paused or not _planet_sprite:
+	# Auto-rotation only happens while the planet is in CORNER mode (no entities
+	# rendered). When the player opens the planet (_is_expanded) we pause so the
+	# entities stay on a single, stable layer without flicker.
+	if _rotation_paused or _is_expanded or not _planet_sprite:
 		return
 	_planet_sprite.frame = (_planet_sprite.frame + 1) % 16
-	_sync_entities_to_current_frame()
-
-
-func _sync_entities_to_current_frame() -> void:
-	# Entities are tied to gameplay layers (frames 0, 3, 6, 9, 12, 15).
-	# Between those, the planet is rotating → entities must be HIDDEN.
-	if not _planet_sprite:
-		return
+	# Track the facing layer silently so cosmic events still know what's exposed,
+	# but DON'T touch entities (they aren't visible in corner mode anyway).
 	var idx: int = GAMEPLAY_FRAMES.find(_planet_sprite.frame)
 	if idx != -1:
 		_view_layer = idx
 		facing_label.text = "LAYER: %d / %d" % [_view_layer + 1, LAYER_COUNT]
 		_update_dots()
-		if _is_expanded:
-			_show_entities()
 		layer_changed.emit(_view_layer)
-	else:
-		# Transition frame — planet between layers, hide entities
-		if _is_expanded:
-			_hide_entities()
 
 
 func pause_rotation() -> void:
@@ -190,9 +183,22 @@ func _snap_to_layer(layer_idx: int) -> void:
 
 
 func _set_frame_and_sync(fr: int) -> void:
+	# Used by _snap_to_layer's tween. Hides entities during transition frames,
+	# shows them when landing on a gameplay frame. _snap_to_layer is only ever
+	# called while the planet is expanded.
 	if _planet_sprite:
 		_planet_sprite.frame = fr
-	_sync_entities_to_current_frame()
+	if not _planet_sprite:
+		return
+	var idx: int = GAMEPLAY_FRAMES.find(_planet_sprite.frame)
+	if idx != -1:
+		_view_layer = idx
+		facing_label.text = "LAYER: %d / %d" % [_view_layer + 1, LAYER_COUNT]
+		_update_dots()
+		_show_entities()
+		layer_changed.emit(_view_layer)
+	else:
+		_hide_entities()
 
 
 func _to_corner(animated: bool) -> void:
@@ -200,6 +206,8 @@ func _to_corner(animated: bool) -> void:
 	_destroy_overlay()
 	_destroy_hp_bar()
 	_hide_entities()
+	# Resume background rotation (decorative — no entities visible in corner)
+	resume_rotation()
 	if _planet_sprite:
 		if animated:
 			var tw = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN_OUT)
@@ -217,6 +225,13 @@ func _to_corner(animated: bool) -> void:
 
 func _to_expanded() -> void:
 	_is_expanded = true
+	# Freeze the rotation while the planet is open — the player needs the
+	# entities of one stable layer, not a flickering carousel.
+	pause_rotation()
+	# Make sure the sprite is on a gameplay frame matching _view_layer so
+	# the entities for that layer are visible immediately.
+	if _planet_sprite:
+		_planet_sprite.frame = GAMEPLAY_FRAMES[_view_layer]
 	_create_overlay()
 	_create_hp_bar()
 	if _planet_sprite:

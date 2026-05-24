@@ -71,24 +71,27 @@ theme_override_font_sizes/font_size = 11
 
 [node name="DistanceRow" type="HBoxContainer" parent="TopBar"]
 size_flags_vertical = 3
+alignment = 1
 theme_override_constants/separation = 8
 
 [node name="DistanceBar" type="ProgressBar" parent="TopBar/DistanceRow"]
-custom_minimum_size = Vector2(0, 8)
+custom_minimum_size = Vector2(0, 10)
 max_value = 100.0
 value = 0.0
 show_percentage = false
 size_flags_horizontal = 3
+size_flags_vertical = 4
 size_flags_stretch_ratio = 3.0
 
 [node name="DistanceLabel" type="Label" parent="TopBar/DistanceRow"]
 text = "1.00 M ly"
 size_flags_horizontal = 3
+size_flags_vertical = 4
 size_flags_stretch_ratio = 1.0
 horizontal_alignment = 2
 vertical_alignment = 1
 theme_override_colors/font_color = Color(1, 1, 1, 0.7)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 11
 
 [node name="NotificationLabel" type="Label" parent="."]
 anchors_preset = 5
