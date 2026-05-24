@@ -12,6 +12,26 @@ const PLANET_SPRITES = [
 # Encounter distances: spread across the journey. First encounter ~750K, last ~120K.
 const ENCOUNTER_DISTANCES: Array = [750_000.0, 550_000.0, 380_000.0, 230_000.0, 120_000.0]
 
+# Bot planet asset pool — picked randomly per bot. Each is a 16-frame 1600x100 spritesheet.
+const BOT_PLANET_ASSETS: Array = [
+	{"path": "res://assets/planets/bots/planet_dry_01.png",  "type": "dry"},
+	{"path": "res://assets/planets/bots/planet_dry_02.png",  "type": "dry"},
+	{"path": "res://assets/planets/bots/planet_dry_03.png",  "type": "dry"},
+	{"path": "res://assets/planets/bots/planet_dry_04.png",  "type": "dry"},
+	{"path": "res://assets/planets/bots/planet_dry_05.png",  "type": "dry"},
+	{"path": "res://assets/planets/bots/planet_gas_01.png",  "type": "gas"},
+	{"path": "res://assets/planets/bots/planet_gas_02.png",  "type": "gas"},
+	{"path": "res://assets/planets/bots/planet_gas_03.png",  "type": "gas"},
+	{"path": "res://assets/planets/bots/planet_ice_01.png",  "type": "ice"},
+	{"path": "res://assets/planets/bots/planet_island_01.png","type": "island"},
+	{"path": "res://assets/planets/bots/planet_island_02.png","type": "island"},
+	{"path": "res://assets/planets/bots/planet_lava_01.png", "type": "lava"},
+	{"path": "res://assets/planets/bots/planet_lava_02.png", "type": "lava"},
+	{"path": "res://assets/planets/bots/planet_lava_03.png", "type": "lava"},
+	{"path": "res://assets/planets/bots/planet_no_atmosphere_01.png", "type": "barren"},
+	{"path": "res://assets/planets/bots/planet_no_atmosphere_02.png", "type": "barren"},
+]
+
 var player_planet: Planet = null
 var bot_planets: Array = []
 
@@ -73,6 +93,11 @@ func _generate_bot_planets() -> void:
 		var base_d: float = ENCOUNTER_DISTANCES[i % ENCOUNTER_DISTANCES.size()]
 		var jittered: float = base_d * randf_range(0.9, 1.1)
 		bot.set_encounter_distance(jittered)
+		# Random visual identity: pick an asset + a random frame from its 16-frame strip
+		var asset: Dictionary = BOT_PLANET_ASSETS[randi() % BOT_PLANET_ASSETS.size()]
+		bot.display_sprite_path = String(asset["path"])
+		bot.display_type = String(asset["type"])
+		bot.display_frame = randi() % 16
 		bot_planets.append(bot)
 		add_child(bot)
 		bot.position = _bot_position(i)

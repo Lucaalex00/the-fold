@@ -117,6 +117,14 @@ func _on_rotation_tick() -> void:
 	if _rotation_paused or not _planet_sprite:
 		return
 	_planet_sprite.frame = (_planet_sprite.frame + 1) % 16
+	_sync_entities_to_current_frame()
+
+
+func _sync_entities_to_current_frame() -> void:
+	# Entities are tied to gameplay layers (frames 0, 3, 6, 9, 12, 15).
+	# Between those, the planet is rotating → entities must be HIDDEN.
+	if not _planet_sprite:
+		return
 	var idx: int = GAMEPLAY_FRAMES.find(_planet_sprite.frame)
 	if idx != -1:
 		_view_layer = idx
@@ -125,6 +133,10 @@ func _on_rotation_tick() -> void:
 		if _is_expanded:
 			_show_entities()
 		layer_changed.emit(_view_layer)
+	else:
+		# Transition frame — planet between layers, hide entities
+		if _is_expanded:
+			_hide_entities()
 
 
 func pause_rotation() -> void:
@@ -154,24 +166,32 @@ func _process(delta: float) -> void:
 func _snap_to_layer(layer_idx: int) -> void:
 	_view_layer = layer_idx
 	facing_label.text = "LAYER: %d / %d" % [_view_layer + 1, LAYER_COUNT]
-	_show_entities()
 	var target: int = GAMEPLAY_FRAMES[_view_layer]
 	if not _planet_sprite:
 		return
 	var current := _planet_sprite.frame
 	if current == target:
+		_show_entities()
 		return
+	# Hide entities while we're tweening through transition frames
+	_hide_entities()
 	var fwd := (target - current + 16) % 16
 	var bwd := (current - target + 16) % 16
 	var tw := create_tween()
 	if fwd <= bwd:
 		for i in range(fwd):
 			var f := (current + i + 1) % 16
-			tw.tween_callback(func(fr = f): _planet_sprite.frame = fr).set_delay(10.0 / 16.0 * 0.25)
+			tw.tween_callback(_set_frame_and_sync.bind(f)).set_delay(10.0 / 16.0 * 0.25)
 	else:
 		for i in range(bwd):
 			var f := (current - i - 1 + 16) % 16
-			tw.tween_callback(func(fr = f): _planet_sprite.frame = fr).set_delay(10.0 / 16.0 * 0.25)
+			tw.tween_callback(_set_frame_and_sync.bind(f)).set_delay(10.0 / 16.0 * 0.25)
+
+
+func _set_frame_and_sync(fr: int) -> void:
+	if _planet_sprite:
+		_planet_sprite.frame = fr
+	_sync_entities_to_current_frame()
 
 
 func _to_corner(animated: bool) -> void:

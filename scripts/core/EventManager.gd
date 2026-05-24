@@ -77,8 +77,14 @@ func generate_social_events() -> void:
 		var urgency = _parse_urgency(event_def.get("_urgency", "notify"))
 		if not _cooldown_passed(urgency):
 			continue
-		if _check_social_trigger(event_def):
-			_spawn_social_event(event_def, urgency)
+		if not _check_social_trigger(event_def):
+			continue
+		# Frequency: independent final roll (default 1.0). Lets us throttle
+		# rare-feel events (asteroids, fatals) without changing their trigger.
+		var freq: float = float(event_def.get("frequency", 1.0))
+		if freq < 1.0 and randf() > freq:
+			continue
+		_spawn_social_event(event_def, urgency)
 
 
 func _check_social_trigger(event_def: Dictionary) -> bool:
@@ -165,12 +171,15 @@ func _maybe_generate_cosmic_event() -> void:
 			continue
 		if not _check_social_trigger(event_def):
 			continue
+		# Per-event frequency multiplier on top of urgency probability
+		var freq: float = float(event_def.get("frequency", 1.0))
 		var prob: float
 		match urgency:
 			EventUrgency.FATAL:    prob = 0.07
 			EventUrgency.CRITICAL: prob = 0.14
 			EventUrgency.URGENT:   prob = 0.33
 			_:                     prob = 0.30
+		prob *= freq
 		if randf() < prob:
 			_spawn_cosmic_event(event_def, urgency)
 			return

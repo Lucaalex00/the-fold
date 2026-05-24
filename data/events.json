@@ -43,7 +43,8 @@
           "effects": []
         }
       ],
-      "default_effects": []
+      "default_effects": [],
+      "frequency": 0.9
     },
     {
       "id": "born_leader",
@@ -102,7 +103,8 @@
           "type": "cohesion",
           "delta": -5
         }
-      ]
+      ],
+      "frequency": 0.5
     },
     {
       "id": "harvest_song",
@@ -141,7 +143,8 @@
           "effects": []
         }
       ],
-      "default_effects": []
+      "default_effects": [],
+      "frequency": 0.7
     },
     {
       "id": "ancient_ruins",
@@ -193,7 +196,8 @@
           ]
         }
       ],
-      "default_effects": []
+      "default_effects": [],
+      "frequency": 0.4
     },
     {
       "id": "dream_vision",
@@ -238,7 +242,8 @@
           "effects": []
         }
       ],
-      "default_effects": []
+      "default_effects": [],
+      "frequency": 0.6
     },
     {
       "id": "trading_post",
@@ -294,7 +299,8 @@
           ]
         }
       ],
-      "default_effects": []
+      "default_effects": [],
+      "frequency": 0.5
     },
     {
       "id": "child_prodigy",
@@ -347,7 +353,8 @@
           "type": "cohesion",
           "delta": -3
         }
-      ]
+      ],
+      "frequency": 0.4
     },
     {
       "id": "comet_blessing",
@@ -390,7 +397,8 @@
           "effects": []
         }
       ],
-      "default_effects": []
+      "default_effects": [],
+      "frequency": 0.3
     },
     {
       "id": "great_harvest",
@@ -447,7 +455,8 @@
           "delta": 3,
           "scope": "all"
         }
-      ]
+      ],
+      "frequency": 0.7
     },
     {
       "id": "alien_probe",
@@ -493,7 +502,8 @@
           ]
         }
       ],
-      "default_effects": []
+      "default_effects": [],
+      "frequency": 0.2
     }
   ],
   "warning": [
@@ -561,7 +571,8 @@
           "type": "cohesion",
           "delta": -15
         }
-      ]
+      ],
+      "frequency": 0.5
     },
     {
       "id": "territorial_dispute",
@@ -642,7 +653,8 @@
           "delta": -5,
           "scope": "all"
         }
-      ]
+      ],
+      "frequency": 0.45
     },
     {
       "id": "outsider_arrival",
@@ -692,7 +704,8 @@
           ]
         }
       ],
-      "default_effects": []
+      "default_effects": [],
+      "frequency": 0.35
     },
     {
       "id": "food_shortage",
@@ -764,7 +777,8 @@
           "type": "cohesion",
           "delta": -10
         }
-      ]
+      ],
+      "frequency": 0.5
     },
     {
       "id": "warrior_restlessness",
@@ -831,7 +845,8 @@
           "delta": -5,
           "scope": "all"
         }
-      ]
+      ],
+      "frequency": 0.45
     },
     {
       "id": "elder_decline",
@@ -896,7 +911,8 @@
           "type": "cohesion",
           "delta": -5
         }
-      ]
+      ],
+      "frequency": 0.4
     },
     {
       "id": "cultural_split",
@@ -961,7 +977,8 @@
           "type": "cohesion",
           "delta": -15
         }
-      ]
+      ],
+      "frequency": 0.3
     },
     {
       "id": "prolonged_eclipse",
@@ -1027,7 +1044,8 @@
           "type": "planet_hp",
           "delta": -10
         }
-      ]
+      ],
+      "frequency": 0.15
     },
     {
       "id": "strange_signal",
@@ -1073,7 +1091,8 @@
           "effects": []
         }
       ],
-      "default_effects": []
+      "default_effects": [],
+      "frequency": 0.2
     },
     {
       "id": "approaching_star",
@@ -1141,7 +1160,8 @@
           "type": "planet_hp",
           "delta": -15
         }
-      ]
+      ],
+      "frequency": 0.1
     }
   ],
   "critical": [
@@ -1226,7 +1246,8 @@
           "scope": "weakest",
           "cause": "uprising"
         }
-      ]
+      ],
+      "frequency": 0.2
     },
     {
       "id": "plague_outbreak",
@@ -1304,7 +1325,8 @@
           "type": "planet_hp",
           "delta": -10
         }
-      ]
+      ],
+      "frequency": 0.15
     },
     {
       "id": "food_crisis",
@@ -1371,7 +1393,8 @@
           "type": "cohesion",
           "delta": -15
         }
-      ]
+      ],
+      "frequency": 0.25
     },
     {
       "id": "meteorite",
@@ -1433,7 +1456,8 @@
           "type": "planet_hp",
           "delta": -15
         }
-      ]
+      ],
+      "frequency": 0.1
     },
     {
       "id": "solar_flare",
@@ -1497,7 +1521,8 @@
           "type": "planet_hp",
           "delta": -15
         }
-      ]
+      ],
+      "frequency": 0.15
     },
     {
       "id": "cosmic_tide",
@@ -1575,7 +1600,8 @@
           "scope": "weakest",
           "cause": "tide"
         }
-      ]
+      ],
+      "frequency": 0.1
     },
     {
       "id": "mass_exodus",
@@ -1642,7 +1668,8 @@
           "type": "cohesion",
           "delta": -10
         }
-      ]
+      ],
+      "frequency": 0.2
     },
     {
       "id": "ice_age",
@@ -1721,7 +1748,8 @@
           "scope": "weakest",
           "cause": "ice_age"
         }
-      ]
+      ],
+      "frequency": 0.08
     },
     {
       "id": "leadership_vacuum",
@@ -1798,7 +1826,8 @@
           "delta": -8,
           "scope": "all"
         }
-      ]
+      ],
+      "frequency": 0.25
     },
     {
       "id": "knowledge_heist",
@@ -1861,7 +1890,8 @@
           "type": "cohesion",
           "delta": -10
         }
-      ]
+      ],
+      "frequency": 0.15
     },
     {
       "id": "walking_dead_outbreak",
@@ -1917,7 +1947,8 @@
           "id": "walking_dead",
           "duration": 72
         }
-      ]
+      ],
+      "frequency": 0.1
     },
     {
       "id": "poison_rain_storm",
@@ -1975,7 +2006,8 @@
           "id": "poison_rain",
           "duration": 72
         }
-      ]
+      ],
+      "frequency": 0.12
     }
   ],
   "fatal": [
@@ -2048,7 +2080,8 @@
           "type": "planet_hp",
           "delta": -15
         }
-      ]
+      ],
+      "frequency": 0.05
     },
     {
       "id": "civil_war",
@@ -2130,7 +2163,8 @@
           "type": "planet_hp",
           "delta": -15
         }
-      ]
+      ],
+      "frequency": 0.1
     },
     {
       "id": "extinction_virus",
@@ -2198,7 +2232,8 @@
           "delta": -10,
           "scope": "all"
         }
-      ]
+      ],
+      "frequency": 0.05
     },
     {
       "id": "supernova_nearby",
@@ -2271,7 +2306,8 @@
           "type": "planet_hp",
           "delta": -15
         }
-      ]
+      ],
+      "frequency": 0.05
     },
     {
       "id": "divine_abandonment",
@@ -2346,7 +2382,8 @@
           "type": "cohesion",
           "delta": -15
         }
-      ]
+      ],
+      "frequency": 0.08
     }
   ]
 }

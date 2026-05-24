@@ -14,6 +14,11 @@ var encounter_distance: float = 500_000.0
 var was_encountered: bool = false
 var was_visited: bool = false
 
+# Visual identity (used by Universe Map and visit events)
+var display_sprite_path: String = ""
+var display_type: String = "world"  # e.g. "lava", "ice", "gas", "dry", "island"
+var display_frame: int = 0          # which frame from the 16-frame strip
+
 # Bots advance very slowly — fraction of player speed
 const BOT_SPEED_MULTIPLIER = 0.05
 

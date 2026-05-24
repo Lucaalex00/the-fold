@@ -204,6 +204,32 @@ func _build_ui() -> void:
 	_root.add_child(_close_button)
 
 
+func _make_planet_visual(bot, fallback_color: Color) -> Control:
+	# If the bot has a sprite path, render it via AtlasTexture (one frame from the strip).
+	# Otherwise fall back to a coloured circle.
+	var path: String = String(bot.display_sprite_path) if "display_sprite_path" in bot else ""
+	if path != "":
+		var tex: Texture2D = load(path) as Texture2D
+		if tex:
+			var frame: int = int(bot.display_frame) if "display_frame" in bot else 0
+			var frame_w: float = float(tex.get_width()) / 16.0
+			var frame_h: float = float(tex.get_height())
+			var atlas := AtlasTexture.new()
+			atlas.atlas = tex
+			atlas.region = Rect2(frame * frame_w, 0, frame_w, frame_h)
+			var tr := TextureRect.new()
+			tr.texture = atlas
+			tr.size = Vector2(PLANET_NODE_DIAMETER, PLANET_NODE_DIAMETER)
+			tr.custom_minimum_size = Vector2(PLANET_NODE_DIAMETER, PLANET_NODE_DIAMETER)
+			tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			tr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			return tr
+	# Fallback: a coloured circle
+	return _make_circle(PLANET_NODE_DIAMETER, fallback_color, Color(fallback_color.r * 0.55, fallback_color.g * 0.55, fallback_color.b * 0.55, 0.95))
+
+
 func _make_circle(diameter: float, fill: Color, border: Color) -> PanelContainer:
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = Vector2(diameter, diameter)
@@ -269,13 +295,12 @@ func _refresh() -> void:
 		var node: Control = entry["node"] as Control
 		if not is_instance_valid(node):
 			continue
-		var ring: PanelContainer = entry["ring"] as PanelContainer
-		var base: Color = entry["default_color"] as Color
-		var tint: Color = base
+		var ring: Control = entry["ring"] as Control
+		var tint: Color = Color(1, 1, 1)  # natural sprite colour
 		if bot.was_visited:
 			tint = Color(0.55, 0.95, 0.55)
 		elif bot.was_encountered:
-			tint = Color(0.95, 0.75, 0.35)
+			tint = Color(1.1, 0.95, 0.55)
 		if is_instance_valid(ring):
 			ring.modulate = tint
 
@@ -305,8 +330,8 @@ func _build_planet_entry(bot, index: int) -> Dictionary:
 	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(holder)
 
-	# Circle positioned on the flow line (i.e. centered in the holder horizontally)
-	var ring: PanelContainer = _make_circle(PLANET_NODE_DIAMETER, color, Color(color.r * 0.55, color.g * 0.55, color.b * 0.55, 0.95))
+	# Visual node: try real planet sprite, fall back to coloured circle
+	var ring: Control = _make_planet_visual(bot, color)
 	var ring_x: float = (holder.size.x - PLANET_NODE_DIAMETER) * 0.5
 	var ring_y: float = (holder.size.y - PLANET_NODE_DIAMETER) * 0.5
 	ring.position = Vector2(ring_x, ring_y)
@@ -369,7 +394,8 @@ func _refresh_info_panel() -> void:
 		_info_body.text = "Planets cross your path as you fall toward the void. You cannot divert — you must wait for them to come close."
 		return
 	var bot = _selected
-	_info_title.text = String(bot.planet_name)
+	var type_name: String = String(bot.display_type) if "display_type" in bot else "world"
+	_info_title.text = "%s   ·   %s" % [String(bot.planet_name), type_name.capitalize()]
 	var status_line: String = ""
 	if bot.was_visited:
 		status_line = "Status: ✓ Visited"
